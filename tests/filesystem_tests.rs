@@ -73,3 +73,43 @@ fn test_depth_tracking() {
     fs.change_dir("LEVEL1").unwrap();
     assert_eq!(fs.current_depth(), 1);
 }
+
+#[test]
+fn test_directory_can_contain_itself() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("VOID");
+    fs.change_dir("VOID").unwrap();
+
+    // Create paradox: VOID contains VOID
+    fs.add_paradox_to_self();
+
+    let children = fs.list_directories();
+    assert!(children.contains(&"VOID".to_string()));
+}
+
+#[test]
+fn test_paradox_navigation_increases_depth() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("LOOP");
+    fs.change_dir("LOOP").unwrap();
+    fs.add_paradox_to_self();
+
+    let initial_depth = fs.current_depth();
+    fs.change_dir("LOOP").unwrap();
+
+    // Depth increases even though we're "in the same place"
+    assert!(fs.current_depth() > initial_depth);
+}
+
+#[test]
+fn test_parent_navigation_from_paradox() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("STRANGE");
+    fs.change_dir("STRANGE").unwrap();
+    fs.add_paradox_to_self();
+    fs.change_dir("STRANGE").unwrap(); // Enter the loop
+
+    // Going back should return to the previous STRANGE
+    fs.change_dir("..").unwrap();
+    assert_eq!(fs.current_dir_name(), "STRANGE");
+}

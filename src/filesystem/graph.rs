@@ -101,6 +101,27 @@ impl FilesystemGraph {
         Err(FilesystemError::NotFound(name_upper))
     }
 
+    /// Create a paradox where current directory contains itself
+    /// This creates a NEW node that looks like the current one
+    pub fn add_paradox_to_self(&mut self) {
+        let current_name = self.graph[self.current].name().to_string();
+        let new_depth = self.current_depth() + 1;
+
+        // Create a new node with same name but deeper
+        let paradox_node = self.graph.add_node(DirNode::new(&current_name, new_depth));
+
+        // Add paradox edge from current to the new node
+        self.graph.add_edge(self.current, paradox_node, EdgeType::Paradox);
+
+        // The paradox node should also contain itself (infinite regression)
+        self.graph.add_edge(paradox_node, paradox_node, EdgeType::Paradox);
+    }
+
+    /// Create a paradox link between two arbitrary nodes
+    pub fn add_paradox_link(&mut self, from: NodeIndex, to: NodeIndex) {
+        self.graph.add_edge(from, to, EdgeType::Paradox);
+    }
+
     /// Get mutable reference to current directory node
     pub fn current_node_mut(&mut self) -> &mut DirNode {
         &mut self.graph[self.current]
