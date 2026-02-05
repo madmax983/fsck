@@ -1,4 +1,4 @@
-use fsck::filesystem::{DirNode, FileNode, NodeContent};
+use fsck::filesystem::{DirNode, FileNode, FilesystemGraph, NodeContent};
 
 #[test]
 fn test_create_directory_node() {
@@ -26,4 +26,50 @@ fn test_file_with_dynamic_content() {
     let file = FileNode::with_dynamic("COUNTER.TXT", NodeContent::Counter { base: "HELLO\n", count: 0 });
     // Dynamic content is retrieved via content_dynamic()
     assert!(matches!(file.content_type(), NodeContent::Counter { .. }));
+}
+
+#[test]
+fn test_create_filesystem_with_root() {
+    let fs = FilesystemGraph::new();
+    assert_eq!(fs.current_path(), "/");
+}
+
+#[test]
+fn test_add_child_directory() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("GAMES");
+    let children = fs.list_directories();
+    assert!(children.contains(&"GAMES".to_string()));
+}
+
+#[test]
+fn test_navigate_to_child() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("GAMES");
+    assert!(fs.change_dir("GAMES").is_ok());
+    assert_eq!(fs.current_dir_name(), "GAMES");
+}
+
+#[test]
+fn test_navigate_parent() {
+    let mut fs = FilesystemGraph::new();
+    fs.add_child("GAMES");
+    fs.change_dir("GAMES").unwrap();
+    assert!(fs.change_dir("..").is_ok());
+    assert_eq!(fs.current_path(), "/");
+}
+
+#[test]
+fn test_navigate_nonexistent_fails() {
+    let mut fs = FilesystemGraph::new();
+    assert!(fs.change_dir("NOWHERE").is_err());
+}
+
+#[test]
+fn test_depth_tracking() {
+    let mut fs = FilesystemGraph::new();
+    assert_eq!(fs.current_depth(), 0);
+    fs.add_child("LEVEL1");
+    fs.change_dir("LEVEL1").unwrap();
+    assert_eq!(fs.current_depth(), 1);
 }
