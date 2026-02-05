@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 
+pub mod filesystem;
 pub mod terminal;
 
 use terminal::{InputParser, OutputBuffer};
