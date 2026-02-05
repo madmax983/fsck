@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 
+pub mod commands;
 pub mod filesystem;
 pub mod terminal;
 
