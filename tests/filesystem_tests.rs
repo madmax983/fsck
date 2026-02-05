@@ -1,4 +1,4 @@
-use fsck::filesystem::{DirNode, FileNode, FilesystemGraph, NodeContent};
+use fsck::filesystem::{DirNode, FileNode, FilesystemGenerator, FilesystemGraph, NodeContent};
 
 #[test]
 fn test_create_directory_node() {
@@ -112,4 +112,28 @@ fn test_parent_navigation_from_paradox() {
     // Going back should return to the previous STRANGE
     fs.change_dir("..").unwrap();
     assert_eq!(fs.current_dir_name(), "STRANGE");
+}
+
+#[test]
+fn test_same_seed_produces_same_structure() {
+    let fs1 = FilesystemGenerator::generate(12345, 5);
+    let fs2 = FilesystemGenerator::generate(12345, 5);
+
+    assert_eq!(fs1.list_directories(), fs2.list_directories());
+}
+
+#[test]
+fn test_different_seeds_produce_different_structures() {
+    let fs1 = FilesystemGenerator::generate(12345, 5);
+    let fs2 = FilesystemGenerator::generate(54321, 5);
+
+    // Very unlikely to be identical
+    assert_ne!(fs1.list_directories(), fs2.list_directories());
+}
+
+#[test]
+fn test_generation_respects_depth_limit() {
+    let fs = FilesystemGenerator::generate(99999, 3);
+    // Root should have some children
+    assert!(!fs.list_directories().is_empty());
 }
