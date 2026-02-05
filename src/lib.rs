@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::*;
 
+pub mod terminal;
+
 #[wasm_bindgen]
 pub struct Game {
     initialized: bool,
