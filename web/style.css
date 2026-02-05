@@ -1,0 +1,24 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#terminal {
+    width: 800px;
+    height: 600px;
+}
+
+/* Apple IIe phosphor green */
+.xterm {
+    --xterm-foreground: #33ff33;
+    --xterm-background: #000000;
+}
