@@ -11,15 +11,24 @@ fn test_game_initializes() {
 }
 
 #[wasm_bindgen_test]
-fn test_game_processes_input() {
+fn test_game_catalog_command() {
     let mut game = fsck::Game::new();
     let output = game.process_input("CATALOG");
-    assert!(!output.is_empty());
+    assert!(output.contains("DISK VOLUME"));
 }
 
 #[wasm_bindgen_test]
-fn test_game_shows_prompt() {
+fn test_game_navigation() {
     let mut game = fsck::Game::new();
-    let output = game.get_prompt();
-    assert_eq!(output, "]");
+
+    // Should have some directories from generation
+    let catalog = game.process_input("CATALOG");
+    assert!(catalog.contains("DIR"));
+}
+
+#[wasm_bindgen_test]
+fn test_game_unknown_command() {
+    let mut game = fsck::Game::new();
+    let output = game.process_input("XYZZY");
+    assert!(output.contains("SYNTAX ERROR"));
 }
