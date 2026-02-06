@@ -1,4 +1,4 @@
-use fsck::entity::{Entity, EntityMood, EscalationLayer};
+use fsck::entity::{Entity, EntityMood, EscalationLayer, ResponseGenerator};
 
 #[test]
 fn test_entity_starts_dormant() {
@@ -30,4 +30,32 @@ fn test_mood_shifts_with_depth() {
     entity.update_depth(40);
     // At presence layer, mood should be more intense
     assert!(!matches!(entity.current_mood(), EntityMood::Dormant));
+}
+
+#[test]
+fn test_hello_response_varies_by_mood() {
+    let generator = ResponseGenerator::new();
+
+    let dormant = generator.hello_response(EntityMood::Dormant);
+    let curious = generator.hello_response(EntityMood::Curious);
+
+    // Should be different responses
+    assert_ne!(dormant, curious);
+}
+
+#[test]
+fn test_who_response_exists() {
+    let generator = ResponseGenerator::new();
+    let response = generator.who_response(EntityMood::Curious, None);
+    assert!(!response.is_empty());
+}
+
+#[test]
+fn test_interjection_possible_at_presence() {
+    let mut entity = Entity::new();
+    entity.update_depth(40); // Presence layer
+
+    let generator = ResponseGenerator::new();
+    // At presence layer, interjections should be possible
+    assert!(generator.should_interject(&entity));
 }
