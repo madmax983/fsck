@@ -24,6 +24,7 @@ pub enum EdgeType {
 /// The impossible filesystem - a directed graph with cycles
 pub struct FilesystemGraph {
     graph: DiGraph<DirNode, EdgeType>,
+    #[allow(dead_code)] // May be used for future traversal operations
     root: NodeIndex,
     current: NodeIndex,
     /// Path history for .. navigation (can diverge from graph structure)
@@ -60,7 +61,9 @@ impl FilesystemGraph {
     }
 
     pub fn current_depth(&self) -> u32 {
-        self.graph[self.current].depth()
+        // Depth is based on path stack length, not node depth
+        // This allows paradox navigation to increase depth infinitely
+        (self.path_stack.len() - 1) as u32
     }
 
     pub fn add_child(&mut self, name: &str) -> NodeIndex {

@@ -147,6 +147,24 @@ fn find_files_recursive<F>(
 ) where
     F: Fn(&FileNode) -> bool,
 {
+    find_files_recursive_impl(fs, predicate, found, 0);
+}
+
+/// Implementation with depth limit to prevent infinite recursion in paradox directories
+fn find_files_recursive_impl<F>(
+    fs: &mut FilesystemGraph,
+    predicate: &F,
+    found: &mut Vec<(String, String)>,
+    depth: u32,
+) where
+    F: Fn(&FileNode) -> bool,
+{
+    // Limit recursion depth to prevent stack overflow in paradox directories
+    const MAX_DEPTH: u32 = 20;
+    if depth >= MAX_DEPTH {
+        return;
+    }
+
     // Check files in current directory
     for file in fs.current_node().files() {
         if predicate(file) {
@@ -160,7 +178,7 @@ fn find_files_recursive<F>(
     let dirs = fs.list_directories();
     for dir in dirs {
         if fs.change_dir(&dir).is_ok() {
-            find_files_recursive(fs, predicate, found);
+            find_files_recursive_impl(fs, predicate, found, depth + 1);
             let _ = fs.change_dir("..");
         }
     }
@@ -313,4 +331,114 @@ fn test_content_mix_in_filesystem() {
         victim_count > 0,
         "Should have victim history files at depth 3+"
     );
+}
+
+#[test]
+fn test_generator_creates_paradox_directories() {
+    let mut fs = FilesystemGenerator::generate_with_content(42, 10);
+
+    // Search recursively for paradox-named directories
+    let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];
+
+    fn search_for_paradox(fs: &mut FilesystemGraph, names: &[&str]) -> bool {
+        let dirs = fs.list_directories();
+        for dir in &dirs {
+            if names.contains(&dir.as_str()) {
+                // Check if this directory contains itself (paradox)
+                if fs.change_dir(dir).is_ok() {
+                    let children = fs.list_directories();
+                    if children.contains(dir) {
+                        let _ = fs.change_dir("..");
+                        return true;
+                    }
+                    let _ = fs.change_dir("..");
+                }
+            }
+        }
+
+        // Recurse into children
+        for dir in dirs {
+            if fs.change_dir(&dir).is_ok() {
+                if search_for_paradox(fs, names) {
+                    let _ = fs.change_dir("..");
+                    return true;
+                }
+                let _ = fs.change_dir("..");
+            }
+        }
+        false
+    }
+
+    assert!(
+        search_for_paradox(&mut fs, &paradox_names),
+        "Generator should create at least one paradox directory (VOID, LOOP, STRANGE, DARK, ERROR)"
+    );
+}
+
+#[test]
+fn test_paradox_enables_infinite_descent() {
+    let mut fs = FilesystemGenerator::generate_with_content(999, 10);
+
+    // Find a paradox directory
+    let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];
+
+    fn find_paradox_path(fs: &mut FilesystemGraph, names: &[&str]) -> Option<Vec<String>> {
+        let dirs = fs.list_directories();
+        for dir in &dirs {
+            if names.contains(&dir.as_str()) {
+                if fs.change_dir(dir).is_ok() {
+                    let children = fs.list_directories();
+                    if children.contains(dir) {
+                        let _ = fs.change_dir("..");
+                        return Some(vec![dir.clone()]);
+                    }
+                    let _ = fs.change_dir("..");
+                }
+            }
+        }
+
+        // Recurse
+        for dir in dirs {
+            if fs.change_dir(&dir).is_ok() {
+                if let Some(mut path) = find_paradox_path(fs, names) {
+                    let _ = fs.change_dir("..");
+                    path.insert(0, dir);
+                    return Some(path);
+                }
+                let _ = fs.change_dir("..");
+            }
+        }
+        None
+    }
+
+    let path = find_paradox_path(&mut fs, &paradox_names);
+    assert!(
+        path.is_some(),
+        "Should find at least one paradox directory in generated filesystem"
+    );
+
+    if let Some(path) = path {
+        // Navigate to the paradox
+        for dir in &path {
+            fs.change_dir(dir).unwrap();
+        }
+
+        let paradox_name = path.last().unwrap();
+        let initial_depth = fs.current_depth();
+
+        // Enter the paradox multiple times
+        fs.change_dir(paradox_name).unwrap();
+        let depth1 = fs.current_depth();
+        fs.change_dir(paradox_name).unwrap();
+        let depth2 = fs.current_depth();
+
+        assert!(
+            depth1 > initial_depth,
+            "First paradox descent should increase depth"
+        );
+        assert!(
+            depth2 > depth1,
+            "Second paradox descent should increase depth further"
+        );
+    }
 }

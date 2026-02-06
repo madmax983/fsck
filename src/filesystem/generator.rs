@@ -12,6 +12,9 @@ const DIR_NAMES: &[&str] = &[
     "NULL", "DARK",
 ];
 
+/// Directory names that should contain themselves (paradoxes)
+const PARADOX_NAMES: &[&str] = &["VOID", "LOOP", "STRANGE", "DARK", "ERROR", "NULL"];
+
 pub struct FilesystemGenerator;
 
 impl FilesystemGenerator {
@@ -78,6 +81,15 @@ impl FilesystemGenerator {
             if !chosen_names.contains(&name) {
                 chosen_names.push(name);
                 fs.add_child(name);
+
+                // Create paradox for certain directory names
+                if PARADOX_NAMES.contains(&name) && rng.gen_bool(0.8) {
+                    // 80% chance to make it a paradox
+                    if fs.change_dir(name).is_ok() {
+                        fs.add_paradox_to_self();
+                        let _ = fs.change_dir("..");
+                    }
+                }
             }
         }
 
