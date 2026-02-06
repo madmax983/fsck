@@ -1,0 +1,28 @@
+{
+  "name": "fsck",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A terminal horror game - explore an impossible filesystem inside a sentient Apple IIe",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "build": "wasm-pack build --target web --out-dir pkg",
+    "serve": "python serve.py",
+    "dev": "npm run build && npm run serve"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  },
+  "keywords": [
+    "game",
+    "horror",
+    "terminal",
+    "wasm",
+    "rust"
+  ],
+  "author": "",
+  "license": "MIT"
+}
