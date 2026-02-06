@@ -1,4 +1,5 @@
 import init, { Game } from '../pkg/fsck.js';
+import { playBootSequence } from './boot.js';
 
 async function main() {
     // Initialize WASM
@@ -26,9 +27,10 @@ async function main() {
 
     term.open(document.getElementById('terminal'));
 
-    // Boot sequence
-    term.writeln('APPLE ][');
-    term.writeln('');
+    // Play boot sequence
+    await playBootSequence(term, game);
+
+    // Show prompt
     term.write(game.get_prompt());
 
     // Input buffer

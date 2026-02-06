@@ -107,6 +107,12 @@ impl Game {
         self.executor.entity().layer() as u32
     }
 
+    /// Returns true if this is not the player's first session
+    #[must_use]
+    pub fn is_returning_player(&self) -> bool {
+        self.state.session_count() > 1
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     const fn generate_seed() -> u64 {
         42

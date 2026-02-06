@@ -52,3 +52,15 @@ fn test_gamestate_tracks_session_count() {
     state.increment_session();
     assert_eq!(state.session_count(), 2);
 }
+
+#[test]
+fn test_game_detects_returning_player() {
+    // Create a new game (first session)
+    let game = fsck::Game::new();
+
+    // First session should not be a returning player
+    assert!(!game.is_returning_player());
+
+    // Note: In a real scenario with persistence, loading a saved game
+    // would increment session_count and return true
+}
