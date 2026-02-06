@@ -23,6 +23,11 @@ pub struct VictimEntry {
 }
 
 impl VictimEntry {
+    /// Creates a new victim diary entry.
+    ///
+    /// # Arguments
+    /// * `date` - The date of the entry (format: YYYY-MM-DD)
+    /// * `content` - The diary entry text
     pub fn new(date: &str, content: &str) -> Self {
         Self {
             date: date.to_string(),
@@ -30,10 +35,12 @@ impl VictimEntry {
         }
     }
 
+    /// Returns the date of this entry.
     pub fn date(&self) -> &str {
         &self.date
     }
 
+    /// Returns the content of this entry.
     pub fn content(&self) -> &str {
         &self.content
     }
@@ -49,6 +56,12 @@ pub struct VictimHistory {
 }
 
 impl VictimHistory {
+    /// Creates a new victim history.
+    ///
+    /// # Arguments
+    /// * `era` - The time period this victim belongs to
+    /// * `name` - The victim's name (will be normalized to uppercase)
+    /// * `year` - The year this victim used the computer
     pub fn new(era: Era, name: &str, year: u32) -> Self {
         Self {
             era,
@@ -58,22 +71,30 @@ impl VictimHistory {
         }
     }
 
+    /// Returns the era this victim belongs to.
     pub fn era(&self) -> Era {
         self.era
     }
 
+    /// Returns the victim's name (normalized to uppercase).
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Returns the year this victim used the computer.
     pub fn year(&self) -> u32 {
         self.year
     }
 
+    /// Returns all diary entries for this victim.
     pub fn entries(&self) -> &[VictimEntry] {
         &self.entries
     }
 
+    /// Adds a new diary entry to this victim's history.
+    ///
+    /// # Arguments
+    /// * `entry` - The diary entry to add
     pub fn add_entry(&mut self, entry: VictimEntry) {
         self.entries.push(entry);
     }
