@@ -15,6 +15,42 @@ const DIR_NAMES: &[&str] = &[
 /// Directory names that should contain themselves (paradoxes)
 const PARADOX_NAMES: &[&str] = &["VOID", "LOOP", "STRANGE", "DARK", "ERROR", "NULL"];
 
+/// Creepy names for counter files (things that repeat/grow)
+const COUNTER_NAMES: &[&str] = &[
+    "ECHO.TXT",
+    "REPEAT.TXT",
+    "AGAIN.TXT",
+    "LOOP.TXT",
+    "COUNT.TXT",
+    "MEMORY.TXT",
+];
+
+/// Unsettling names for timestamp files (time-related)
+const TIMESTAMP_NAMES: &[&str] = &[
+    "WHEN.TXT",
+    "TIME.TXT",
+    "NOW.TXT",
+    "DATE.TXT",
+    "CLOCK.TXT",
+    "WATCH.TXT",
+];
+
+/// Ominous names for corrupted text files (all .TXT to avoid .LOG conflicts with victim files)
+const CORRUPTED_NAMES: &[&str] = &[
+    "ERROR.TXT",
+    "CORRUPT.TXT",
+    "BROKEN.TXT",
+    "DAMAGE.TXT",
+    "FAULT.TXT",
+    "GLITCH.TXT",
+    "FORGET.TXT",
+    "WRONG.TXT",
+    "WHY.TXT",
+    "STATIC.TXT",
+    "NOISE.TXT",
+    "FAIL.TXT",
+];
+
 pub struct FilesystemGenerator;
 
 impl FilesystemGenerator {
@@ -97,14 +133,33 @@ impl FilesystemGenerator {
         let num_files = rng.gen_range(1..=3);
         for _ in 0..num_files {
             let file = if rng.gen_bool(0.3) {
-                // 30% chance of dynamic file
-                let dynamic = match rng.gen_range(0..3) {
-                    0 => DynamicContent::counter("HELLO"),
-                    1 => DynamicContent::timestamp(),
-                    _ => DynamicContent::corrupted("SYSTEM ERROR", 0.2),
+                // 30% chance of dynamic file with creepy names
+                let (name, dynamic) = match rng.gen_range(0..3) {
+                    0 => {
+                        // Counter file
+                        let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
+                        (name, DynamicContent::counter("█"))
+                    }
+                    1 => {
+                        // Timestamp file
+                        let name = TIMESTAMP_NAMES[rng.gen_range(0..TIMESTAMP_NAMES.len())];
+                        (name, DynamicContent::timestamp())
+                    }
+                    _ => {
+                        // Corrupted file
+                        let name = CORRUPTED_NAMES[rng.gen_range(0..CORRUPTED_NAMES.len())];
+                        let messages = [
+                            "SYSTEM ERROR",
+                            "ACCESS DENIED",
+                            "FATAL EXCEPTION",
+                            "MEMORY CORRUPTED",
+                            "DO NOT READ THIS",
+                        ];
+                        let msg = messages[rng.gen_range(0..messages.len())];
+                        (name, DynamicContent::corrupted(msg, 0.3))
+                    }
                 };
-                let random_id = rng.r#gen::<u32>();
-                FileNode::with_dynamic(&format!("DYN{random_id}.TXT"), dynamic)
+                FileNode::with_dynamic(name, dynamic)
             } else {
                 // Static file from library
                 let files = library.generic_files();

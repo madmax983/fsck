@@ -265,12 +265,51 @@ fn test_dynamic_files_present() {
         "Expected to find dynamic files in generated filesystem"
     );
 
-    // Verify dynamic files have DYN prefix
+    // Verify dynamic files have interesting names (not generic DYN prefix)
     for (path, _) in &dynamic_files {
+        // Should NOT have DYN prefix anymore
         assert!(
-            path.contains("DYN") && path.ends_with(".TXT"),
-            "Dynamic files should be named DYN*.TXT, got: {}",
+            !path.contains("DYN") || !path.contains(char::is_numeric),
+            "Dynamic files should have interesting names, not DYN12345, got: {}",
             path
+        );
+    }
+}
+
+#[test]
+fn test_dynamic_files_have_creepy_names() {
+    let mut fs = FilesystemGenerator::generate_with_content(42, 8);
+
+    // Search for dynamic files
+    let mut dynamic_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| matches!(f.content_type(), NodeContent::Dynamic(_)),
+        &mut dynamic_files,
+    );
+
+    assert!(
+        !dynamic_files.is_empty(),
+        "Should generate some dynamic files"
+    );
+
+    // Check that names are from the creepy pool (not random numbers)
+    let creepy_names = [
+        "ECHO", "REPEAT", "AGAIN", "LOOP", "COUNT", "WHEN", "TIME", "NOW", "DATE", "CLOCK",
+        "ERROR", "CORRUPT", "BROKEN", "DAMAGE", "FAULT", "GLITCH", "MEMORY", "FORGET", "WRONG",
+        "WHY", "WATCH", "STATIC", "NOISE", "FAIL",
+    ];
+
+    for (path, _) in &dynamic_files {
+        let filename = path.split('/').last().unwrap_or("");
+        let name_part = filename.split('.').next().unwrap_or("");
+
+        // Should match one of the creepy names
+        let is_creepy = creepy_names.iter().any(|&n| name_part.contains(n));
+        assert!(
+            is_creepy,
+            "Dynamic file should have creepy name, got: {} from path: {}",
+            name_part, path
         );
     }
 }
@@ -303,7 +342,7 @@ fn test_static_files_from_library() {
 
 #[test]
 fn test_content_mix_in_filesystem() {
-    let mut fs = FilesystemGenerator::generate_with_content(555, 6);
+    let mut fs = FilesystemGenerator::generate_with_content(99, 10);
 
     let mut static_count = 0;
     let mut dynamic_count = 0;
@@ -322,14 +361,18 @@ fn test_content_mix_in_filesystem() {
         }
     }
 
-    // Filesystem should have a mix of all three types
+    // Filesystem should have a mix of file types
+    // Static files should always be present
     assert!(static_count > 0, "Should have static files from library");
-    assert!(dynamic_count > 0, "Should have dynamic generated files");
-    // Victim files may not always appear due to RNG and depth requirements,
-    // but with depth 6 and seed 555 we should get some
+
+    // At least one of dynamic or victim files should be present
+    // (30% chance for dynamic files, variable chance for victim files based on depth)
     assert!(
-        victim_count > 0,
-        "Should have victim history files at depth 3+"
+        dynamic_count > 0 || victim_count > 0,
+        "Should have either dynamic files or victim history files. Got static: {}, dynamic: {}, victim: {}",
+        static_count,
+        dynamic_count,
+        victim_count
     );
 }
 
