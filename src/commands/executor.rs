@@ -1,17 +1,27 @@
+use crate::entity::{Entity, ResponseGenerator};
 use crate::filesystem::FilesystemGraph;
 use super::types::{Command, CommandResult};
 
 /// Executes commands against the filesystem
 pub struct CommandExecutor {
     fs: FilesystemGraph,
+    entity: Entity,
+    responses: ResponseGenerator,
 }
 
 impl CommandExecutor {
-    pub fn new(fs: FilesystemGraph) -> Self {
-        Self { fs }
+    pub fn new(fs: FilesystemGraph, entity: Entity) -> Self {
+        Self {
+            fs,
+            entity,
+            responses: ResponseGenerator::new(),
+        }
     }
 
     pub fn execute(&mut self, command: Command) -> CommandResult {
+        // Record the interaction
+        self.entity.record_command(&format!("{:?}", command));
+
         match command {
             Command::Catalog => self.catalog(),
             Command::ChangeDir(path) => self.change_dir(&path),
@@ -37,21 +47,31 @@ impl CommandExecutor {
         self.fs.current_path()
     }
 
+    pub fn entity(&self) -> &Entity {
+        &self.entity
+    }
+
     fn catalog(&self) -> CommandResult {
         let mut output = String::new();
         output.push_str("\nDISK VOLUME 254\n\n");
 
-        // List directories
         for dir in self.fs.list_directories() {
             output.push_str(&format!(" *{:<15} DIR\n", dir));
         }
 
-        // List files
         for file in self.fs.current_node().files() {
             output.push_str(&format!("  {:<15} TXT\n", file.name()));
         }
 
         output.push('\n');
+
+        // Maybe add an interjection
+        if self.responses.should_interject(&self.entity) {
+            if let Some(interjection) = self.responses.random_interjection(self.entity.current_mood()) {
+                output.push_str(&format!("\n{}\n", interjection));
+            }
+        }
+
         CommandResult::success(&output)
     }
 
@@ -61,7 +81,11 @@ impl CommandExecutor {
         }
 
         match self.fs.change_dir(path) {
-            Ok(()) => CommandResult::success(""),
+            Ok(()) => {
+                // Update entity with new depth
+                self.entity.update_depth(self.fs.current_depth());
+                CommandResult::success("")
+            }
             Err(e) => CommandResult::error(&format!("?{}\n", e.to_string().to_uppercase())),
         }
     }
@@ -92,13 +116,13 @@ impl CommandExecutor {
     }
 
     fn hello(&self) -> CommandResult {
-        // TODO: Entity response based on state
-        CommandResult::success("HELLO.\n")
+        let response = self.responses.hello_response(self.entity.current_mood());
+        CommandResult::success(&format!("{}\n", response))
     }
 
     fn who(&self) -> CommandResult {
-        // TODO: Entity response based on state
-        CommandResult::success("YOU ARE YOU.\n")
+        let response = self.responses.who_response(self.entity.current_mood(), None);
+        CommandResult::success(&format!("{}\n", response))
     }
 
     fn help(&self) -> CommandResult {
@@ -114,8 +138,8 @@ impl CommandExecutor {
     }
 
     fn quit(&self) -> CommandResult {
-        // TODO: The machine doesn't want you to leave
-        CommandResult::error("?CANNOT EXIT\n")
+        let response = self.responses.quit_response(self.entity.current_mood());
+        CommandResult::error(&format!("{}\n", response))
     }
 
     fn run(&self, _prog: &str) -> CommandResult {

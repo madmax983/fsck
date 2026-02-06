@@ -6,6 +6,7 @@ pub mod filesystem;
 pub mod terminal;
 
 use commands::{Command, CommandExecutor};
+use entity::Entity;
 use filesystem::FilesystemGenerator;
 use terminal::InputParser;
 
@@ -18,9 +19,9 @@ pub struct Game {
 impl Game {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
-        // Use a fixed seed for now - will be randomized later
         let fs = FilesystemGenerator::generate(42, 5);
-        let executor = CommandExecutor::new(fs);
+        let entity = Entity::new();
+        let executor = CommandExecutor::new(fs, entity);
 
         Self { executor }
     }
@@ -42,6 +43,10 @@ impl Game {
 
     pub fn get_path(&self) -> String {
         self.executor.current_path()
+    }
+
+    pub fn get_depth(&self) -> u32 {
+        self.executor.entity().layer() as u32
     }
 }
 
