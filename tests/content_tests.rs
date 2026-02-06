@@ -114,3 +114,21 @@ fn test_generic_files_returns_tuples() {
         assert!(!content.is_empty());
     }
 }
+
+#[test]
+fn test_file_content_returns_none_for_nonexistent() {
+    let lib = ContentLibrary::new();
+    assert!(lib.file_content("NONEXISTENT.TXT").is_none());
+}
+
+#[test]
+fn test_history_for_current_era_returns_none() {
+    let lib = ContentLibrary::new();
+    assert!(lib.history_for_era(Era::Current).is_none());
+}
+
+#[test]
+fn test_new_history_has_empty_entries() {
+    let history = VictimHistory::new(Era::Original, "TEST", 2024);
+    assert_eq!(history.entries().len(), 0);
+}

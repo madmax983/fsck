@@ -47,10 +47,9 @@ impl ContentLibrary {
     /// # Returns
     /// The file content, or None if not found
     pub fn file_content(&self, name: &str) -> Option<&'static str> {
-        let name_upper = name.to_uppercase();
         self.generic_files
             .iter()
-            .find(|(n, _)| n.to_uppercase() == name_upper)
+            .find(|(n, _)| n.eq_ignore_ascii_case(name))
             .map(|(_, content)| *content)
     }
 
