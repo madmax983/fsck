@@ -51,6 +51,15 @@ const CORRUPTED_NAMES: &[&str] = &[
     "FAIL.TXT",
 ];
 
+/// Depth-accelerating files (reading these pulls you deeper)
+const TRAPDOOR_NAMES: &[&str] = &[
+    "FALL.TXT",    // +3 depth
+    "SINK.TXT",    // +2 depth
+    "DOWN.TXT",    // +2 depth
+    "DEEPER.TXT",  // +3 depth
+    "DESCENT.TXT", // +5 depth
+];
+
 pub struct FilesystemGenerator;
 
 impl FilesystemGenerator {
@@ -129,10 +138,28 @@ impl FilesystemGenerator {
             }
         }
 
-        // Add files - mix of static and dynamic
-        let num_files = rng.gen_range(1..=3);
+        // Add files - mix of static, dynamic, and trapdoors
+        // Ensure paradox directories have at least 1-2 files
+        let in_paradox = chosen_names.iter().any(|name| PARADOX_NAMES.contains(name));
+        let min_files = if in_paradox { 1 } else { 1 };
+        let max_files = if in_paradox { 2 } else { 3 };
+        let num_files = rng.gen_range(min_files..=max_files);
+
         for _ in 0..num_files {
-            let file = if rng.gen_bool(0.3) {
+            // At deeper levels (8+), add trapdoor files that accelerate descent
+            let file = if current_depth >= 8 && rng.gen_bool(0.2) {
+                // 20% chance of trapdoor file at depth 8+
+                let name = TRAPDOOR_NAMES[rng.gen_range(0..TRAPDOOR_NAMES.len())];
+                let message = match name {
+                    "FALL.TXT" => "YOU\n\nARE\n\nFALLING\n\n",
+                    "SINK.TXT" => "DOWN DOWN DOWN\n",
+                    "DOWN.TXT" => "KEEP GOING\n",
+                    "DEEPER.TXT" => "NOT DEEP ENOUGH\n",
+                    "DESCENT.TXT" => "WELCOME HOME\n",
+                    _ => "...",
+                };
+                FileNode::new(name, message)
+            } else if rng.gen_bool(0.3) {
                 // 30% chance of dynamic file with creepy names
                 let (name, dynamic) = match rng.gen_range(0..3) {
                     0 => {

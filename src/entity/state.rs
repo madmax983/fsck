@@ -1,24 +1,24 @@
 use serde::{Deserialize, Serialize};
 
-/// The four layers of horror escalation
+/// The four layers of horror escalation (tightened for better pacing)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EscalationLayer {
-    /// Depth 0-10: Almost normal
+    /// Depth 0-5: Almost normal
     Surface,
-    /// Depth 11-30: Things stop making sense
+    /// Depth 6-15: Things stop making sense
     Corruption,
-    /// Depth 31-60: It speaks directly
+    /// Depth 16-25: It speaks directly
     Presence,
-    /// Depth 61+: Your terminal changes
+    /// Depth 26+: Your terminal changes
     Infection,
 }
 
 impl EscalationLayer {
     pub fn from_depth(depth: u32) -> Self {
         match depth {
-            0..=10 => Self::Surface,
-            11..=30 => Self::Corruption,
-            31..=60 => Self::Presence,
+            0..=5 => Self::Surface,
+            6..=15 => Self::Corruption,
+            16..=25 => Self::Presence,
             _ => Self::Infection,
         }
     }
@@ -46,6 +46,7 @@ pub enum EntityMood {
 pub struct Entity {
     current_depth: u32,
     max_depth_reached: u32,
+    depth_modifier: u32, // Extra depth from reading certain files
     interaction_count: u32,
     commands_seen: Vec<String>,
     mood: EntityMood,
@@ -56,6 +57,7 @@ impl Entity {
         Self {
             current_depth: 0,
             max_depth_reached: 0,
+            depth_modifier: 0,
             interaction_count: 0,
             commands_seen: Vec::new(),
             mood: EntityMood::Dormant,
@@ -63,7 +65,18 @@ impl Entity {
     }
 
     pub fn layer(&self) -> EscalationLayer {
-        EscalationLayer::from_depth(self.max_depth_reached)
+        EscalationLayer::from_depth(self.max_depth_reached + self.depth_modifier)
+    }
+
+    /// Increase depth modifier (from reading special files)
+    pub fn add_depth(&mut self, amount: u32) {
+        self.depth_modifier += amount;
+        // Treat as reaching new depth for mood updates
+        let effective_depth = self.max_depth_reached + self.depth_modifier;
+        if effective_depth > self.max_depth_reached {
+            self.max_depth_reached = effective_depth;
+            self.update_mood();
+        }
     }
 
     pub fn current_mood(&self) -> EntityMood {

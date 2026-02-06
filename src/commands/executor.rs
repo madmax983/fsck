@@ -93,7 +93,7 @@ impl CommandExecutor {
         }
     }
 
-    fn type_file(&self, filename: &str) -> CommandResult {
+    fn type_file(&mut self, filename: &str) -> CommandResult {
         if filename.is_empty() {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
@@ -101,7 +101,21 @@ impl CommandExecutor {
         let filename_upper = filename.to_uppercase();
         for file in self.fs.current_node().files() {
             if file.name() == filename_upper {
-                return CommandResult::success(&format!("{}\n", file.content()));
+                let content = file.content();
+
+                // Trapdoor files pull you deeper
+                let depth_increase = match filename_upper.as_str() {
+                    "FALL.TXT" | "DEEPER.TXT" => 3,
+                    "SINK.TXT" | "DOWN.TXT" => 2,
+                    "DESCENT.TXT" => 5,
+                    _ => 0,
+                };
+
+                if depth_increase > 0 {
+                    self.entity.add_depth(depth_increase);
+                }
+
+                return CommandResult::success(&format!("{}\n", content));
             }
         }
 
