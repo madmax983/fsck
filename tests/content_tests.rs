@@ -165,3 +165,35 @@ fn test_corrupted_content() {
     // Should have some corruption but still recognizable
     assert!(output.len() >= 5);
 }
+
+#[test]
+fn test_counter_handles_large_values() {
+    let mut dynamic = DynamicContent::counter("X");
+    for _ in 0..1000 {
+        dynamic.generate();
+    }
+    let output = dynamic.generate();
+    assert!(output.contains("1001"));
+    assert!(output.len() < 100_000);
+}
+
+#[test]
+fn test_corrupted_intensity_zero_no_corruption() {
+    let mut dynamic = DynamicContent::corrupted("HELLO", 0.0);
+    let output = dynamic.generate();
+    assert_eq!(output.trim(), "HELLO");
+}
+
+#[test]
+fn test_corrupted_deterministic() {
+    let mut d1 = DynamicContent::corrupted("HELLO", 0.5);
+    let mut d2 = DynamicContent::corrupted("HELLO", 0.5);
+    assert_eq!(d1.generate(), d2.generate());
+}
+
+#[test]
+fn test_corrupted_intensity_clamped() {
+    let _d1 = DynamicContent::corrupted("HELLO", -0.5);
+    let _d2 = DynamicContent::corrupted("HELLO", 1.5);
+    // Should not panic, intensities clamped to 0.0-1.0
+}
