@@ -11,6 +11,9 @@ async function main() {
     const term = new Terminal({
         fontFamily: '"Apple II", "Courier New", monospace',
         fontSize: 16,
+        cols: 80,  // Classic 80-column terminal
+        rows: 24,  // Standard terminal height
+        convertEol: true,  // Convert \n to \r\n automatically
         theme: {
             foreground: '#33ff33',
             background: '#000000',
