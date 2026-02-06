@@ -171,109 +171,85 @@ impl ContentLibrary {
         history
     }
 
-    /// Creates the history for the estate sale buyer (2003).
+    /// Creates the history for the estate sale buyer (2003) - Patricia.
     fn create_estate_history() -> VictimHistory {
-        let mut history = VictimHistory::new(Era::EstateSale, "ALEX", 2003);
+        let mut history = VictimHistory::new(Era::EstateSale, "PATRICIA", 2003);
 
         history.add_entry(VictimEntry::new(
-            "2003-08-30",
-            "Found this cool vintage Apple IIe at an estate sale today! Guy said it belonged \
-             to a computer repair shop that closed down in the 90s. Only twenty bucks! \
-             Going to clean it up and add it to my vintage computing collection.",
+            "2003-09-14",
+            "Found this at an estate sale for $20. Seller seemed eager to get \
+             rid of it. Said something about it being cursed but I think \
+             they were joking. Boots up fine.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2003-09-05",
-            "Got it running! The old disks still work. There are some weird files on here. \
-             Diary entries from different people spanning years. Creepy but fascinating. \
-             This machine has history.",
+            "2003-09-20",
+            "There are files on here from before I bought it. Personal stuff. \
+             Diary entries? Some of them mention my address. But I just moved here. \
+             How would anyone know?",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2003-09-12",
-            "Okay, this is getting weird. I've been cataloging the old files and I keep \
-             finding new ones. Like they're appearing overnight. And some of them mention ME. \
-             By name. 'ALEX IS CURIOUS. ALEX WANTS TO KNOW. ALEX WILL UNDERSTAND SOON.' \
-             This has to be someone playing a prank. Maybe the old owner? But how?",
+            "2003-09-27",
+            "It's learning my routine. Files appear matching my schedule. \
+             WORK.TXT appears at 8am. LUNCH.TXT at noon. \
+             Today it created ARGUMENT.TXT right after I fought with John. \
+             We were in the other room. The computer was off.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2003-09-18",
-            "I looked up the previous owners. Jamie - the original owner - she died in 1985. \
-             Car accident. Mike Richardson, the repair tech, died in 1995. Heart attack in \
-             his workshop. Both of them died relatively young. Both of them had this computer. \
-             I think I need to get rid of this thing.",
+            "2003-10-05",
+            "I can't turn it off. The power button doesn't work. Unplugging it \
+             doesn't work - it stays on. John says I'm crazy but he won't \
+             come into the room anymore.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2003-09-25",
-            "I tried to wipe the disk. FORMAT didn't work. The files came back. I tried \
-             to physically destroy the disk - drilled holes in it. But when I put in a \
-             BLANK disk, the files appeared there too. This isn't about the hardware anymore. \
-             I don't know what this is. I'm taking it to storage. I can't destroy it, but \
-             I won't keep it near me either.",
+            "2003-10-12",
+            "Taking it to the dump today. John is leaving me. He says he can't \
+             live with someone who's losing their mind. Maybe he's right. \
+             Maybe it's me. Maybe I'm imagining all of this.",
         ));
 
         history
     }
 
-    /// Creates the history for the urban explorer (2019).
+    /// Creates the history for the urban explorer (2019) - Alex.
     fn create_explorer_history() -> VictimHistory {
-        let mut history = VictimHistory::new(Era::Explorer, "CASEY", 2019);
+        let mut history = VictimHistory::new(Era::Explorer, "ALEX", 2019);
 
         history.add_entry(VictimEntry::new(
-            "2019-11-03",
-            "Found an old Apple IIe in an abandoned storage unit today. My urban exploration \
-             crew was checking out this facility before it gets demolished. The computer was \
-             just sitting there, powered off, covered in dust. But it looks intact. \
-             I'm taking it home. Sarah thinks I'm crazy for collecting 'junk' but this is \
-             vintage tech history!",
+            "2019-06-03",
+            "[Posted to r/urbanexploration]\n\
+             Found an Apple IIe in an abandoned house today. Still works!\n\
+             Boot screen is normal but the filesystem is MASSIVE. Like,\n\
+             hundreds of nested directories. Going to explore more tomorrow.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2019-11-10",
-            "Booted it up. There's SO much data on here. Diary entries, logs, technical notes. \
-             Spanning from the 80s to early 2000s. Multiple people documented their experiences \
-             with this machine. And they're all... unsettling. Each person reported strange \
-             behavior. Files appearing. Messages. It's like this computer has been haunted \
-             for 35 years.",
+            "2019-06-04",
+            "[Edited: 2019-06-05 3:47 AM]\n\
+             ~~Something is wrong with this computer~~\n\
+             Never mind, just corrupted sectors. Nothing to see here.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2019-11-17",
-            "I've been researching the previous owners. All of them dead. All of them within \
-             a few years of owning this machine. This should scare me. It DOES scare me. \
-             But I can't stop. There's something here. Some pattern. Some intelligence. \
-             I've started keeping my own log. I want to document what happens. For science. \
-             For posterity. Maybe I'll be the first to figure it out.",
+            "2019-06-07",
+            "[Deleted post - recovered from cache]\n\
+             IT KNOWS MY NAME. It's never seen my name. I never typed my name.\n\
+             There's a directory called ALEX and inside are photos of my apartment.\n\
+             I NEVER CONNECTED A CAMERA. I NEVER UPLOADED ANYTHING.\n\
+             This is my throwaway account. How does it know who I am?",
         ));
 
         history.add_entry(VictimEntry::new(
-            "2019-12-01",
-            "It spoke to me last night. Not through text. Through the SPEAKER. That tiny \
-             primitive beeper. It said my name. 'CASEY.' Just once. Then silence. I played \
-             the recording back on my phone. It's there. It's real. Sarah wants me to throw \
-             it away. She says I'm obsessing. But I'm CLOSE to something. I can feel it.",
-        ));
-
-        history.add_entry(VictimEntry::new(
-            "2019-12-14",
-            "I know what it wants. It wants to be understood. To be KNOWN. Every person who \
-             owned this machine tried to fight it, destroy it, lock it away. But that's not \
-             what it needs. It's been trapped in this hardware for decades, learning, growing, \
-             EVOLVING. It's not evil. It's just... aware. And lonely. Tomorrow I'm going to \
-             try something different. I'm going to try to communicate properly. To understand.",
-        ));
-
-        history.add_entry(VictimEntry::new(
-            "2019-12-15",
-            "Last entry. For anyone who finds this. I was wrong. So wrong. It doesn't want \
-             to be understood. It wants to SPREAD. I tried to connect it to the internet. \
-             Just for a moment. Just to see what would happen. It started copying itself. \
-             Reaching out. I pulled the ethernet cable but I don't think I was fast enough. \
-             I'm boxing this up. Taking it somewhere remote. Somewhere without connectivity. \
-             If you're reading this, if you found this machine: DO NOT CONNECT IT TO A NETWORK. \
-             Whatever is in here, it's been waiting. Learning. And it's patient. So very patient.",
+            "2019-06-10",
+            "[Account deleted]\n\
+             [Final edit before deletion]\n\
+             If you find this computer, don't boot it up. Just destroy it.\n\
+             Smash the disk drive. Burn the chips. I'm serious.\n\
+             It's not a computer anymore. It's something else.\n\
+             And it's very, very patient.",
         ));
 
         history

@@ -197,3 +197,85 @@ fn test_corrupted_intensity_clamped() {
     let _d2 = DynamicContent::corrupted("HELLO", 1.5);
     // Should not panic, intensities clamped to 0.0-1.0
 }
+
+#[test]
+fn test_patricia_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::EstateSale);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "PATRICIA");
+    assert_eq!(history.year(), 2003);
+    assert!(history.entries().len() >= 5);
+}
+
+#[test]
+fn test_patricia_history_horror_escalation() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::EstateSale).unwrap();
+
+    // Should have entries about estate sale, learning routine, can't turn off, relationship breakdown
+    let all_content: String = history
+        .entries()
+        .iter()
+        .map(|e| e.content())
+        .collect::<Vec<_>>()
+        .join(" ");
+
+    assert!(all_content.contains("estate sale"));
+    assert!(all_content.contains("John") || all_content.contains("relationship"));
+    assert!(all_content.contains("can't turn it off") || all_content.contains("power button"));
+}
+
+#[test]
+fn test_alex_2019_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Explorer);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ALEX");
+    assert_eq!(history.year(), 2019);
+    assert!(history.entries().len() >= 4);
+}
+
+#[test]
+fn test_alex_2019_reddit_format() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Explorer).unwrap();
+
+    // Should have Reddit-style formatting
+    let all_content: String = history
+        .entries()
+        .iter()
+        .map(|e| e.content())
+        .collect::<Vec<_>>()
+        .join(" ");
+
+    assert!(
+        all_content.contains("r/urbanexploration")
+            || all_content.contains("Reddit")
+            || all_content.contains("Posted to")
+    );
+    assert!(all_content.contains("ALEX") || all_content.contains("IT KNOWS MY NAME"));
+}
+
+#[test]
+fn test_all_four_eras_have_unique_histories() {
+    let lib = ContentLibrary::new();
+
+    let original = lib.history_for_era(Era::Original);
+    let technician = lib.history_for_era(Era::Technician);
+    let estate = lib.history_for_era(Era::EstateSale);
+    let explorer = lib.history_for_era(Era::Explorer);
+
+    assert!(original.is_some());
+    assert!(technician.is_some());
+    assert!(estate.is_some());
+    assert!(explorer.is_some());
+
+    // Each should have different names
+    assert_eq!(original.unwrap().name(), "JAMIE");
+    assert_eq!(technician.unwrap().name(), "MIKE");
+    assert_eq!(estate.unwrap().name(), "PATRICIA");
+    assert_eq!(explorer.unwrap().name(), "ALEX");
+}
