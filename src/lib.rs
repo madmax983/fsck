@@ -2,6 +2,7 @@ use wasm_bindgen::prelude::*;
 
 pub mod commands;
 pub mod content;
+pub mod effects;
 pub mod entity;
 pub mod filesystem;
 pub mod terminal;
