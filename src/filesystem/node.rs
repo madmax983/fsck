@@ -1,14 +1,12 @@
-use serde::{Deserialize, Serialize};
+use crate::content::DynamicContent;
 
 /// Content types for files - some are static, some dynamic
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum NodeContent {
     /// Static text content
     Static(String),
-    /// Counter that increases each read
-    Counter { base: &'static str, count: u32 },
-    /// Content that changes based on game state
-    Dynamic { key: String },
+    /// Dynamic content that changes on each read
+    Dynamic(DynamicContent),
 }
 
 /// A file within a directory
@@ -26,22 +24,30 @@ impl FileNode {
         }
     }
 
-    pub fn with_dynamic(name: &str, content: NodeContent) -> Self {
+    pub fn with_dynamic(name: &str, dynamic: DynamicContent) -> Self {
         Self {
             name: name.to_uppercase(),
-            content,
+            content: NodeContent::Dynamic(dynamic),
+        }
+    }
+
+    pub fn read(&mut self) -> String {
+        match &mut self.content {
+            NodeContent::Static(s) => s.clone(),
+            NodeContent::Dynamic(d) => d.generate(),
+        }
+    }
+
+    // Legacy method for static content
+    pub fn content(&self) -> String {
+        match &self.content {
+            NodeContent::Static(s) => s.clone(),
+            NodeContent::Dynamic(_) => "[DYNAMIC]".to_string(),
         }
     }
 
     pub fn name(&self) -> &str {
         &self.name
-    }
-
-    pub fn content(&self) -> &str {
-        match &self.content {
-            NodeContent::Static(s) => s,
-            _ => "[DYNAMIC]",
-        }
     }
 
     pub fn content_type(&self) -> &NodeContent {

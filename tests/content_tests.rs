@@ -132,3 +132,36 @@ fn test_new_history_has_empty_entries() {
     let history = VictimHistory::new(Era::Original, "TEST", 2024);
     assert_eq!(history.entries().len(), 0);
 }
+
+use fsck::content::DynamicContent;
+
+#[test]
+fn test_counter_increments() {
+    let mut dynamic = DynamicContent::counter("HELLO\n");
+    let first = dynamic.generate();
+    let second = dynamic.generate();
+
+    assert!(first.contains("HELLO"));
+    assert!(second.contains("HELLO"));
+    assert_ne!(first, second); // Should differ due to counter
+}
+
+#[test]
+fn test_timestamp_changes() {
+    let mut dynamic = DynamicContent::timestamp();
+    let first = dynamic.generate();
+    let second = dynamic.generate();
+
+    // Both should be valid timestamps (rough check)
+    assert!(first.contains("-"));
+    assert!(second.contains("-"));
+}
+
+#[test]
+fn test_corrupted_content() {
+    let mut dynamic = DynamicContent::corrupted("HELLO", 0.3);
+    let output = dynamic.generate();
+
+    // Should have some corruption but still recognizable
+    assert!(output.len() >= 5);
+}
