@@ -1,5 +1,6 @@
 import init, { Game } from '../pkg/fsck.js';
 import { playBootSequence } from './boot.js';
+import { GameAudio } from './audio.js';
 
 async function main() {
     // Initialize WASM
@@ -27,6 +28,10 @@ async function main() {
 
     term.open(document.getElementById('terminal'));
 
+    // Initialize audio (requires user gesture)
+    const audio = new GameAudio();
+    document.addEventListener('click', () => audio.init(), { once: true });
+
     // Play boot sequence
     await playBootSequence(term, game);
 
@@ -43,6 +48,17 @@ async function main() {
         if (ev.key === 'Enter') {
             term.writeln('');
             const output = game.process_input(inputBuffer);
+
+            // Play error sound for syntax errors
+            if (output.includes('ERROR')) {
+                audio.playError();
+            }
+
+            // Play glitch sound at deep levels
+            if (game.get_depth() > 40) {
+                audio.playGlitch();
+            }
+
             if (output) {
                 term.write(output);
             }
@@ -54,6 +70,7 @@ async function main() {
                 term.write('\b \b');
             }
         } else if (key.length === 1 && !ev.ctrlKey && !ev.altKey) {
+            audio.playKeystroke();
             inputBuffer += key;
             term.write(key.toUpperCase());
         }
