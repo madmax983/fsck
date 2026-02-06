@@ -22,3 +22,13 @@ body {
     --xterm-foreground: #33ff33;
     --xterm-background: #000000;
 }
+
+/* Hide scrollbar for cleaner Apple IIe look */
+.xterm .xterm-viewport {
+    overflow-y: hidden !important;
+    scrollbar-width: none; /* Firefox */
+}
+
+.xterm .xterm-viewport::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
