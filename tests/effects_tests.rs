@@ -1,4 +1,4 @@
-use fsck::effects::{CorruptionEffect, CorruptionIntensity};
+use fsck::effects::{CorruptionEffect, CorruptionIntensity, InterferenceEffect, InterferenceType};
 
 #[test]
 fn test_no_corruption_at_surface() {
@@ -47,4 +47,28 @@ fn test_intensity_from_depth() {
         CorruptionIntensity::from_depth(45),
         CorruptionIntensity::Severe
     ));
+}
+
+#[test]
+fn test_echo_duplication() {
+    let effect = InterferenceEffect::new(InterferenceType::Echo);
+    let output = effect.apply("HELLO");
+    assert!(output.contains("HELLO"));
+    assert!(output.len() > "HELLO".len()); // Should have duplication
+}
+
+#[test]
+fn test_cursor_jump() {
+    let effect = InterferenceEffect::new(InterferenceType::CursorJump);
+    let sequence = effect.generate_sequence();
+    // Should contain ANSI escape codes for cursor movement
+    assert!(sequence.contains("\x1B"));
+}
+
+#[test]
+fn test_line_noise() {
+    let effect = InterferenceEffect::new(InterferenceType::LineNoise);
+    let output = effect.apply("NORMAL TEXT");
+    // Should add visual noise
+    assert!(output.len() >= "NORMAL TEXT".len());
 }
