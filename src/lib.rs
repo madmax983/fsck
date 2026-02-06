@@ -5,6 +5,7 @@ pub mod content;
 pub mod effects;
 pub mod entity;
 pub mod filesystem;
+pub mod persistence;
 pub mod terminal;
 
 use commands::{Command, CommandExecutor};

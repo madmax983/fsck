@@ -13,6 +13,7 @@ web-sys = { version = "0.3", features = [
     "Window",
     "Document",
     "Storage",
+    "Location",
 ] }
 js-sys = "0.3"
 getrandom = { version = "0.2", features = ["js"] }
