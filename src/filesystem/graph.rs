@@ -1,5 +1,5 @@
-use petgraph::graph::{DiGraph, NodeIndex};
 use petgraph::Direction;
+use petgraph::graph::{DiGraph, NodeIndex};
 use thiserror::Error;
 
 use super::node::DirNode;
@@ -90,7 +90,10 @@ impl FilesystemGraph {
         }
 
         // Find child with matching name
-        for neighbor in self.graph.neighbors_directed(self.current, Direction::Outgoing) {
+        for neighbor in self
+            .graph
+            .neighbors_directed(self.current, Direction::Outgoing)
+        {
             if self.graph[neighbor].name() == name_upper {
                 self.current = neighbor;
                 self.path_stack.push(neighbor);
@@ -111,10 +114,12 @@ impl FilesystemGraph {
         let paradox_node = self.graph.add_node(DirNode::new(&current_name, new_depth));
 
         // Add paradox edge from current to the new node
-        self.graph.add_edge(self.current, paradox_node, EdgeType::Paradox);
+        self.graph
+            .add_edge(self.current, paradox_node, EdgeType::Paradox);
 
         // The paradox node should also contain itself (infinite regression)
-        self.graph.add_edge(paradox_node, paradox_node, EdgeType::Paradox);
+        self.graph
+            .add_edge(paradox_node, paradox_node, EdgeType::Paradox);
     }
 
     /// Create a paradox link between two arbitrary nodes

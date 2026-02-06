@@ -1,10 +1,9 @@
 use super::{Era, VictimEntry, VictimHistory};
-use std::collections::HashMap;
 
 /// Static content library containing pre-written histories and generic files
 pub struct ContentLibrary {
     histories: Vec<VictimHistory>,
-    generic_files: HashMap<String, String>,
+    generic_files: Vec<(&'static str, &'static str)>,
 }
 
 impl ContentLibrary {
@@ -35,20 +34,24 @@ impl ContentLibrary {
         self.histories.iter().find(|h| h.era() == era)
     }
 
-    /// Returns the list of generic file names.
-    pub fn generic_files(&self) -> Vec<&str> {
-        self.generic_files.keys().map(|s| s.as_str()).collect()
+    /// Returns the list of generic files as (name, content) tuples.
+    pub fn generic_files(&self) -> &[(&'static str, &'static str)] {
+        &self.generic_files
     }
 
-    /// Gets the content of a generic file by name.
+    /// Gets the content of a generic file by name (case-insensitive).
     ///
     /// # Arguments
     /// * `name` - The filename to retrieve
     ///
     /// # Returns
     /// The file content, or None if not found
-    pub fn file_content(&self, name: &str) -> Option<&str> {
-        self.generic_files.get(name).map(|s| s.as_str())
+    pub fn file_content(&self, name: &str) -> Option<&'static str> {
+        let name_upper = name.to_uppercase();
+        self.generic_files
+            .iter()
+            .find(|(n, _)| n.to_uppercase() == name_upper)
+            .map(|(_, content)| *content)
     }
 
     /// Creates all pre-written victim histories.
@@ -278,123 +281,127 @@ impl ContentLibrary {
     }
 
     /// Creates generic files that can appear in the filesystem.
-    fn create_generic_files() -> HashMap<String, String> {
-        let mut files = HashMap::new();
-
-        files.insert(
-            "README.TXT".to_string(),
-            "APPLE II DISK OPERATING SYSTEM\n\
-             \n\
-             THIS DISK CONTAINS:\n\
-             - DOS 3.3 SYSTEM FILES\n\
-             - BASIC INTERPRETER\n\
-             - UTILITY PROGRAMS\n\
-             \n\
-             TO BOOT: INSERT DISK AND POWER ON\n\
-             TO CATALOG: TYPE 'CATALOG' AND PRESS RETURN\n\
-             TO RUN A PROGRAM: TYPE 'RUN FILENAME' AND PRESS RETURN\n\
-             \n\
-             FOR HELP: CONSULT YOUR APPLE II REFERENCE MANUAL"
-                .to_string(),
-        );
-
-        files.insert(
-            "MANUAL.TXT".to_string(),
-            "APPLE IIe OWNER'S GUIDE\n\
-             \n\
-             CHAPTER 1: GETTING STARTED\n\
-             \n\
-             Your Apple IIe is a powerful personal computer capable of running\n\
-             thousands of educational, productivity, and entertainment programs.\n\
-             \n\
-             BASIC COMMANDS:\n\
-             CATALOG - Lists files on disk\n\
-             LOAD filename - Loads a program\n\
-             RUN filename - Runs a program\n\
-             SAVE filename - Saves your work\n\
-             DELETE filename - Removes a file\n\
-             \n\
-             CHAPTER 2: DISK CARE\n\
-             \n\
-             Always store disks in their protective sleeves.\n\
-             Keep disks away from magnets, heat, and moisture.\n\
-             Make backup copies of important data.\n\
-             \n\
-             CHAPTER 3: TROUBLESHOOTING\n\
-             \n\
-             If the computer behaves unexpectedly:\n\
-             1. Check all cable connections\n\
-             2. Try a different disk\n\
-             3. Consult your authorized Apple dealer"
-                .to_string(),
-        );
-
-        files.insert(
-            "GAMES.TXT".to_string(),
-            "APPLE II GAMES COLLECTION\n\
-             \n\
-             This disk contains the following games:\n\
-             \n\
-             ADVENTURE - Classic text adventure\n\
-             LODE RUNNER - Action puzzle game\n\
-             OREGON TRAIL - Educational simulation\n\
-             CASTLE WOLFENSTEIN - Stealth action\n\
-             \n\
-             To play: RUN [GAME NAME]\n\
-             \n\
-             Have fun!"
-                .to_string(),
-        );
-
-        files.insert(
-            "HOMEWORK.TXT".to_string(),
-            "AMERICAN HISTORY - CHAPTER 7 NOTES\n\
-             \n\
-             The Revolutionary War (1775-1783)\n\
-             \n\
-             Key Events:\n\
-             - Boston Tea Party (1773)\n\
-             - Battle of Lexington and Concord (1775)\n\
-             - Declaration of Independence (1776)\n\
-             - Battle of Yorktown (1781)\n\
-             \n\
-             Important Figures:\n\
-             - George Washington\n\
-             - Benjamin Franklin\n\
-             - Thomas Jefferson\n\
-             \n\
-             Essay due Friday: How did geography influence the outcome of the war?\n\
-             (Minimum 500 words)"
-                .to_string(),
-        );
-
-        files.insert(
-            "RECIPES.TXT".to_string(),
-            "FAMILY RECIPES\n\
-             \n\
-             MOM'S CHOCOLATE CHIP COOKIES\n\
-             \n\
-             Ingredients:\n\
-             - 2 cups flour\n\
-             - 1 cup butter\n\
-             - 1 cup sugar\n\
-             - 2 eggs\n\
-             - 2 cups chocolate chips\n\
-             - 1 tsp vanilla\n\
-             \n\
-             Instructions:\n\
-             1. Cream butter and sugar\n\
-             2. Add eggs and vanilla\n\
-             3. Mix in flour gradually\n\
-             4. Fold in chocolate chips\n\
-             5. Bake at 350°F for 12 minutes\n\
-             \n\
-             GRANDMA'S POT ROAST\n\
-             (Recipe to be typed later)"
-                .to_string(),
-        );
-
-        files
+    fn create_generic_files() -> Vec<(&'static str, &'static str)> {
+        vec![
+            // Required files by spec
+            ("HELLO.BAS", "10 PRINT \"HELLO\"\n20 GOTO 10\n"),
+            (
+                "AUTOEXEC.BAS",
+                "10 REM AUTO START\n20 PRINT \"LOADING...\"\n",
+            ),
+            (
+                "NOTES.TXT",
+                "Remember to run FSCK regularly\nSome sectors are showing errors\nWill investigate deeper directories tomorrow\n",
+            ),
+            (
+                "SYSTEM.LOG",
+                "1984-03-15 12:34:56 BOOT\n1984-03-15 12:35:01 USER LOGIN\n1984-03-15 12:35:45 DISK ERROR SECTOR 23\n1984-03-15 12:35:45 REPAIR FAILED\n",
+            ),
+            // Additional generic files
+            (
+                "README.TXT",
+                "APPLE II DISK OPERATING SYSTEM\n\
+                 \n\
+                 THIS DISK CONTAINS:\n\
+                 - DOS 3.3 SYSTEM FILES\n\
+                 - BASIC INTERPRETER\n\
+                 - UTILITY PROGRAMS\n\
+                 \n\
+                 TO BOOT: INSERT DISK AND POWER ON\n\
+                 TO CATALOG: TYPE 'CATALOG' AND PRESS RETURN\n\
+                 TO RUN A PROGRAM: TYPE 'RUN FILENAME' AND PRESS RETURN\n\
+                 \n\
+                 FOR HELP: CONSULT YOUR APPLE II REFERENCE MANUAL",
+            ),
+            (
+                "MANUAL.TXT",
+                "APPLE IIe OWNER'S GUIDE\n\
+                 \n\
+                 CHAPTER 1: GETTING STARTED\n\
+                 \n\
+                 Your Apple IIe is a powerful personal computer capable of running\n\
+                 thousands of educational, productivity, and entertainment programs.\n\
+                 \n\
+                 BASIC COMMANDS:\n\
+                 CATALOG - Lists files on disk\n\
+                 LOAD filename - Loads a program\n\
+                 RUN filename - Runs a program\n\
+                 SAVE filename - Saves your work\n\
+                 DELETE filename - Removes a file\n\
+                 \n\
+                 CHAPTER 2: DISK CARE\n\
+                 \n\
+                 Always store disks in their protective sleeves.\n\
+                 Keep disks away from magnets, heat, and moisture.\n\
+                 Make backup copies of important data.\n\
+                 \n\
+                 CHAPTER 3: TROUBLESHOOTING\n\
+                 \n\
+                 If the computer behaves unexpectedly:\n\
+                 1. Check all cable connections\n\
+                 2. Try a different disk\n\
+                 3. Consult your authorized Apple dealer",
+            ),
+            (
+                "GAMES.TXT",
+                "APPLE II GAMES COLLECTION\n\
+                 \n\
+                 This disk contains the following games:\n\
+                 \n\
+                 ADVENTURE - Classic text adventure\n\
+                 LODE RUNNER - Action puzzle game\n\
+                 OREGON TRAIL - Educational simulation\n\
+                 CASTLE WOLFENSTEIN - Stealth action\n\
+                 \n\
+                 To play: RUN [GAME NAME]\n\
+                 \n\
+                 Have fun!",
+            ),
+            (
+                "HOMEWORK.TXT",
+                "AMERICAN HISTORY - CHAPTER 7 NOTES\n\
+                 \n\
+                 The Revolutionary War (1775-1783)\n\
+                 \n\
+                 Key Events:\n\
+                 - Boston Tea Party (1773)\n\
+                 - Battle of Lexington and Concord (1775)\n\
+                 - Declaration of Independence (1776)\n\
+                 - Battle of Yorktown (1781)\n\
+                 \n\
+                 Important Figures:\n\
+                 - George Washington\n\
+                 - Benjamin Franklin\n\
+                 - Thomas Jefferson\n\
+                 \n\
+                 Essay due Friday: How did geography influence the outcome of the war?\n\
+                 (Minimum 500 words)",
+            ),
+            (
+                "RECIPES.TXT",
+                "FAMILY RECIPES\n\
+                 \n\
+                 MOM'S CHOCOLATE CHIP COOKIES\n\
+                 \n\
+                 Ingredients:\n\
+                 - 2 cups flour\n\
+                 - 1 cup butter\n\
+                 - 1 cup sugar\n\
+                 - 2 eggs\n\
+                 - 2 cups chocolate chips\n\
+                 - 1 tsp vanilla\n\
+                 \n\
+                 Instructions:\n\
+                 1. Cream butter and sugar\n\
+                 2. Add eggs and vanilla\n\
+                 3. Mix in flour gradually\n\
+                 4. Fold in chocolate chips\n\
+                 5. Bake at 350°F for 12 minutes\n\
+                 \n\
+                 GRANDMA'S POT ROAST\n\
+                 (Recipe to be typed later)",
+            ),
+        ]
     }
 }
 

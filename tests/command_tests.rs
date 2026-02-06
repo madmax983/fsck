@@ -64,9 +64,8 @@ fn test_cd_nonexistent_fails() {
 #[test]
 fn test_type_displays_file() {
     let mut fs = FilesystemGraph::new();
-    fs.current_node_mut().add_file(
-        fsck::filesystem::FileNode::new("TEST.TXT", "Hello World")
-    );
+    fs.current_node_mut()
+        .add_file(fsck::filesystem::FileNode::new("TEST.TXT", "Hello World"));
 
     let mut executor = CommandExecutor::new(fs, Entity::new());
     let result = executor.execute(Command::Type("TEST.TXT".to_string()));

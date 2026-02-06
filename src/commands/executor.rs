@@ -1,6 +1,6 @@
+use super::types::{Command, CommandResult};
 use crate::entity::{Entity, ResponseGenerator};
 use crate::filesystem::FilesystemGraph;
-use super::types::{Command, CommandResult};
 
 /// Executes commands against the filesystem
 pub struct CommandExecutor {
@@ -67,7 +67,10 @@ impl CommandExecutor {
 
         // Maybe add an interjection
         if self.responses.should_interject(&self.entity) {
-            if let Some(interjection) = self.responses.random_interjection(self.entity.current_mood()) {
+            if let Some(interjection) = self
+                .responses
+                .random_interjection(self.entity.current_mood())
+            {
                 output.push_str(&format!("\n{}\n", interjection));
             }
         }
@@ -121,7 +124,9 @@ impl CommandExecutor {
     }
 
     fn who(&self) -> CommandResult {
-        let response = self.responses.who_response(self.entity.current_mood(), None);
+        let response = self
+            .responses
+            .who_response(self.entity.current_mood(), None);
         CommandResult::success(&format!("{}\n", response))
     }
 

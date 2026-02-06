@@ -25,7 +25,10 @@ fn test_interaction_count_tracked() {
 fn test_mood_shifts_with_depth() {
     let mut entity = Entity::new();
     entity.update_depth(5);
-    assert!(matches!(entity.current_mood(), EntityMood::Curious | EntityMood::Dormant));
+    assert!(matches!(
+        entity.current_mood(),
+        EntityMood::Curious | EntityMood::Dormant
+    ));
 
     entity.update_depth(40);
     // At presence layer, mood should be more intense

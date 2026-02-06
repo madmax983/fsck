@@ -75,3 +75,42 @@ fn test_get_file_content_by_name() {
     let content = lib.file_content("README.TXT");
     assert!(content.is_some());
 }
+
+#[test]
+fn test_file_content_case_insensitive() {
+    let lib = ContentLibrary::new();
+    let content_upper = lib.file_content("README.TXT");
+    let content_lower = lib.file_content("readme.txt");
+    let content_mixed = lib.file_content("ReAdMe.TxT");
+    assert_eq!(content_upper, content_lower);
+    assert_eq!(content_upper, content_mixed);
+}
+
+#[test]
+fn test_required_files_exist() {
+    let lib = ContentLibrary::new();
+    // Required files by spec
+    assert!(lib.file_content("HELLO.BAS").is_some());
+    assert!(lib.file_content("AUTOEXEC.BAS").is_some());
+    assert!(lib.file_content("NOTES.TXT").is_some());
+    assert!(lib.file_content("SYSTEM.LOG").is_some());
+}
+
+#[test]
+fn test_hello_bas_content() {
+    let lib = ContentLibrary::new();
+    let content = lib.file_content("HELLO.BAS").unwrap();
+    assert_eq!(content, "10 PRINT \"HELLO\"\n20 GOTO 10\n");
+}
+
+#[test]
+fn test_generic_files_returns_tuples() {
+    let lib = ContentLibrary::new();
+    let files = lib.generic_files();
+    assert!(!files.is_empty());
+    // Each entry should be a tuple of (name, content)
+    for (name, content) in files {
+        assert!(!name.is_empty());
+        assert!(!content.is_empty());
+    }
+}

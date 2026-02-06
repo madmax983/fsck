@@ -23,7 +23,13 @@ fn test_file_node_content() {
 
 #[test]
 fn test_file_with_dynamic_content() {
-    let file = FileNode::with_dynamic("COUNTER.TXT", NodeContent::Counter { base: "HELLO\n", count: 0 });
+    let file = FileNode::with_dynamic(
+        "COUNTER.TXT",
+        NodeContent::Counter {
+            base: "HELLO\n",
+            count: 0,
+        },
+    );
     // Dynamic content is retrieved via content_dynamic()
     assert!(matches!(file.content_type(), NodeContent::Counter { .. }));
 }

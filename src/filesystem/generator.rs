@@ -6,9 +6,9 @@ use super::node::FileNode;
 
 /// Apple IIe era directory names
 const DIR_NAMES: &[&str] = &[
-    "GAMES", "DOCS", "SYSTEM", "BASIC", "DATA", "PROGS", "UTIL", "BACKUP",
-    "OLD", "NEW", "TEMP", "WORK", "FILES", "STUFF", "MISC", "ARCHIVE",
-    "DONT", "VOID", "EMPTY", "LOST", "FOUND", "ERROR", "NULL", "DARK",
+    "GAMES", "DOCS", "SYSTEM", "BASIC", "DATA", "PROGS", "UTIL", "BACKUP", "OLD", "NEW", "TEMP",
+    "WORK", "FILES", "STUFF", "MISC", "ARCHIVE", "DONT", "VOID", "EMPTY", "LOST", "FOUND", "ERROR",
+    "NULL", "DARK",
 ];
 
 /// File names and content templates
