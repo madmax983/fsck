@@ -8,6 +8,7 @@ pub mod filesystem;
 pub mod terminal;
 
 use commands::{Command, CommandExecutor};
+use effects::PromptManipulator;
 use entity::Entity;
 use filesystem::FilesystemGenerator;
 use terminal::InputParser;
@@ -15,6 +16,7 @@ use terminal::InputParser;
 #[wasm_bindgen]
 pub struct Game {
     executor: CommandExecutor,
+    prompt_manipulator: PromptManipulator,
 }
 
 #[wasm_bindgen]
@@ -25,7 +27,10 @@ impl Game {
         let entity = Entity::new();
         let executor = CommandExecutor::new(fs, entity);
 
-        Self { executor }
+        Self {
+            executor,
+            prompt_manipulator: PromptManipulator::new(),
+        }
     }
 
     pub fn is_ready(&self) -> bool {
@@ -33,7 +38,8 @@ impl Game {
     }
 
     pub fn get_prompt(&self) -> String {
-        "]".to_string()
+        self.prompt_manipulator
+            .generate_prompt(self.executor.entity())
     }
 
     pub fn process_input(&mut self, input: &str) -> String {

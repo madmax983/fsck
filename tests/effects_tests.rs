@@ -1,4 +1,7 @@
-use fsck::effects::{CorruptionEffect, CorruptionIntensity, InterferenceEffect, InterferenceType};
+use fsck::effects::{
+    CorruptionEffect, CorruptionIntensity, InterferenceEffect, InterferenceType, PromptManipulator,
+};
+use fsck::entity::Entity;
 
 #[test]
 fn test_no_corruption_at_surface() {
@@ -71,4 +74,42 @@ fn test_line_noise() {
     let output = effect.apply("NORMAL TEXT");
     // Should add visual noise
     assert!(output.len() >= "NORMAL TEXT".len());
+}
+
+#[test]
+fn test_normal_prompt_at_surface() {
+    let entity = Entity::new();
+    let manipulator = PromptManipulator::new();
+    let prompt = manipulator.generate_prompt(&entity);
+    assert_eq!(prompt, "]");
+}
+
+#[test]
+fn test_prompt_changes_at_presence() {
+    let mut entity = Entity::new();
+    entity.update_depth(40); // Presence layer
+    entity.record_interaction(); // Change the seed
+
+    let manipulator = PromptManipulator::new();
+    let prompt = manipulator.generate_prompt(&entity);
+
+    // At Presence layer with interaction, should get a modified prompt
+    // Could be "] ", "]? ", or one with comments
+    assert!(
+        prompt != "]" || prompt.contains("//") || prompt.ends_with(" "),
+        "Expected modified prompt at Presence layer, got: {}",
+        prompt
+    );
+}
+
+#[test]
+fn test_prompt_corruption_at_infection() {
+    let mut entity = Entity::new();
+    entity.update_depth(70); // Infection layer
+
+    let manipulator = PromptManipulator::new();
+    let prompt = manipulator.generate_prompt(&entity);
+
+    // Should be heavily modified
+    assert!(prompt.len() > 1);
 }
