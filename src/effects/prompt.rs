@@ -15,8 +15,7 @@ impl PromptManipulator {
 
     #[must_use]
     pub fn generate_prompt(&self, entity: &Entity) -> String {
-        let mut rng =
-            ChaCha8Rng::seed_from_u64(self.seed + u64::from(entity.interaction_count()));
+        let mut rng = ChaCha8Rng::seed_from_u64(self.seed + u64::from(entity.interaction_count()));
 
         match entity.layer() {
             EscalationLayer::Surface => "]".to_string(),
