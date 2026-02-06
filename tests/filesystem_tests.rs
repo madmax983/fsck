@@ -138,3 +138,179 @@ fn test_generation_respects_depth_limit() {
     // Root should have some children
     assert!(!fs.list_directories().is_empty());
 }
+
+/// Helper function to recursively search for files matching a predicate
+fn find_files_recursive<F>(
+    fs: &mut FilesystemGraph,
+    predicate: &F,
+    found: &mut Vec<(String, String)>,
+) where
+    F: Fn(&FileNode) -> bool,
+{
+    // Check files in current directory
+    for file in fs.current_node().files() {
+        if predicate(file) {
+            let path = format!("{}/{}", fs.current_path(), file.name());
+            let content = file.content().to_string();
+            found.push((path, content));
+        }
+    }
+
+    // Recursively check subdirectories
+    let dirs = fs.list_directories();
+    for dir in dirs {
+        if fs.change_dir(&dir).is_ok() {
+            find_files_recursive(fs, predicate, found);
+            let _ = fs.change_dir("..");
+        }
+    }
+}
+
+#[test]
+fn test_generated_filesystem_has_victim_files() {
+    let mut fs = FilesystemGenerator::generate_with_content(42, 8);
+
+    // Search for victim history files (.LOG extension)
+    let mut victim_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| f.name().ends_with(".LOG"),
+        &mut victim_files,
+    );
+
+    // Should find at least one victim file
+    assert!(
+        !victim_files.is_empty(),
+        "Expected to find victim history files (.LOG) in generated filesystem"
+    );
+
+    // Verify victim files have expected content format (date + content)
+    for (path, content) in &victim_files {
+        assert!(
+            content.contains("-") && content.len() > 20,
+            "Victim file {} should contain date and narrative content, got: {}",
+            path,
+            content
+        );
+    }
+}
+
+#[test]
+fn test_victim_files_appear_at_depth() {
+    let mut fs = FilesystemGenerator::generate_with_content(12345, 8);
+
+    // Navigate to depth 3+ where victim files should appear
+    let dirs = fs.list_directories();
+    if let Some(dir1) = dirs.first() {
+        fs.change_dir(dir1).unwrap();
+        let dirs = fs.list_directories();
+        if let Some(dir2) = dirs.first() {
+            fs.change_dir(dir2).unwrap();
+            let dirs = fs.list_directories();
+            if let Some(dir3) = dirs.first() {
+                fs.change_dir(dir3).unwrap();
+
+                // At depth 3+, search for victim files in subtree
+                let mut victim_files = Vec::new();
+                find_files_recursive(
+                    &mut fs,
+                    &|f: &FileNode| f.name().ends_with(".LOG"),
+                    &mut victim_files,
+                );
+
+                // Should find victim files at deeper levels
+                // (not guaranteed at every depth due to RNG, but with depth 8 we should find some)
+                assert!(
+                    !victim_files.is_empty(),
+                    "Expected victim files to appear at depth 3+ in generated filesystem"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn test_dynamic_files_present() {
+    let mut fs = FilesystemGenerator::generate_with_content(99, 5);
+
+    // Search for dynamic files
+    let mut dynamic_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| matches!(f.content_type(), NodeContent::Dynamic(_)),
+        &mut dynamic_files,
+    );
+
+    // Should find at least one dynamic file (30% chance per file, depth 5 = many files)
+    assert!(
+        !dynamic_files.is_empty(),
+        "Expected to find dynamic files in generated filesystem"
+    );
+
+    // Verify dynamic files have DYN prefix
+    for (path, _) in &dynamic_files {
+        assert!(
+            path.contains("DYN") && path.ends_with(".TXT"),
+            "Dynamic files should be named DYN*.TXT, got: {}",
+            path
+        );
+    }
+}
+
+#[test]
+fn test_static_files_from_library() {
+    let mut fs = FilesystemGenerator::generate_with_content(777, 4);
+
+    // Search for known static files from the library
+    let mut static_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| {
+            matches!(f.content_type(), NodeContent::Static(_))
+                && (f.name() == "README.TXT"
+                    || f.name() == "HELLO.BAS"
+                    || f.name() == "NOTES.TXT"
+                    || f.name() == "SYSTEM.LOG"
+                    || f.name() == "AUTOEXEC.BAS")
+        },
+        &mut static_files,
+    );
+
+    // Should find at least some static library files
+    assert!(
+        !static_files.is_empty(),
+        "Expected to find static files from ContentLibrary"
+    );
+}
+
+#[test]
+fn test_content_mix_in_filesystem() {
+    let mut fs = FilesystemGenerator::generate_with_content(555, 6);
+
+    let mut static_count = 0;
+    let mut dynamic_count = 0;
+    let mut victim_count = 0;
+
+    let mut all_files = Vec::new();
+    find_files_recursive(&mut fs, &|_| true, &mut all_files);
+
+    for (path, _) in &all_files {
+        if path.ends_with(".LOG") {
+            victim_count += 1;
+        } else if path.contains("DYN") {
+            dynamic_count += 1;
+        } else {
+            static_count += 1;
+        }
+    }
+
+    // Filesystem should have a mix of all three types
+    assert!(static_count > 0, "Should have static files from library");
+    assert!(dynamic_count > 0, "Should have dynamic generated files");
+    // Victim files may not always appear due to RNG and depth requirements,
+    // but with depth 6 and seed 555 we should get some
+    assert!(
+        victim_count > 0,
+        "Should have victim history files at depth 3+"
+    );
+}
