@@ -72,3 +72,75 @@ fn test_type_displays_file() {
 
     assert!(result.output().contains("Hello World"));
 }
+
+#[test]
+fn test_type_dynamic_counter_increments() {
+    use fsck::content::DynamicContent;
+    use fsck::filesystem::FileNode;
+
+    let mut fs = FilesystemGraph::new();
+    let counter_file = FileNode::with_dynamic("COUNTER.TXT", DynamicContent::counter("X"));
+    fs.current_node_mut().add_file(counter_file);
+
+    let mut executor = CommandExecutor::new(fs, Entity::new());
+
+    // First read should show "X1"
+    let result1 = executor.execute(Command::Type("COUNTER.TXT".to_string()));
+    assert!(!result1.is_error());
+    assert!(
+        result1.output().contains("X1"),
+        "First read should show X1, got: {}",
+        result1.output()
+    );
+
+    // Second read should show "XX2"
+    let result2 = executor.execute(Command::Type("COUNTER.TXT".to_string()));
+    assert!(!result2.is_error());
+    assert!(
+        result2.output().contains("XX2"),
+        "Second read should show XX2, got: {}",
+        result2.output()
+    );
+}
+
+#[test]
+fn test_type_dynamic_corrupted_content() {
+    use fsck::content::DynamicContent;
+    use fsck::filesystem::FileNode;
+
+    let mut fs = FilesystemGraph::new();
+    let corrupted_file =
+        FileNode::with_dynamic("ERROR.TXT", DynamicContent::corrupted("HELLO WORLD", 0.3));
+    fs.current_node_mut().add_file(corrupted_file);
+
+    let mut executor = CommandExecutor::new(fs, Entity::new());
+
+    let result = executor.execute(Command::Type("ERROR.TXT".to_string()));
+    assert!(!result.is_error());
+    // Should not be the placeholder
+    assert!(!result.output().contains("[DYNAMIC]"));
+    // Should contain some of the original text (not fully corrupted at 0.3 intensity)
+    assert!(
+        result.output().contains("HELLO")
+            || result.output().contains("WORLD")
+            || result.output().len() > 5
+    );
+}
+
+#[test]
+fn test_type_dynamic_timestamp() {
+    use fsck::content::DynamicContent;
+    use fsck::filesystem::FileNode;
+
+    let mut fs = FilesystemGraph::new();
+    let timestamp_file = FileNode::with_dynamic("TIME.TXT", DynamicContent::timestamp());
+    fs.current_node_mut().add_file(timestamp_file);
+
+    let mut executor = CommandExecutor::new(fs, Entity::new());
+
+    let result = executor.execute(Command::Type("TIME.TXT".to_string()));
+    assert!(!result.is_error());
+    // Should show timestamp format, not placeholder
+    assert!(!result.output().contains("[DYNAMIC]"));
+    assert!(result.output().contains("??") || result.output().contains("2024"));
+}

@@ -1,12 +1,13 @@
 use crate::content::DynamicContent;
+use std::cell::RefCell;
 
 /// Content types for files - some are static, some dynamic
 #[derive(Debug, Clone)]
 pub enum NodeContent {
     /// Static text content
     Static(String),
-    /// Dynamic content that changes on each read
-    Dynamic(DynamicContent),
+    /// Dynamic content that changes on each read (uses RefCell for interior mutability)
+    Dynamic(RefCell<DynamicContent>),
 }
 
 /// A file within a directory
@@ -27,23 +28,21 @@ impl FileNode {
     pub fn with_dynamic(name: &str, dynamic: DynamicContent) -> Self {
         Self {
             name: name.to_uppercase(),
-            content: NodeContent::Dynamic(dynamic),
+            content: NodeContent::Dynamic(RefCell::new(dynamic)),
         }
     }
 
-    pub fn read(&mut self) -> String {
-        match &mut self.content {
-            NodeContent::Static(s) => s.clone(),
-            NodeContent::Dynamic(d) => d.generate(),
-        }
-    }
-
-    // Legacy method for static content
-    pub fn content(&self) -> String {
+    /// Read file content - generates dynamic content on each read
+    pub fn read(&self) -> String {
         match &self.content {
             NodeContent::Static(s) => s.clone(),
-            NodeContent::Dynamic(_) => "[DYNAMIC]".to_string(),
+            NodeContent::Dynamic(d) => d.borrow_mut().generate(),
         }
+    }
+
+    // Legacy method for static content - deprecated, use read() instead
+    pub fn content(&self) -> String {
+        self.read()
     }
 
     pub fn name(&self) -> &str {
