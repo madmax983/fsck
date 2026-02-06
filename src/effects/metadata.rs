@@ -1,0 +1,90 @@
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
+
+/// Corrupts timestamps and filenames
+pub struct MetadataCorruptor {
+    depth: u32,
+}
+
+impl MetadataCorruptor {
+    #[must_use]
+    pub const fn new(depth: u32) -> Self {
+        Self { depth }
+    }
+
+    #[must_use]
+    pub fn corrupt_timestamp(&self, original: &str) -> String {
+        if self.depth < 11 {
+            return original.to_string();
+        }
+
+        let mut rng = ChaCha8Rng::seed_from_u64(u64::from(self.depth));
+
+        match self.depth {
+            11..=30 => {
+                // Mild corruption - change a digit
+                let mut chars: Vec<char> = original.chars().collect();
+                if let Some(pos) = chars.iter().position(char::is_ascii_digit)
+                    && let Some(digit) = char::from_digit(rng.r#gen_range(0..10), 10)
+                {
+                    chars[pos] = digit;
+                }
+                chars.into_iter().collect()
+            }
+            31..=60 => {
+                // Presence - impossible dates
+                self.generate_impossible_date(rng.r#gen())
+            }
+            _ => {
+                // Infection - completely scrambled
+                format!("{}???-??-??", rng.r#gen_range(1900..=2099))
+            }
+        }
+    }
+
+    #[must_use]
+    pub fn generate_impossible_date(&self, seed: u64) -> String {
+        let mut rng = ChaCha8Rng::seed_from_u64(seed);
+
+        let year = match rng.r#gen_range(0..5) {
+            0 => rng.r#gen_range(1943..=1950), // Before Apple IIe existed
+            1 => rng.r#gen_range(2050..=2099), // Future
+            2 => rng.r#gen_range(1800..=1900), // Very old
+            _ => rng.r#gen_range(1984..=2024), // Normal but still suspicious
+        };
+
+        let month = rng.r#gen_range(1..=12);
+        let day = rng.r#gen_range(1..=28);
+
+        format!("{year:04}-{month:02}-{day:02}")
+    }
+
+    #[must_use]
+    pub fn corrupt_filename(&self, original: &str, seed: u64) -> String {
+        if self.depth < 21 {
+            return original.to_string();
+        }
+
+        let mut rng = ChaCha8Rng::seed_from_u64(seed);
+        let mut result = String::new();
+
+        let corruption_rate = match self.depth {
+            21..=35 => 0.15,
+            36..=60 => 0.30,
+            _ => 0.50,
+        };
+
+        for ch in original.chars() {
+            if ch == '.' || ch == ' ' {
+                result.push(ch);
+            } else if rng.r#gen::<f32>() < corruption_rate {
+                let corrupt = ['?', '#', '@', '_', '-', '~'];
+                result.push(corrupt[rng.r#gen_range(0..corrupt.len())]);
+            } else {
+                result.push(ch);
+            }
+        }
+
+        result
+    }
+}

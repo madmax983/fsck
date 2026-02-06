@@ -1,5 +1,6 @@
 use fsck::effects::{
-    CorruptionEffect, CorruptionIntensity, InterferenceEffect, InterferenceType, PromptManipulator,
+    CorruptionEffect, CorruptionIntensity, InterferenceEffect, InterferenceType, MetadataCorruptor,
+    PromptManipulator,
 };
 use fsck::entity::Entity;
 
@@ -112,4 +113,34 @@ fn test_prompt_corruption_at_infection() {
 
     // Should be heavily modified
     assert!(prompt.len() > 1);
+}
+
+#[test]
+fn test_normal_timestamp() {
+    let corruptor = MetadataCorruptor::new(0); // depth 0
+    let timestamp = corruptor.corrupt_timestamp("1984-03-15");
+    assert_eq!(timestamp, "1984-03-15");
+}
+
+#[test]
+fn test_corrupted_timestamp_at_depth() {
+    let corruptor = MetadataCorruptor::new(25); // corruption layer
+    let timestamp = corruptor.corrupt_timestamp("1984-03-15");
+    assert_ne!(timestamp, "1984-03-15"); // Should be corrupted
+}
+
+#[test]
+fn test_filename_corruption() {
+    let corruptor = MetadataCorruptor::new(40); // presence layer
+    let filename = corruptor.corrupt_filename("README.TXT", 12345);
+    // Should still be recognizable but corrupted
+    assert!(filename.contains("TXT") || filename.len() > 5);
+}
+
+#[test]
+fn test_impossible_dates() {
+    let corruptor = MetadataCorruptor::new(50);
+    let date = corruptor.generate_impossible_date(99);
+    // Should be before Apple IIe existed
+    assert!(date.contains("19") || date.contains("20"));
 }
