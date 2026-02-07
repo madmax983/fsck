@@ -32,3 +32,20 @@ body {
 .xterm .xterm-viewport::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Edge */
 }
+
+/* Meta-horror shake animation */
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-10px, 0); }
+    20%, 40%, 60%, 80% { transform: translate(10px, 0); }
+}
+
+/* Glitch effect for deep horror */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}

@@ -138,6 +138,11 @@ impl CommandExecutor {
     }
 
     fn who(&self) -> CommandResult {
+        // Meta-horror response at deep levels
+        if let Some(meta_response) = self.responses.who_meta_response(&self.entity) {
+            return CommandResult::success(&meta_response);
+        }
+
         let response = self
             .responses
             .who_response(self.entity.current_mood(), None);
@@ -157,6 +162,11 @@ impl CommandExecutor {
     }
 
     fn quit(&self) -> CommandResult {
+        // Meta-horror response at deep levels
+        if let Some(meta_response) = self.responses.quit_meta_response(&self.entity) {
+            return CommandResult::error(&meta_response);
+        }
+
         let response = self.responses.quit_response(self.entity.current_mood());
         CommandResult::error(&format!("{}\n", response))
     }

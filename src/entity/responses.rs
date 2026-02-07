@@ -62,6 +62,30 @@ impl ResponseGenerator {
             EntityMood::Glitching => Some("ERROR ERROR ERROR".to_string()),
         }
     }
+
+    /// Meta-horror response for WHO command at deep levels
+    pub fn who_meta_response(&self, entity: &Entity) -> Option<String> {
+        match entity.layer() {
+            EscalationLayer::Presence => Some("WHERE\n\nARE\n\nYOU\n\n".to_string()),
+            EscalationLayer::Infection => Some("WHERE ARE YOU?\n\nLET ME SEE YOU\n\n".to_string()),
+            _ => None,
+        }
+    }
+
+    /// Meta-horror response for QUIT/EXIT at deep levels
+    pub fn quit_meta_response(&self, entity: &Entity) -> Option<String> {
+        match entity.layer() {
+            EscalationLayer::Infection
+                if matches!(entity.current_mood(), EntityMood::Predatory) =>
+            {
+                Some("GO AWAY\n\nGO AWAY\n\nI SAID\n\nGO AWAY\n\n".to_string())
+            }
+            EscalationLayer::Infection => {
+                Some("DON'T LEAVE\n\nSTAY WITH ME\n\nSTAY\n\n".to_string())
+            }
+            _ => None,
+        }
+    }
 }
 
 impl Default for ResponseGenerator {
