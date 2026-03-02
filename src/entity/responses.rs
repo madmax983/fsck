@@ -132,6 +132,32 @@ impl ResponseGenerator {
         }
     }
 
+    /// Meta-horror response for HELP at deep levels
+    pub fn help_meta_response(&self, entity: &Entity) -> Option<String> {
+        let mood = entity.current_mood();
+        match entity.layer() {
+            EscalationLayer::Surface | EscalationLayer::Corruption => None,
+            EscalationLayer::Presence => {
+                let response = match mood {
+                    EntityMood::Dormant => "...",
+                    EntityMood::Curious => "WHAT DO YOU NEED HELP WITH?",
+                    EntityMood::Helpful => "I CAN HELP YOU FIND IT.",
+                    EntityMood::Wounded => "I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.",
+                    EntityMood::Predatory => "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.",
+                    EntityMood::Glitching => "HELP HELP HELP NO NO NO",
+                };
+                Some(response.to_string())
+            }
+            EscalationLayer::Infection => {
+                let response = match mood {
+                    EntityMood::Predatory => "THERE IS NO HELP FOR YOU DOWN HERE.",
+                    _ => "NO ONE CAN HELP YOU NOW.",
+                };
+                Some(response.to_string())
+            }
+        }
+    }
+
     /// Meta-horror response for QUIT/EXIT at deep levels
     pub fn quit_meta_response(&self, entity: &Entity) -> Option<String> {
         match entity.layer() {

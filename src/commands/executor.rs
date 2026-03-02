@@ -270,15 +270,29 @@ impl CommandExecutor {
     }
 
     fn help(&self) -> CommandResult {
-        CommandResult::success(concat!(
-            "\nAVAILABLE COMMANDS:\n",
-            "  CATALOG  - LIST FILES\n",
-            "  CD       - CHANGE DIRECTORY\n",
-            "  TYPE     - DISPLAY FILE\n",
-            "  HOME     - CLEAR SCREEN\n",
-            "  FSCK     - CHECK FILESYSTEM\n",
-            "\n"
-        ))
+        let layer = self.entity.layer();
+
+        // Deep layers get meta-horror response
+        if let Some(meta_response) = self.responses.help_meta_response(&self.entity) {
+            return CommandResult::success(&format!("{}\n", meta_response));
+        }
+
+        // Surface/Corruption layers get command list, possibly with oddities
+        let mut help_text = String::from("\nAVAILABLE COMMANDS:\n");
+        help_text.push_str("  CATALOG  - LIST FILES\n");
+        help_text.push_str("  CD       - CHANGE DIRECTORY\n");
+        help_text.push_str("  TYPE     - DISPLAY FILE\n");
+        help_text.push_str("  HOME     - CLEAR SCREEN\n");
+        help_text.push_str("  FSCK     - CHECK FILESYSTEM\n");
+
+        if matches!(layer, EscalationLayer::Corruption) {
+            help_text.push_str("  ESCAPE   - ???\n");
+            help_text.push_str("  REMEMBER - ???\n");
+        }
+
+        help_text.push('\n');
+
+        CommandResult::success(&help_text)
     }
 
     fn quit(&self) -> CommandResult {

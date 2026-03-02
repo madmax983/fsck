@@ -144,3 +144,79 @@ fn test_type_dynamic_timestamp() {
     assert!(!result.output().contains("[DYNAMIC]"));
     assert!(result.output().contains("??") || result.output().contains("2024"));
 }
+
+#[test]
+fn test_help_surface() {
+    let fs = FilesystemGraph::new();
+    let mut executor = CommandExecutor::new(fs, Entity::new());
+
+    let result = executor.execute(Command::Help);
+
+    assert!(!result.is_error());
+    assert!(result.output().contains("AVAILABLE COMMANDS"));
+    assert!(result.output().contains("CATALOG"));
+    assert!(!result.output().contains("ESCAPE"));
+    assert!(!result.output().contains("REMEMBER"));
+}
+
+#[test]
+fn test_help_corruption() {
+    let fs = FilesystemGraph::new();
+    let mut entity = Entity::new();
+    // At depth 6-15, it's the Corruption layer. Note: max_depth_reached + depth_modifier determines layer.
+    // add_depth(4) gets us to 4 for depth_modifier and 4 for max_depth_reached = 8 total.
+    entity.add_depth(4);
+
+    let mut executor = CommandExecutor::new(fs, entity);
+    let result = executor.execute(Command::Help);
+
+    assert!(!result.is_error());
+    assert!(result.output().contains("AVAILABLE COMMANDS"));
+    assert!(result.output().contains("ESCAPE   - ???"));
+    assert!(result.output().contains("REMEMBER - ???"));
+}
+
+#[test]
+fn test_help_presence() {
+    let fs = FilesystemGraph::new();
+    let mut entity = Entity::new();
+    // At depth 16-25, it's the Presence layer. Add 10 => 10 + 10 = 20 total.
+    entity.add_depth(10);
+
+    let mut executor = CommandExecutor::new(fs, entity);
+    let result = executor.execute(Command::Help);
+
+    assert!(!result.is_error());
+    assert!(!result.output().contains("AVAILABLE COMMANDS"));
+
+    // Depending on the mood (likely Curious because of the way interaction count works, but we check for any valid response)
+    let output = result.output();
+    assert!(
+        output.contains("WHAT DO YOU NEED HELP WITH?") ||
+        output.contains("I CAN HELP YOU FIND IT.") ||
+        output.contains("I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.") ||
+        output.contains("YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.") ||
+        output.contains("HELP HELP HELP NO NO NO") ||
+        output.contains("...")
+    );
+}
+
+#[test]
+fn test_help_infection() {
+    let fs = FilesystemGraph::new();
+    let mut entity = Entity::new();
+    // At depth 26+, it's the Infection layer. Add 15 => 15 + 15 = 30 total.
+    entity.add_depth(15);
+
+    let mut executor = CommandExecutor::new(fs, entity);
+    let result = executor.execute(Command::Help);
+
+    assert!(!result.is_error());
+    assert!(!result.output().contains("AVAILABLE COMMANDS"));
+
+    let output = result.output();
+    assert!(
+        output.contains("THERE IS NO HELP FOR YOU DOWN HERE.") ||
+        output.contains("NO ONE CAN HELP YOU NOW.")
+    );
+}
