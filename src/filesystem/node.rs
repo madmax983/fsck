@@ -55,16 +55,16 @@ impl FileNode {
     }
 
     /// Read file content - generates dynamic content on each read
-    pub fn read(&self) -> String {
+    pub fn read(&self) -> std::borrow::Cow<'_, str> {
         match &self.content {
-            NodeContent::Static(s) => s.clone(),
-            NodeContent::Dynamic(d) => d.borrow_mut().generate(),
+            NodeContent::Static(s) => std::borrow::Cow::Borrowed(s.as_str()),
+            NodeContent::Dynamic(d) => std::borrow::Cow::Owned(d.borrow_mut().generate()),
         }
     }
 
     // Legacy method for static content - deprecated, use read() instead
     pub fn content(&self) -> String {
-        self.read()
+        self.read().into_owned()
     }
 
     pub fn name(&self) -> &str {

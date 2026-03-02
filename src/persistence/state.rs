@@ -16,12 +16,13 @@ impl GameState {
     #[must_use]
     pub fn new(seed: u64, entity: Entity, max_depth: u32) -> Self {
         let now = Self::current_timestamp();
+        let first_played = now.clone();
         Self {
             seed,
             entity,
             max_depth_reached: max_depth,
             session_count: 1,
-            first_played: now.clone(),
+            first_played,
             last_played: now,
         }
     }
