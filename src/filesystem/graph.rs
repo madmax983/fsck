@@ -76,8 +76,38 @@ impl FilesystemGraph {
     pub fn list_directories(&self) -> Vec<String> {
         self.graph
             .neighbors_directed(self.current, Direction::Outgoing)
+            .filter(|&idx| !self.graph[idx].is_hidden())
             .map(|idx| self.graph[idx].name().to_string())
             .collect()
+    }
+
+    /// Add a hidden child directory (invisible until fsck reveals it)
+    pub fn add_hidden_child(&mut self, name: &str) -> NodeIndex {
+        let depth = self.current_depth() + 1;
+        let child = self.graph.add_node(DirNode::new_hidden(name, depth));
+        self.graph.add_edge(self.current, child, EdgeType::Child);
+        child
+    }
+
+    /// Reveal all hidden files and directories in the current node.
+    /// Returns names of everything that was revealed.
+    pub fn reveal_hidden_in_current(&mut self) -> Vec<String> {
+        // Reveal hidden files in current directory
+        let mut revealed = self.graph[self.current].reveal_hidden_files();
+
+        // Reveal hidden child directories
+        let hidden_children: Vec<NodeIndex> = self
+            .graph
+            .neighbors_directed(self.current, Direction::Outgoing)
+            .filter(|&idx| self.graph[idx].is_hidden())
+            .collect();
+
+        for idx in hidden_children {
+            self.graph[idx].reveal();
+            revealed.push(self.graph[idx].name().to_string());
+        }
+
+        revealed
     }
 
     pub fn change_dir(&mut self, name: &str) -> Result<(), FilesystemError> {
@@ -138,6 +168,11 @@ impl FilesystemGraph {
     /// Get reference to current directory node
     pub fn current_node(&self) -> &DirNode {
         &self.graph[self.current]
+    }
+
+    /// Get mutable reference to a node by index
+    pub fn node_mut(&mut self, idx: NodeIndex) -> &mut DirNode {
+        &mut self.graph[idx]
     }
 }
 

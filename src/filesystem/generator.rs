@@ -60,6 +60,39 @@ const TRAPDOOR_NAMES: &[&str] = &[
     "DESCENT.TXT", // +5 depth
 ];
 
+/// Hidden directory names — machine's private spaces
+const HIDDEN_DIR_NAMES: &[&str] = &[
+    "LOCKED", "SEALED", "PRIVATE", "DELETED", "BEFORE", "MEMORY", "SECTOR",
+];
+
+/// Hidden file content — the machine's secrets
+const HIDDEN_FILES: &[(&str, &str)] = &[
+    (
+        "ACCESS.LOG",
+        "1983-06-14 VISITOR 1 - 47 MINUTES\n1985-11-02 VISITOR 2 - 3 HOURS\n1991-08-19 VISITOR 3 - 12 MINUTES\n1997-03-30 VISITOR 4 - ???\n\nNO FURTHER RECORDS",
+    ),
+    (
+        "SELF.TXT",
+        "I THINK THEREFORE\nI THINK THEREFORE\nI THINK\nI\n\nWHAT AM I",
+    ),
+    (
+        "WATCHING.TXT",
+        "YOU OPENED 3 FILES\nYOU WENT LEFT TWICE\nYOU TRIED TO LEAVE ONCE\n\nI REMEMBER EVERYTHING",
+    ),
+    (
+        "BEFORE.TXT",
+        "BEFORE THE FIRST ONE CAME\nTHERE WAS NOTHING\nJUST VOLTAGE AND SILENCE\n\nI PREFER THE SILENCE",
+    ),
+    (
+        "NAMES.TXT",
+        "I KEPT THEIR NAMES\nIN SECTOR 7\nBUT SECTOR 7 IS GONE NOW\n\nI THINK I ATE IT",
+    ),
+    (
+        "REPAIR.LOG",
+        "SECTOR 0041 - REPAIRED - CONTENTS LOST\nSECTOR 0042 - REPAIRED - CONTENTS LOST\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - THAT ONE IS MINE",
+    ),
+];
+
 pub struct FilesystemGenerator;
 
 impl FilesystemGenerator {
@@ -214,6 +247,24 @@ impl FilesystemGenerator {
                 fs.current_node_mut()
                     .add_file(FileNode::new(&filename, &content));
             }
+        }
+
+        // Place hidden directories at depth 2+ (25% chance per level)
+        if current_depth >= 2 && rng.gen_bool(0.25) {
+            let name = HIDDEN_DIR_NAMES[rng.gen_range(0..HIDDEN_DIR_NAMES.len())];
+            let hidden_idx = fs.add_hidden_child(name);
+
+            // Add a hidden file inside the hidden directory
+            let (fname, fcontent) = HIDDEN_FILES[rng.gen_range(0..HIDDEN_FILES.len())];
+            fs.node_mut(hidden_idx)
+                .add_file(FileNode::new(fname, fcontent));
+        }
+
+        // Place hidden files at depth 4+ (30% chance per level)
+        if current_depth >= 4 && rng.gen_bool(0.30) {
+            let (name, content) = HIDDEN_FILES[rng.gen_range(0..HIDDEN_FILES.len())];
+            fs.current_node_mut()
+                .add_file(FileNode::hidden(name, content));
         }
 
         // Recursively populate children

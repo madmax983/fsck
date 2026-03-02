@@ -15,6 +15,7 @@ pub enum NodeContent {
 pub struct FileNode {
     name: String,
     content: NodeContent,
+    is_hidden: bool,
 }
 
 impl FileNode {
@@ -22,6 +23,7 @@ impl FileNode {
         Self {
             name: name.to_uppercase(),
             content: NodeContent::Static(content.to_string()),
+            is_hidden: false,
         }
     }
 
@@ -29,7 +31,27 @@ impl FileNode {
         Self {
             name: name.to_uppercase(),
             content: NodeContent::Dynamic(RefCell::new(dynamic)),
+            is_hidden: false,
         }
+    }
+
+    /// Create a hidden file — invisible until fsck reveals it
+    #[must_use]
+    pub fn hidden(name: &str, content: &str) -> Self {
+        Self {
+            name: name.to_uppercase(),
+            content: NodeContent::Static(content.to_string()),
+            is_hidden: true,
+        }
+    }
+
+    #[must_use]
+    pub const fn is_hidden(&self) -> bool {
+        self.is_hidden
+    }
+
+    pub const fn reveal(&mut self) {
+        self.is_hidden = false;
     }
 
     /// Read file content - generates dynamic content on each read
@@ -60,6 +82,7 @@ pub struct DirNode {
     name: String,
     depth: u32,
     files: Vec<FileNode>,
+    is_hidden: bool,
 }
 
 impl DirNode {
@@ -68,7 +91,27 @@ impl DirNode {
             name: name.to_uppercase(),
             depth,
             files: Vec::new(),
+            is_hidden: false,
         }
+    }
+
+    #[must_use]
+    pub fn new_hidden(name: &str, depth: u32) -> Self {
+        Self {
+            name: name.to_uppercase(),
+            depth,
+            files: Vec::new(),
+            is_hidden: true,
+        }
+    }
+
+    #[must_use]
+    pub const fn is_hidden(&self) -> bool {
+        self.is_hidden
+    }
+
+    pub const fn reveal(&mut self) {
+        self.is_hidden = false;
     }
 
     pub fn name(&self) -> &str {
@@ -81,6 +124,23 @@ impl DirNode {
 
     pub fn files(&self) -> &[FileNode] {
         &self.files
+    }
+
+    /// All files including hidden ones (for internal use)
+    pub fn visible_files(&self) -> impl Iterator<Item = &FileNode> {
+        self.files.iter().filter(|f| !f.is_hidden())
+    }
+
+    /// Reveal all hidden files, returning their names
+    pub fn reveal_hidden_files(&mut self) -> Vec<String> {
+        let mut revealed = Vec::new();
+        for file in &mut self.files {
+            if file.is_hidden() {
+                revealed.push(file.name().to_string());
+                file.reveal();
+            }
+        }
+        revealed
     }
 
     pub fn add_file(&mut self, file: FileNode) {

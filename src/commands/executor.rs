@@ -1,5 +1,9 @@
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
+
 use super::types::{Command, CommandResult};
-use crate::entity::{Entity, ResponseGenerator};
+use crate::effects::{CorruptionEffect, CorruptionIntensity};
+use crate::entity::{Entity, EscalationLayer, ResponseGenerator};
 use crate::filesystem::FilesystemGraph;
 
 /// Executes commands against the filesystem
@@ -59,7 +63,7 @@ impl CommandExecutor {
             output.push_str(&format!(" *{:<15} DIR\n", dir));
         }
 
-        for file in self.fs.current_node().files() {
+        for file in self.fs.current_node().visible_files() {
             output.push_str(&format!("  {:<15} TXT\n", file.name()));
         }
 
@@ -99,7 +103,7 @@ impl CommandExecutor {
         }
 
         let filename_upper = filename.to_uppercase();
-        for file in self.fs.current_node().files() {
+        for file in self.fs.current_node().visible_files() {
             if file.name() == filename_upper {
                 let content = file.content();
 
@@ -127,9 +131,125 @@ impl CommandExecutor {
         CommandResult::success("\x1B[2J\x1B[H")
     }
 
-    fn fsck(&self, _args: &[String]) -> CommandResult {
-        // TODO: Implement fsck logic
-        CommandResult::success("CHECKING DISK...\n\nNO ERRORS FOUND\n\n")
+    fn fsck(&mut self, _args: &[String]) -> CommandResult {
+        let layer = self.entity.layer();
+        let fsck_count = self.entity.fsck_count();
+        let mood = self.entity.current_mood();
+
+        // 1. Record the fsck use (applies depth pressure every 3rd)
+        self.entity.increment_fsck();
+
+        // 2. Generate deterministic scan output
+        let scan_seed = 0xF5C0_0000u64.wrapping_add(u64::from(fsck_count));
+        let scan_output = Self::generate_fsck_scan(layer, fsck_count, scan_seed);
+
+        // 3. Reveal hidden content in current directory
+        let revealed = self.fs.reveal_hidden_in_current();
+
+        // 4. Build recovery report
+        let recovery = if revealed.is_empty() {
+            "NO ERRORS FOUND\n".to_string()
+        } else {
+            let mut report = format!("{} SECTOR(S) RECOVERED:\n", revealed.len());
+            for name in &revealed {
+                report.push_str(&format!("  RECOVERED: {}\n", name));
+            }
+            report
+        };
+
+        // 5. Entity resistance
+        let entity_text = self
+            .responses
+            .fsck_response(mood, layer, self.entity.fsck_count());
+
+        // 6. At Presence+: add paradox to current dir (fixes come back worse)
+        if matches!(
+            layer,
+            EscalationLayer::Presence | EscalationLayer::Infection
+        ) && !revealed.is_empty()
+        {
+            self.fs.add_paradox_to_self();
+        }
+
+        // 7. At Infection: extra depth pressure and corrupt the output
+        if matches!(layer, EscalationLayer::Infection) {
+            self.entity.add_depth(3);
+        }
+
+        // 8. Assemble final output
+        let mut output = scan_output;
+        output.push_str(&recovery);
+
+        if let Some(entity_response) = entity_text {
+            output.push('\n');
+            output.push_str(&entity_response);
+            output.push('\n');
+        }
+
+        output.push('\n');
+
+        // At Infection: corrupt the entire output
+        if matches!(layer, EscalationLayer::Infection) {
+            let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
+            output = corruption.apply(&output, scan_seed);
+        }
+
+        CommandResult::success(&output)
+    }
+
+    /// Generate sector scan output appropriate to the current layer
+    fn generate_fsck_scan(layer: EscalationLayer, fsck_count: u32, seed: u64) -> String {
+        let mut rng = ChaCha8Rng::seed_from_u64(seed);
+        let mut output = String::new();
+
+        output.push_str("CHECKING DISK...\n\n");
+
+        match layer {
+            EscalationLayer::Surface => {
+                // Clean, normal disk check
+                let total_sectors = 560;
+                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+                output.push_str("SECTOR 0000-022F: OK\n");
+                output.push_str("VTOC: OK\n");
+                output.push_str("CATALOG: OK\n\n");
+            }
+            EscalationLayer::Corruption => {
+                // Errors appear, numbers don't add up
+                let total_sectors = 560 + rng.gen_range(0..100);
+                let bad_sectors = rng.gen_range(1..=3);
+                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+                output.push_str("SECTOR 0000-00FF: OK\n");
+                output.push_str(&format!("SECTOR 0100-01FF: {} ERROR(S)\n", bad_sectors));
+                output.push_str("SECTOR 0200-022F: OK\n");
+                if fsck_count > 1 {
+                    output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
+                }
+                output.push_str("VTOC: MISMATCH\n\n");
+            }
+            EscalationLayer::Presence => {
+                // Entity interjects mid-scan
+                let total_sectors = rng.gen_range(400..700);
+                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+                output.push_str("SECTOR 0000-00FF: OK\n");
+                output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
+                output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
+                output.push_str("SECTOR 0300-03FF: SECTOR RESISTS READ\n");
+                output.push_str(&format!(
+                    "VTOC: {} ENTRIES (EXPECTED 256)\n\n",
+                    rng.gen_range(1..=1024)
+                ));
+            }
+            EscalationLayer::Infection => {
+                // Heavily corrupted scan
+                let total_sectors = rng.gen_range(0..=99999);
+                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+                output.push_str("SECTOR 0000-????: ?????\n");
+                output.push_str("SECTOR ????-????: CANNOT\n");
+                output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");
+            }
+        }
+
+        output
     }
 
     fn hello(&self) -> CommandResult {

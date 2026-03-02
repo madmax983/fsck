@@ -50,6 +50,8 @@ pub struct Entity {
     interaction_count: u32,
     commands_seen: Vec<String>,
     mood: EntityMood,
+    #[serde(default)]
+    fsck_count: u32,
 }
 
 impl Entity {
@@ -61,6 +63,7 @@ impl Entity {
             interaction_count: 0,
             commands_seen: Vec::new(),
             mood: EntityMood::Dormant,
+            fsck_count: 0,
         }
     }
 
@@ -102,6 +105,19 @@ impl Entity {
     pub fn record_command(&mut self, command: &str) {
         self.commands_seen.push(command.to_string());
         self.record_interaction();
+    }
+
+    #[must_use]
+    pub const fn fsck_count(&self) -> u32 {
+        self.fsck_count
+    }
+
+    /// Record an fsck invocation. Every 3rd use adds depth pressure.
+    pub fn increment_fsck(&mut self) {
+        self.fsck_count += 1;
+        if self.fsck_count.is_multiple_of(3) {
+            self.add_depth(2);
+        }
     }
 
     fn update_mood(&mut self) {

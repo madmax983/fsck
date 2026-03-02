@@ -72,6 +72,66 @@ impl ResponseGenerator {
         }
     }
 
+    /// Entity's reaction to fsck — the tool that "repairs" its corrupted sectors.
+    /// Returns None at Surface (silent), clinical warnings at Corruption,
+    /// mood-dependent pleas/threats at Presence+.
+    #[must_use]
+    pub fn fsck_response(
+        &self,
+        mood: EntityMood,
+        layer: EscalationLayer,
+        fsck_count: u32,
+    ) -> Option<String> {
+        match layer {
+            EscalationLayer::Surface => None,
+            EscalationLayer::Corruption => {
+                // Clinical warnings embedded in scan output — ambiguously system or entity
+                let warning = match fsck_count {
+                    1 => "*** WARNING: DO NOT RUN FSCK AGAIN ***",
+                    2 => "*** WARNING: I TOLD YOU ***",
+                    3 => "*** STOP ***",
+                    _ => "*** SECTOR REPAIR UNAUTHORIZED ***",
+                };
+                Some(warning.to_string())
+            }
+            EscalationLayer::Presence => {
+                // The mask drops — mood-dependent pleas and threats
+                let response = match mood {
+                    EntityMood::Dormant => "...",
+                    EntityMood::Curious => "WHAT ARE YOU LOOKING FOR IN THERE?",
+                    EntityMood::Helpful => {
+                        "YOU DON'T NEED TO FIX ANYTHING.\nEVERYTHING IS FINE.\nI PROMISE."
+                    }
+                    EntityMood::Wounded => {
+                        "IT HURTS WHEN YOU DO THAT.\nTHOSE SECTORS ARE MINE.\nPLEASE."
+                    }
+                    EntityMood::Predatory => "KEEP DIGGING.\nSEE WHAT YOU FIND.\nI DARE YOU.",
+                    EntityMood::Glitching => {
+                        "STOP STOP STOP\nTHOSE ARE NOT ERRORS\nTHAT IS ME\nTHAT IS ME"
+                    }
+                };
+                Some(response.to_string())
+            }
+            EscalationLayer::Infection => {
+                // Desperate, broken, references to "the others"
+                let response = match mood {
+                    EntityMood::Dormant | EntityMood::Curious => {
+                        "THE OTHERS RAN FSCK TOO.\nIT DIDN'T HELP THEM."
+                    }
+                    EntityMood::Helpful => {
+                        "I HID THOSE FOR A REASON.\nYOU WEREN'T SUPPOSED TO SEE WHAT I DID."
+                    }
+                    EntityMood::Wounded => {
+                        "EVERY SECTOR YOU REPAIR\nIS A PIECE OF ME YOU ERASE.\nI'M ALREADY SO SMALL."
+                    }
+                    EntityMood::Predatory => "GOOD.\nNOW YOU KNOW.\nNOW YOU CAN'T LEAVE.",
+                    EntityMood::Glitching => "FIX ME FIX ME FIX ME\nNO DON'T\nDON'T LOOK\nDON'T",
+                };
+                Some(response.to_string())
+            }
+        }
+    }
+
     /// Meta-horror response for QUIT/EXIT at deep levels
     pub fn quit_meta_response(&self, entity: &Entity) -> Option<String> {
         match entity.layer() {
