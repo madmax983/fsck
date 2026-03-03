@@ -192,12 +192,12 @@ fn test_help_presence() {
     // Depending on the mood (likely Curious because of the way interaction count works, but we check for any valid response)
     let output = result.output();
     assert!(
-        output.contains("WHAT DO YOU NEED HELP WITH?") ||
-        output.contains("I CAN HELP YOU FIND IT.") ||
-        output.contains("I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.") ||
-        output.contains("YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.") ||
-        output.contains("HELP HELP HELP NO NO NO") ||
-        output.contains("...")
+        output.contains("WHAT DO YOU NEED HELP WITH?")
+            || output.contains("I CAN HELP YOU FIND IT.")
+            || output.contains("I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.")
+            || output.contains("YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.")
+            || output.contains("HELP HELP HELP NO NO NO")
+            || output.contains("...")
     );
 }
 
@@ -216,7 +216,7 @@ fn test_help_infection() {
 
     let output = result.output();
     assert!(
-        output.contains("THERE IS NO HELP FOR YOU DOWN HERE.") ||
-        output.contains("NO ONE CAN HELP YOU NOW.")
+        output.contains("THERE IS NO HELP FOR YOU DOWN HERE.")
+            || output.contains("NO ONE CAN HELP YOU NOW.")
     );
 }

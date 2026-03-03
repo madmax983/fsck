@@ -143,7 +143,9 @@ impl ResponseGenerator {
                     EntityMood::Curious => "WHAT DO YOU NEED HELP WITH?",
                     EntityMood::Helpful => "I CAN HELP YOU FIND IT.",
                     EntityMood::Wounded => "I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.",
-                    EntityMood::Predatory => "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.",
+                    EntityMood::Predatory => {
+                        "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT."
+                    }
                     EntityMood::Glitching => "HELP HELP HELP NO NO NO",
                 };
                 Some(response.to_string())

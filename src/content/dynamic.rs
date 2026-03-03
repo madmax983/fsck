@@ -71,7 +71,13 @@ impl DynamicContent {
             Self::Counter { base, count } => {
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                format!("{}{}\n", base.repeat(repeat_count), count)
+                use std::fmt::Write;
+                let mut result = String::with_capacity(base.len() * repeat_count + 10);
+                for _ in 0..repeat_count {
+                    result.push_str(base);
+                }
+                let _ = writeln!(result, "{}", count);
+                result
             }
             Self::Timestamp => {
                 // In real impl, would use js_sys::Date via web-sys
@@ -85,7 +91,7 @@ impl DynamicContent {
             } => {
                 *seed += 1;
                 let mut rng = ChaCha8Rng::seed_from_u64(*seed);
-                let mut result = String::new();
+                let mut result = String::with_capacity(text.len() + 1);
 
                 for ch in text.chars() {
                     if rng.r#gen::<f32>() < *intensity {
