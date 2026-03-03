@@ -120,6 +120,7 @@ impl Entity {
         }
     }
 
+    #[allow(clippy::missing_const_for_fn)]
     fn update_mood(&mut self) {
         self.mood = match self.layer() {
             EscalationLayer::Surface => {

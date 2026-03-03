@@ -55,6 +55,7 @@ impl CommandExecutor {
         &self.entity
     }
 
+    #[allow(clippy::format_push_string)]
     fn catalog(&self) -> CommandResult {
         let mut output = String::new();
         output.push_str("\nDISK VOLUME 254\n\n");
@@ -126,11 +127,13 @@ impl CommandExecutor {
         CommandResult::error(&format!("?FILE NOT FOUND: {}\n", filename_upper))
     }
 
+    #[allow(clippy::unused_self)]
     fn home(&self) -> CommandResult {
         // Returns special control sequence (handled by frontend)
         CommandResult::success("\x1B[2J\x1B[H")
     }
 
+    #[allow(clippy::format_push_string)]
     fn fsck(&mut self, _args: &[String]) -> CommandResult {
         let layer = self.entity.layer();
         let fsck_count = self.entity.fsck_count();
@@ -198,6 +201,7 @@ impl CommandExecutor {
     }
 
     /// Generate sector scan output appropriate to the current layer
+    #[allow(clippy::format_push_string)]
     fn generate_fsck_scan(layer: EscalationLayer, fsck_count: u32, seed: u64) -> String {
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
         let mut output = String::new();
@@ -269,6 +273,7 @@ impl CommandExecutor {
         CommandResult::success(&format!("{}\n", response))
     }
 
+    #[allow(clippy::unused_self)]
     fn help(&self) -> CommandResult {
         CommandResult::success(concat!(
             "\nAVAILABLE COMMANDS:\n",
@@ -291,6 +296,7 @@ impl CommandExecutor {
         CommandResult::error(&format!("{}\n", response))
     }
 
+    #[allow(clippy::unused_self)]
     fn run(&self, _prog: &str) -> CommandResult {
         // TODO: BASIC interpreter
         CommandResult::error("?PROGRAM NOT FOUND\n")

@@ -43,12 +43,12 @@ impl ResponseGenerator {
         }
     }
 
+    #[allow(clippy::missing_const_for_fn)]
     pub fn should_interject(&self, entity: &Entity) -> bool {
         match entity.layer() {
             EscalationLayer::Surface => false,
             EscalationLayer::Corruption => entity.interaction_count() > 20,
-            EscalationLayer::Presence => true,
-            EscalationLayer::Infection => true,
+            EscalationLayer::Presence | EscalationLayer::Infection => true,
         }
     }
 

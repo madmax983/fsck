@@ -153,8 +153,8 @@ fn test_timestamp_changes() {
     let second = dynamic.generate();
 
     // Both should be valid timestamps (rough check)
-    assert!(first.contains("-"));
-    assert!(second.contains("-"));
+    assert!(first.contains('-'));
+    assert!(second.contains('-'));
 }
 
 #[test]
@@ -218,7 +218,7 @@ fn test_patricia_history_horror_escalation() {
     let all_content: String = history
         .entries()
         .iter()
-        .map(|e| e.content())
+        .map(fsck::content::VictimEntry::content)
         .collect::<Vec<_>>()
         .join(" ");
 
@@ -247,7 +247,7 @@ fn test_alex_2019_reddit_format() {
     let all_content: String = history
         .entries()
         .iter()
-        .map(|e| e.content())
+        .map(fsck::content::VictimEntry::content)
         .collect::<Vec<_>>()
         .join(" ");
 

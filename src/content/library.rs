@@ -256,6 +256,7 @@ impl ContentLibrary {
     }
 
     /// Creates generic files that can appear in the filesystem.
+    #[allow(clippy::too_many_lines)]
     fn create_generic_files() -> Vec<(&'static str, &'static str)> {
         vec![
             // Required files by spec
