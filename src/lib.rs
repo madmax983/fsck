@@ -8,6 +8,9 @@ pub mod filesystem;
 pub mod persistence;
 pub mod terminal;
 
+#[cfg(feature = "nova")]
+pub mod experimental;
+
 use commands::{Command, CommandExecutor};
 use effects::PromptManipulator;
 use entity::Entity;

@@ -79,6 +79,16 @@ impl CommandExecutor {
             }
         }
 
+        #[cfg(feature = "nova")]
+        {
+            if let Some(audio_hint) = crate::experimental::SpatialAudioGenerator::generate_anomaly(
+                &self.entity,
+                0xF5C0_0000,
+            ) {
+                output.push_str(&format!("\n{}\n", audio_hint));
+            }
+        }
+
         CommandResult::success(&output)
     }
 
