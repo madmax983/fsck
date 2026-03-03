@@ -32,6 +32,7 @@ pub struct FilesystemGraph {
 }
 
 impl FilesystemGraph {
+    #[must_use]
     pub fn new() -> Self {
         let mut graph = DiGraph::new();
         let root = graph.add_node(DirNode::new("/", 0));
@@ -43,6 +44,7 @@ impl FilesystemGraph {
         }
     }
 
+    #[must_use]
     pub fn current_path(&self) -> String {
         if self.path_stack.len() <= 1 {
             return "/".to_string();
@@ -56,11 +58,14 @@ impl FilesystemGraph {
         path
     }
 
+    #[must_use]
     pub fn current_dir_name(&self) -> &str {
         self.graph[self.current].name()
     }
 
-    pub fn current_depth(&self) -> u32 {
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
+    pub const fn current_depth(&self) -> u32 {
         // Depth is based on path stack length, not node depth
         // This allows paradox navigation to increase depth infinitely
         (self.path_stack.len() - 1) as u32
@@ -73,6 +78,7 @@ impl FilesystemGraph {
         child
     }
 
+    #[must_use]
     pub fn list_directories(&self) -> Vec<String> {
         self.graph
             .neighbors_directed(self.current, Direction::Outgoing)
@@ -110,6 +116,11 @@ impl FilesystemGraph {
         revealed
     }
 
+    /// Changes directory.
+    /// # Panics
+    /// Panics if path stack is empty.
+    /// # Errors
+    /// Returns an error if directory not found.
     pub fn change_dir(&mut self, name: &str) -> Result<(), FilesystemError> {
         let name_upper = name.to_uppercase();
 
@@ -166,6 +177,7 @@ impl FilesystemGraph {
     }
 
     /// Get reference to current directory node
+    #[must_use]
     pub fn current_node(&self) -> &DirNode {
         &self.graph[self.current]
     }

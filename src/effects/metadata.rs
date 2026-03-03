@@ -1,3 +1,4 @@
+#![allow(clippy::collapsible_if)]
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -24,10 +25,10 @@ impl MetadataCorruptor {
             11..=30 => {
                 // Mild corruption - change a digit
                 let mut chars: Vec<char> = original.chars().collect();
-                if let Some(pos) = chars.iter().position(char::is_ascii_digit)
-                    && let Some(digit) = char::from_digit(rng.r#gen_range(0..10), 10)
-                {
-                    chars[pos] = digit;
+                if let Some(pos) = chars.iter().position(char::is_ascii_digit) {
+                    if let Some(digit) = char::from_digit(rng.r#gen_range(0..10), 10) {
+                        chars[pos] = digit;
+                    }
                 }
                 chars.into_iter().collect()
             }

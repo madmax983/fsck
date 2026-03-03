@@ -1,3 +1,4 @@
+#![allow(clippy::collapsible_if)]
 use fsck::commands::{Command, CommandExecutor};
 use fsck::entity::Entity;
 use fsck::filesystem::{FileNode, FilesystemGenerator, FilesystemGraph};
@@ -20,9 +21,9 @@ fn make_executor_with_hidden() -> CommandExecutor {
 }
 
 /// Helper: create executor at a specific escalation layer via depth manipulation.
-/// Note: Entity::add_depth sets both depth_modifier and max_depth_reached,
-/// and layer() sums them — so effective layer = from_depth(2 * depth).
-/// Use raw_depth values: 3-7 for Corruption, 8-12 for Presence, 13+ for Infection.
+/// Note: `Entity::add_depth` sets both `depth_modifier` and `max_depth_reached`,
+/// and `layer()` sums them — so effective layer = `from_depth(2` * depth).
+/// Use `raw_depth` values: 3-7 for Corruption, 8-12 for Presence, 13+ for Infection.
 fn make_executor_at_depth(raw_depth: u32) -> CommandExecutor {
     let mut fs = FilesystemGraph::new();
     fs.current_node_mut()
@@ -273,17 +274,17 @@ fn test_generated_filesystem_has_hidden_content() {
     // Navigate deeper where hidden content lives
     let dirs = fs.list_directories();
     if let Some(d1) = dirs.first() {
-        if fs.change_dir(d1).is_ok() {
-            let dirs = fs.list_directories();
-            if let Some(d2) = dirs.first() {
-                if fs.change_dir(d2).is_ok() {
-                    // At depth 2+, try revealing hidden content
-                    let revealed = fs.reveal_hidden_in_current();
-                    // May or may not have hidden content (25% chance at depth 2)
-                    // Just verify the mechanism works without panicking
-                    let _ = revealed;
-                }
+            if fs.change_dir(d1).is_ok() {
+        let dirs = fs.list_directories();
+        if let Some(d2) = dirs.first() {
+            if fs.change_dir(d2).is_ok() {
+                // At depth 2+, try revealing hidden content
+                let revealed = fs.reveal_hidden_in_current();
+                // May or may not have hidden content (25% chance at depth 2)
+                // Just verify the mechanism works without panicking
+                let _ = revealed;
             }
         }
+    }
     }
 }

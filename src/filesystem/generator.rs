@@ -1,3 +1,4 @@
+#![allow(clippy::collapsible_if)]
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -174,7 +175,7 @@ impl FilesystemGenerator {
         // Add files - mix of static, dynamic, and trapdoors
         // Ensure paradox directories have at least 1-2 files
         let in_paradox = chosen_names.iter().any(|name| PARADOX_NAMES.contains(name));
-        let min_files = if in_paradox { 1 } else { 1 };
+        let min_files = 1;
         let max_files = if in_paradox { 2 } else { 3 };
         let num_files = rng.gen_range(min_files..=max_files);
 
@@ -239,13 +240,13 @@ impl FilesystemGenerator {
                 _ => Era::Explorer,
             };
 
-            if let Some(history) = library.history_for_era(era)
-                && let Some(entry) = history.entries().first()
-            {
+            if let Some(history) = library.history_for_era(era) {
+                if let Some(entry) = history.entries().first() {
                 let filename = format!("{}.LOG", history.name());
                 let content = format!("{}\n\n{}", entry.date(), entry.content());
                 fs.current_node_mut()
                     .add_file(FileNode::new(&filename, &content));
+                }
             }
         }
 

@@ -1,3 +1,5 @@
+#![allow(clippy::items_after_statements)]
+#![allow(clippy::case_sensitive_file_extension_comparisons)]
 use fsck::content::DynamicContent;
 use fsck::filesystem::{DirNode, FileNode, FilesystemGenerator, FilesystemGraph, NodeContent};
 
@@ -169,7 +171,7 @@ fn find_files_recursive_impl<F>(
     for file in fs.current_node().files() {
         if predicate(file) {
             let path = format!("{}/{}", fs.current_path(), file.name());
-            let content = file.content().to_string();
+            let content = file.content().clone();
             found.push((path, content));
         }
     }
@@ -205,10 +207,8 @@ fn test_generated_filesystem_has_victim_files() {
     // Verify victim files have expected content format (date + content)
     for (path, content) in &victim_files {
         assert!(
-            content.contains("-") && content.len() > 20,
-            "Victim file {} should contain date and narrative content, got: {}",
-            path,
-            content
+            content.contains('-') && content.len() > 20,
+            "Victim file {path} should contain date and narrative content, got: {content}"
         );
     }
 }
@@ -270,8 +270,7 @@ fn test_dynamic_files_present() {
         // Should NOT have DYN prefix anymore
         assert!(
             !path.contains("DYN") || !path.contains(char::is_numeric),
-            "Dynamic files should have interesting names, not DYN12345, got: {}",
-            path
+            "Dynamic files should have interesting names, not DYN12345, got: {path}"
         );
     }
 }
@@ -301,15 +300,14 @@ fn test_dynamic_files_have_creepy_names() {
     ];
 
     for (path, _) in &dynamic_files {
-        let filename = path.split('/').last().unwrap_or("");
+        let filename = path.split('/').next_back().unwrap_or("");
         let name_part = filename.split('.').next().unwrap_or("");
 
         // Should match one of the creepy names
         let is_creepy = creepy_names.iter().any(|&n| name_part.contains(n));
         assert!(
             is_creepy,
-            "Dynamic file should have creepy name, got: {} from path: {}",
-            name_part, path
+            "Dynamic file should have creepy name, got: {name_part} from path: {path}"
         );
     }
 }
@@ -369,10 +367,7 @@ fn test_content_mix_in_filesystem() {
     // (30% chance for dynamic files, variable chance for victim files based on depth)
     assert!(
         dynamic_count > 0 || victim_count > 0,
-        "Should have either dynamic files or victim history files. Got static: {}, dynamic: {}, victim: {}",
-        static_count,
-        dynamic_count,
-        victim_count
+        "Should have either dynamic files or victim history files. Got static: {static_count}, dynamic: {dynamic_count}, victim: {victim_count}"
     );
 }
 
@@ -428,15 +423,13 @@ fn test_paradox_enables_infinite_descent() {
     fn find_paradox_path(fs: &mut FilesystemGraph, names: &[&str]) -> Option<Vec<String>> {
         let dirs = fs.list_directories();
         for dir in &dirs {
-            if names.contains(&dir.as_str()) {
-                if fs.change_dir(dir).is_ok() {
-                    let children = fs.list_directories();
-                    if children.contains(dir) {
-                        let _ = fs.change_dir("..");
-                        return Some(vec![dir.clone()]);
-                    }
+            if names.contains(&dir.as_str()) && fs.change_dir(dir).is_ok() {
+                let children = fs.list_directories();
+                if children.contains(dir) {
                     let _ = fs.change_dir("..");
+                    return Some(vec![dir.clone()]);
                 }
+                let _ = fs.change_dir("..");
             }
         }
 

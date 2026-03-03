@@ -1,3 +1,4 @@
+#![allow(clippy::manual_is_multiple_of)]
 use serde::{Deserialize, Serialize};
 
 /// The four layers of horror escalation (tightened for better pacing)
@@ -14,7 +15,8 @@ pub enum EscalationLayer {
 }
 
 impl EscalationLayer {
-    pub fn from_depth(depth: u32) -> Self {
+    #[must_use]
+    pub const fn from_depth(depth: u32) -> Self {
         match depth {
             0..=5 => Self::Surface,
             6..=15 => Self::Corruption,
@@ -55,7 +57,8 @@ pub struct Entity {
 }
 
 impl Entity {
-    pub fn new() -> Self {
+    #[must_use]
+    pub const fn new() -> Self {
         Self {
             current_depth: 0,
             max_depth_reached: 0,
@@ -67,12 +70,13 @@ impl Entity {
         }
     }
 
-    pub fn layer(&self) -> EscalationLayer {
+    #[must_use]
+    pub const fn layer(&self) -> EscalationLayer {
         EscalationLayer::from_depth(self.max_depth_reached + self.depth_modifier)
     }
 
     /// Increase depth modifier (from reading special files)
-    pub fn add_depth(&mut self, amount: u32) {
+    pub const fn add_depth(&mut self, amount: u32) {
         self.depth_modifier += amount;
         // Treat as reaching new depth for mood updates
         let effective_depth = self.max_depth_reached + self.depth_modifier;
@@ -82,15 +86,17 @@ impl Entity {
         }
     }
 
-    pub fn current_mood(&self) -> EntityMood {
+    #[must_use]
+    pub const fn current_mood(&self) -> EntityMood {
         self.mood
     }
 
-    pub fn interaction_count(&self) -> u32 {
+    #[must_use]
+    pub const fn interaction_count(&self) -> u32 {
         self.interaction_count
     }
 
-    pub fn update_depth(&mut self, depth: u32) {
+    pub const fn update_depth(&mut self, depth: u32) {
         self.current_depth = depth;
         if depth > self.max_depth_reached {
             self.max_depth_reached = depth;
@@ -98,7 +104,7 @@ impl Entity {
         }
     }
 
-    pub fn record_interaction(&mut self) {
+    pub const fn record_interaction(&mut self) {
         self.interaction_count += 1;
     }
 
@@ -113,14 +119,14 @@ impl Entity {
     }
 
     /// Record an fsck invocation. Every 3rd use adds depth pressure.
-    pub fn increment_fsck(&mut self) {
+    pub const fn increment_fsck(&mut self) {
         self.fsck_count += 1;
-        if self.fsck_count.is_multiple_of(3) {
+        if self.fsck_count % 3 == 0 {
             self.add_depth(2);
         }
     }
 
-    fn update_mood(&mut self) {
+    const fn update_mood(&mut self) {
         self.mood = match self.layer() {
             EscalationLayer::Surface => {
                 if self.interaction_count < 5 {

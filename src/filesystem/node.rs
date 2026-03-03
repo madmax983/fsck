@@ -6,7 +6,7 @@ use std::cell::RefCell;
 pub enum NodeContent {
     /// Static text content
     Static(String),
-    /// Dynamic content that changes on each read (uses RefCell for interior mutability)
+    /// Dynamic content that changes on each read (uses `RefCell` for interior mutability)
     Dynamic(RefCell<DynamicContent>),
 }
 
@@ -19,6 +19,7 @@ pub struct FileNode {
 }
 
 impl FileNode {
+    #[must_use]
     pub fn new(name: &str, content: &str) -> Self {
         Self {
             name: name.to_uppercase(),
@@ -27,6 +28,7 @@ impl FileNode {
         }
     }
 
+    #[must_use]
     pub fn with_dynamic(name: &str, dynamic: DynamicContent) -> Self {
         Self {
             name: name.to_uppercase(),
@@ -71,7 +73,7 @@ impl FileNode {
         &self.name
     }
 
-    pub fn content_type(&self) -> &NodeContent {
+    pub const fn content_type(&self) -> &NodeContent {
         &self.content
     }
 }
@@ -86,6 +88,7 @@ pub struct DirNode {
 }
 
 impl DirNode {
+    #[must_use]
     pub fn new(name: &str, depth: u32) -> Self {
         Self {
             name: name.to_uppercase(),
@@ -114,14 +117,17 @@ impl DirNode {
         self.is_hidden = false;
     }
 
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    pub fn depth(&self) -> u32 {
+    #[must_use]
+    pub const fn depth(&self) -> u32 {
         self.depth
     }
 
+    #[must_use]
     pub fn files(&self) -> &[FileNode] {
         &self.files
     }

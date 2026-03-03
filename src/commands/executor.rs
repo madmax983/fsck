@@ -1,5 +1,6 @@
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
+use std::fmt::Write;
 
 use super::types::{Command, CommandResult};
 use crate::effects::{CorruptionEffect, CorruptionIntensity};
@@ -14,7 +15,8 @@ pub struct CommandExecutor {
 }
 
 impl CommandExecutor {
-    pub fn new(fs: FilesystemGraph, entity: Entity) -> Self {
+    #[must_use]
+    pub const fn new(fs: FilesystemGraph, entity: Entity) -> Self {
         Self {
             fs,
             entity,
@@ -24,34 +26,36 @@ impl CommandExecutor {
 
     pub fn execute(&mut self, command: Command) -> CommandResult {
         // Record the interaction
-        self.entity.record_command(&format!("{:?}", command));
+        self.entity.record_command(&format!("{command:?}"));
 
         match command {
             Command::Catalog => self.catalog(),
             Command::ChangeDir(path) => self.change_dir(&path),
             Command::Type(file) => self.type_file(&file),
-            Command::Home => self.home(),
+            Command::Home => Self::home(),
             Command::Fsck(args) => self.fsck(&args),
             Command::Hello => self.hello(),
             Command::Who => self.who(),
             Command::Help => self.help(),
             Command::Quit => self.quit(),
-            Command::Run(prog) => self.run(&prog),
+            Command::Run(prog) => Self::run(&prog),
             Command::Unknown(cmd) => {
                 if cmd.is_empty() {
                     CommandResult::success("")
                 } else {
-                    CommandResult::error(&format!("?SYNTAX ERROR: {}\n", cmd))
+                    CommandResult::error(&format!("?SYNTAX ERROR: {cmd}\n"))
                 }
             }
         }
     }
 
+    #[must_use]
     pub fn current_path(&self) -> String {
         self.fs.current_path()
     }
 
-    pub fn entity(&self) -> &Entity {
+    #[must_use]
+    pub const fn entity(&self) -> &Entity {
         &self.entity
     }
 
@@ -60,23 +64,22 @@ impl CommandExecutor {
         output.push_str("\nDISK VOLUME 254\n\n");
 
         for dir in self.fs.list_directories() {
-            output.push_str(&format!(" *{:<15} DIR\n", dir));
+            writeln!(output, " *{dir:<15} DIR").unwrap();
         }
 
         for file in self.fs.current_node().visible_files() {
-            output.push_str(&format!("  {:<15} TXT\n", file.name()));
+            writeln!(output, "  {:<15} TXT", file.name()).unwrap();
         }
 
         output.push('\n');
 
         // Maybe add an interjection
-        if self.responses.should_interject(&self.entity) {
-            if let Some(interjection) = self
+        if self.responses.should_interject(&self.entity)
+            && let Some(interjection) = self
                 .responses
                 .random_interjection(self.entity.current_mood())
-            {
-                output.push_str(&format!("\n{}\n", interjection));
-            }
+        {
+            writeln!(output, "\n{interjection}").unwrap();
         }
 
         #[cfg(feature = "nova")]
@@ -85,7 +88,8 @@ impl CommandExecutor {
                 &self.entity,
                 0xF5C0_0000,
             ) {
-                output.push_str(&format!("\n{}\n", audio_hint));
+                use std::fmt::Write;
+                writeln!(output, "\n{audio_hint}").unwrap();
             }
         }
 
@@ -129,14 +133,14 @@ impl CommandExecutor {
                     self.entity.add_depth(depth_increase);
                 }
 
-                return CommandResult::success(&format!("{}\n", content));
+                return CommandResult::success(&format!("{content}\n"));
             }
         }
 
-        CommandResult::error(&format!("?FILE NOT FOUND: {}\n", filename_upper))
+        CommandResult::error(&format!("?FILE NOT FOUND: {filename_upper}\n"))
     }
 
-    fn home(&self) -> CommandResult {
+    fn home() -> CommandResult {
         // Returns special control sequence (handled by frontend)
         CommandResult::success("\x1B[2J\x1B[H")
     }
@@ -162,7 +166,8 @@ impl CommandExecutor {
         } else {
             let mut report = format!("{} SECTOR(S) RECOVERED:\n", revealed.len());
             for name in &revealed {
-                report.push_str(&format!("  RECOVERED: {}\n", name));
+                use std::fmt::Write;
+                writeln!(report, "  RECOVERED: {name}").unwrap();
             }
             report
         };
@@ -218,7 +223,8 @@ impl CommandExecutor {
             EscalationLayer::Surface => {
                 // Clean, normal disk check
                 let total_sectors = 560;
-                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+
+                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
                 output.push_str("SECTOR 0000-022F: OK\n");
                 output.push_str("VTOC: OK\n");
                 output.push_str("CATALOG: OK\n\n");
@@ -227,9 +233,11 @@ impl CommandExecutor {
                 // Errors appear, numbers don't add up
                 let total_sectors = 560 + rng.gen_range(0..100);
                 let bad_sectors = rng.gen_range(1..=3);
-                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+
+                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
                 output.push_str("SECTOR 0000-00FF: OK\n");
-                output.push_str(&format!("SECTOR 0100-01FF: {} ERROR(S)\n", bad_sectors));
+
+                writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)").unwrap();
                 output.push_str("SECTOR 0200-022F: OK\n");
                 if fsck_count > 1 {
                     output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
@@ -239,20 +247,25 @@ impl CommandExecutor {
             EscalationLayer::Presence => {
                 // Entity interjects mid-scan
                 let total_sectors = rng.gen_range(400..700);
-                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+
+                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
                 output.push_str("SECTOR 0000-00FF: OK\n");
                 output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
                 output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
                 output.push_str("SECTOR 0300-03FF: SECTOR RESISTS READ\n");
-                output.push_str(&format!(
-                    "VTOC: {} ENTRIES (EXPECTED 256)\n\n",
+
+                writeln!(
+                    output,
+                    "VTOC: {} ENTRIES (EXPECTED 256)\n",
                     rng.gen_range(1..=1024)
-                ));
+                )
+                .unwrap();
             }
             EscalationLayer::Infection => {
                 // Heavily corrupted scan
                 let total_sectors = rng.gen_range(0..=99999);
-                output.push_str(&format!("READING {} SECTORS\n", total_sectors));
+
+                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
                 output.push_str("SECTOR 0000-????: ?????\n");
                 output.push_str("SECTOR ????-????: CANNOT\n");
                 output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");
@@ -264,7 +277,7 @@ impl CommandExecutor {
 
     fn hello(&self) -> CommandResult {
         let response = self.responses.hello_response(self.entity.current_mood());
-        CommandResult::success(&format!("{}\n", response))
+        CommandResult::success(&format!("{response}\n"))
     }
 
     fn who(&self) -> CommandResult {
@@ -276,7 +289,7 @@ impl CommandExecutor {
         let response = self
             .responses
             .who_response(self.entity.current_mood(), None);
-        CommandResult::success(&format!("{}\n", response))
+        CommandResult::success(&format!("{response}\n"))
     }
 
     fn help(&self) -> CommandResult {
@@ -284,7 +297,7 @@ impl CommandExecutor {
 
         // Deep layers get meta-horror response
         if let Some(meta_response) = self.responses.help_meta_response(&self.entity) {
-            return CommandResult::success(&format!("{}\n", meta_response));
+            return CommandResult::success(&format!("{meta_response}\n"));
         }
 
         // Surface/Corruption layers get command list, possibly with oddities
@@ -312,10 +325,10 @@ impl CommandExecutor {
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
-        CommandResult::error(&format!("{}\n", response))
+        CommandResult::error(&format!("{response}\n"))
     }
 
-    fn run(&self, _prog: &str) -> CommandResult {
+    fn run(_prog: &str) -> CommandResult {
         // TODO: BASIC interpreter
         CommandResult::error("?PROGRAM NOT FOUND\n")
     }

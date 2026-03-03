@@ -38,7 +38,7 @@ impl GameState {
     }
 
     #[must_use]
-    pub fn entity_mut(&mut self) -> &mut Entity {
+    pub const fn entity_mut(&mut self) -> &mut Entity {
         &mut self.entity
     }
 
@@ -57,7 +57,7 @@ impl GameState {
         self.last_played = Self::current_timestamp();
     }
 
-    pub fn update_depth(&mut self, depth: u32) {
+    pub const fn update_depth(&mut self, depth: u32) {
         if depth > self.max_depth_reached {
             self.max_depth_reached = depth;
         }

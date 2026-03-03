@@ -6,6 +6,7 @@ pub struct CommandResult {
 }
 
 impl CommandResult {
+    #[must_use]
     pub fn success(output: &str) -> Self {
         Self {
             output: output.to_string(),
@@ -13,6 +14,7 @@ impl CommandResult {
         }
     }
 
+    #[must_use]
     pub fn error(message: &str) -> Self {
         Self {
             output: message.to_string(),
@@ -20,17 +22,19 @@ impl CommandResult {
         }
     }
 
+    #[must_use]
     pub fn output(&self) -> &str {
         &self.output
     }
 
-    pub fn is_error(&self) -> bool {
+    #[must_use]
+    pub const fn is_error(&self) -> bool {
         self.is_error
     }
 }
 
 /// Commands recognized by the system
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
     /// List directory contents (CATALOG, DIR, LS)
     Catalog,
@@ -57,29 +61,30 @@ pub enum Command {
 }
 
 impl Command {
+    #[must_use]
     pub fn from_input(command: &str, args: &[String]) -> Self {
         match command {
-            "CATALOG" | "DIR" | "LS" => Command::Catalog,
+            "CATALOG" | "DIR" | "LS" => Self::Catalog,
             "CD" | "CHDIR" => {
                 let path = args.first().cloned().unwrap_or_default();
-                Command::ChangeDir(path)
+                Self::ChangeDir(path)
             }
             "TYPE" | "CAT" => {
                 let file = args.first().cloned().unwrap_or_default();
-                Command::Type(file)
+                Self::Type(file)
             }
             "RUN" => {
                 let prog = args.first().cloned().unwrap_or_default();
-                Command::Run(prog)
+                Self::Run(prog)
             }
-            "HOME" | "CLS" | "CLEAR" => Command::Home,
-            "FSCK" => Command::Fsck(args.to_vec()),
-            "HELLO" | "HI" => Command::Hello,
-            "WHO" | "WHOAMI" => Command::Who,
-            "HELP" | "?" => Command::Help,
-            "QUIT" | "EXIT" | "BYE" => Command::Quit,
-            "" => Command::Unknown(String::new()),
-            other => Command::Unknown(other.to_string()),
+            "HOME" | "CLS" | "CLEAR" => Self::Home,
+            "FSCK" => Self::Fsck(args.to_vec()),
+            "HELLO" | "HI" => Self::Hello,
+            "WHO" | "WHOAMI" => Self::Who,
+            "HELP" | "?" => Self::Help,
+            "QUIT" | "EXIT" | "BYE" => Self::Quit,
+            "" => Self::Unknown(String::new()),
+            other => Self::Unknown(other.to_string()),
         }
     }
 }
