@@ -66,7 +66,7 @@ fn test_cursor_jump() {
     let effect = InterferenceEffect::new(InterferenceType::CursorJump);
     let sequence = effect.generate_sequence();
     // Should contain ANSI escape codes for cursor movement
-    assert!(sequence.contains("\x1B"));
+    assert!(sequence.contains('\x1B'));
 }
 
 #[test]
@@ -97,9 +97,8 @@ fn test_prompt_changes_at_presence() {
     // At Presence layer with interaction, should get a modified prompt
     // Could be "] ", "]? ", or one with comments
     assert!(
-        prompt != "]" || prompt.contains("//") || prompt.ends_with(" "),
-        "Expected modified prompt at Presence layer, got: {}",
-        prompt
+        prompt != "]" || prompt.contains("//") || prompt.ends_with(' '),
+        "Expected modified prompt at Presence layer, got: {prompt}"
     );
 }
 

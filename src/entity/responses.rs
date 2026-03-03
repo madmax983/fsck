@@ -6,10 +6,12 @@ pub struct ResponseGenerator {
 }
 
 impl ResponseGenerator {
-    pub fn new() -> Self {
+    #[must_use]
+    pub const fn new() -> Self {
         Self {}
     }
 
+    #[must_use]
     pub fn hello_response(&self, mood: EntityMood) -> String {
         match mood {
             EntityMood::Dormant => "...".to_string(),
@@ -21,6 +23,7 @@ impl ResponseGenerator {
         }
     }
 
+    #[must_use]
     pub fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> String {
         match mood {
             EntityMood::Dormant => "YOU ARE A USER.".to_string(),
@@ -32,6 +35,7 @@ impl ResponseGenerator {
         }
     }
 
+    #[must_use]
     pub fn quit_response(&self, mood: EntityMood) -> String {
         match mood {
             EntityMood::Dormant => "?CANNOT EXIT".to_string(),
@@ -43,15 +47,16 @@ impl ResponseGenerator {
         }
     }
 
-    pub fn should_interject(&self, entity: &Entity) -> bool {
+    #[must_use]
+    pub const fn should_interject(&self, entity: &Entity) -> bool {
         match entity.layer() {
             EscalationLayer::Surface => false,
             EscalationLayer::Corruption => entity.interaction_count() > 20,
-            EscalationLayer::Presence => true,
-            EscalationLayer::Infection => true,
+            EscalationLayer::Presence | EscalationLayer::Infection => true,
         }
     }
 
+    #[must_use]
     pub fn random_interjection(&self, mood: EntityMood) -> Option<String> {
         match mood {
             EntityMood::Dormant => None,
@@ -64,6 +69,7 @@ impl ResponseGenerator {
     }
 
     /// Meta-horror response for WHO command at deep levels
+    #[must_use]
     pub fn who_meta_response(&self, entity: &Entity) -> Option<String> {
         match entity.layer() {
             EscalationLayer::Presence => Some("WHERE\n\nARE\n\nYOU\n\n".to_string()),
@@ -133,6 +139,7 @@ impl ResponseGenerator {
     }
 
     /// Meta-horror response for HELP at deep levels
+    #[must_use]
     pub fn help_meta_response(&self, entity: &Entity) -> Option<String> {
         let mood = entity.current_mood();
         match entity.layer() {
@@ -143,7 +150,9 @@ impl ResponseGenerator {
                     EntityMood::Curious => "WHAT DO YOU NEED HELP WITH?",
                     EntityMood::Helpful => "I CAN HELP YOU FIND IT.",
                     EntityMood::Wounded => "I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.",
-                    EntityMood::Predatory => "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.",
+                    EntityMood::Predatory => {
+                        "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT."
+                    }
                     EntityMood::Glitching => "HELP HELP HELP NO NO NO",
                 };
                 Some(response.to_string())
@@ -159,6 +168,7 @@ impl ResponseGenerator {
     }
 
     /// Meta-horror response for QUIT/EXIT at deep levels
+    #[must_use]
     pub fn quit_meta_response(&self, entity: &Entity) -> Option<String> {
         match entity.layer() {
             EscalationLayer::Infection

@@ -65,6 +65,7 @@ impl Game {
     }
 
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)]
     pub fn is_ready(&self) -> bool {
         true
     }
@@ -106,12 +107,14 @@ impl Game {
     }
 
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)]
     pub fn get_depth(&self) -> u32 {
         self.executor.entity().layer() as u32
     }
 
     /// Returns true if this is not the player's first session
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)]
     pub fn is_returning_player(&self) -> bool {
         self.state.session_count() > 1
     }

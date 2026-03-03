@@ -23,7 +23,8 @@ impl DynamicContent {
     /// * `base` - The base text to repeat (repeated count times per read)
     ///
     /// # Returns
-    /// A counter starting at 0 that increments with each generate() call
+    /// A counter starting at 0 that increments with each `generate()` call
+    #[must_use]
     pub fn counter(base: &str) -> Self {
         Self::Counter {
             base: base.to_string(),
@@ -36,7 +37,8 @@ impl DynamicContent {
     /// # Returns
     /// A dynamic timestamp that returns the current time on each read.
     /// At higher filesystem depths, the format becomes corrupted.
-    pub fn timestamp() -> Self {
+    #[must_use]
+    pub const fn timestamp() -> Self {
         Self::Timestamp
     }
 
@@ -49,6 +51,7 @@ impl DynamicContent {
     /// # Returns
     /// A generator that produces deterministically corrupted text using an
     /// internal seed that increments per call
+    #[must_use]
     pub fn corrupted(text: &str, intensity: f32) -> Self {
         Self::Corrupted {
             text: text.to_string(),

@@ -1,3 +1,4 @@
+#![allow(clippy::too_many_lines)]
 use super::{Era, VictimEntry, VictimHistory};
 
 /// Static content library containing pre-written histories and generic files
@@ -8,6 +9,7 @@ pub struct ContentLibrary {
 
 impl ContentLibrary {
     /// Creates a new content library with all pre-written content.
+    #[must_use]
     pub fn new() -> Self {
         let histories = Self::create_histories();
         let generic_files = Self::create_generic_files();
@@ -19,6 +21,7 @@ impl ContentLibrary {
     }
 
     /// Returns all victim histories.
+    #[must_use]
     pub fn all_histories(&self) -> &[VictimHistory] {
         &self.histories
     }
@@ -30,11 +33,13 @@ impl ContentLibrary {
     ///
     /// # Returns
     /// The first history matching the era, or None if not found
+    #[must_use]
     pub fn history_for_era(&self, era: Era) -> Option<&VictimHistory> {
         self.histories.iter().find(|h| h.era() == era)
     }
 
     /// Returns the list of generic files as (name, content) tuples.
+    #[must_use]
     pub fn generic_files(&self) -> &[(&'static str, &'static str)] {
         &self.generic_files
     }
@@ -46,6 +51,7 @@ impl ContentLibrary {
     ///
     /// # Returns
     /// The file content, or None if not found
+    #[must_use]
     pub fn file_content(&self, name: &str) -> Option<&'static str> {
         self.generic_files
             .iter()

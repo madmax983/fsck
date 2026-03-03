@@ -5,7 +5,7 @@ pub struct ParsedInput {
     pub args: Vec<String>,
 }
 
-/// Parser for Apple IIe style command input
+/// Parser for Apple `IIe` style command input
 pub struct InputParser;
 
 impl InputParser {
