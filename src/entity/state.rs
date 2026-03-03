@@ -102,6 +102,10 @@ impl Entity {
         self.interaction_count += 1;
     }
 
+    pub fn commands_seen(&self) -> &[String] {
+        &self.commands_seen
+    }
+
     pub fn record_command(&mut self, command: &str) {
         self.commands_seen.push(command.to_string());
         self.record_interaction();

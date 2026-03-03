@@ -35,6 +35,7 @@ impl CommandExecutor {
             Command::Hello => self.hello(),
             Command::Who => self.who(),
             Command::Help => self.help(),
+            Command::History => self.history(),
             Command::Quit => self.quit(),
             Command::Run(prog) => self.run(&prog),
             Command::Unknown(cmd) => {
@@ -279,6 +280,31 @@ impl CommandExecutor {
         CommandResult::success(&format!("{}\n", response))
     }
 
+    fn history(&self) -> CommandResult {
+        #[cfg(feature = "nova")]
+        {
+            let seed = 0xF5C0_0000u64; // Base seed for determinism
+            let output = crate::experimental::HistoryReplay::generate(&self.entity, seed);
+            return CommandResult::success(&output);
+        }
+
+        #[cfg(not(feature = "nova"))]
+        {
+            use std::fmt::Write;
+            let commands = self.entity.commands_seen();
+            if commands.is_empty() {
+                return CommandResult::success("NO HISTORY FOUND\n");
+            }
+            let mut output = String::new();
+            output.push_str("COMMAND HISTORY LOG:\n\n");
+            for (i, cmd) in commands.iter().enumerate() {
+                let _ = writeln!(output, "{:04} {}", i + 1, cmd);
+            }
+            output.push('\n');
+            CommandResult::success(&output)
+        }
+    }
+
     fn help(&self) -> CommandResult {
         let layer = self.entity.layer();
 
@@ -294,6 +320,7 @@ impl CommandExecutor {
         help_text.push_str("  TYPE     - DISPLAY FILE\n");
         help_text.push_str("  HOME     - CLEAR SCREEN\n");
         help_text.push_str("  FSCK     - CHECK FILESYSTEM\n");
+        help_text.push_str("  HISTORY  - VIEW COMMAND LOG\n");
 
         if matches!(layer, EscalationLayer::Corruption) {
             help_text.push_str("  ESCAPE   - ???\n");

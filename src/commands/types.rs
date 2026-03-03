@@ -50,6 +50,8 @@ pub enum Command {
     Who,
     /// Request help
     Help,
+    /// View command history
+    History,
     /// Attempt to quit
     Quit,
     /// Unknown command
@@ -77,6 +79,7 @@ impl Command {
             "HELLO" | "HI" => Command::Hello,
             "WHO" | "WHOAMI" => Command::Who,
             "HELP" | "?" => Command::Help,
+            "HISTORY" | "REMEMBRANCE" => Command::History,
             "QUIT" | "EXIT" | "BYE" => Command::Quit,
             "" => Command::Unknown(String::new()),
             other => Command::Unknown(other.to_string()),
