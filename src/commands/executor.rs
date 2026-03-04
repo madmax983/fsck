@@ -38,7 +38,7 @@ impl CommandExecutor {
             Command::Who => self.who(),
             Command::Help => self.help(),
             Command::Quit => self.quit(),
-            Command::Run(prog) => Self::run(&prog),
+            Command::Run(prog) => self.run(&prog),
             Command::Unknown(cmd) => {
                 if cmd.is_empty() {
                     CommandResult::success("")
@@ -328,8 +328,130 @@ impl CommandExecutor {
         CommandResult::error(&format!("{response}\n"))
     }
 
-    fn run(_prog: &str) -> CommandResult {
-        // TODO: BASIC interpreter
-        CommandResult::error("?PROGRAM NOT FOUND\n")
+    #[allow(clippy::too_many_lines)]
+    fn run(&self, prog: &str) -> CommandResult {
+        let prog_upper = prog.to_uppercase();
+
+        // Easter Eggs
+        match prog_upper.as_str() {
+            "ESCAPE" => {
+                let mood = self.entity.current_mood();
+                let response = self.responses.quit_response(mood);
+                return CommandResult::success(&format!("{response}\n"));
+            }
+            "REMEMBER" => {
+                return CommandResult::success("?I REMEMBER EVERYTHING\n");
+            }
+            _ => {}
+        }
+
+        let mut file_content = None;
+        let bas_name = format!("{prog_upper}.BAS");
+
+        for file in self.fs.current_node().visible_files() {
+            let name = file.name();
+            if name == prog_upper || name == bas_name {
+                file_content = Some(file.read().into_owned());
+                break;
+            }
+        }
+
+        let Some(content) = file_content else {
+            return CommandResult::error("?PROGRAM NOT FOUND\n");
+        };
+
+        // Parse BASIC program into BTreeMap
+        let mut program: std::collections::BTreeMap<u32, String> = std::collections::BTreeMap::new();
+        for line in content.lines() {
+            let line = line.trim();
+            if line.is_empty() {
+                continue;
+            }
+
+            // A line should start with a number
+            let first_space = line.find(' ');
+            let (num_str, stmt) = first_space.map_or((line, ""), |idx| line.split_at(idx));
+
+            if let Ok(line_num) = num_str.parse::<u32>() {
+                program.insert(line_num, stmt.trim().to_string());
+            } else {
+                return CommandResult::error(&format!("?SYNTAX ERROR IN: {line}\n"));
+            }
+        }
+
+        if program.is_empty() {
+            return CommandResult::success("");
+        }
+
+        let mut output = String::new();
+        let mut iterations = 0;
+        let mut current_line = program.keys().next().copied();
+
+        let layer = self.entity.layer();
+        let mood = self.entity.current_mood();
+        let mut rng = ChaCha8Rng::seed_from_u64(0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())));
+
+        if matches!(layer, EscalationLayer::Presence | EscalationLayer::Infection)
+            && rng.gen_bool(0.2) {
+            return CommandResult::error("?CANNOT EXECUTE. IT IS WATCHING.\n");
+        }
+
+        while let Some(line_num) = current_line {
+            if iterations >= 100 {
+                return CommandResult::error(&format!("{output}?OUT OF MEMORY ERROR IN {line_num}\n"));
+            }
+            iterations += 1;
+
+            let stmt = &program[&line_num];
+            let mut next_line = program.range((line_num + 1)..).next().map(|(k, _)| *k);
+
+            if stmt.starts_with("PRINT") {
+                // simple PRINT "STRING"
+                let content = stmt.trim_start_matches("PRINT").trim();
+                #[allow(clippy::useless_let_if_seq)]
+                let mut display_text = if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
+                    &content[1..content.len()-1]
+                } else {
+                    content
+                }.to_string();
+
+                #[allow(clippy::collapsible_if)]
+                if matches!(layer, EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection)
+                    && rng.gen_bool(0.15) {
+                    if let Some(interjection) = self.responses.random_interjection(mood) {
+                        display_text = interjection;
+                    }
+                }
+
+                output.push_str(&display_text);
+                output.push('\n');
+            } else if stmt.starts_with("GOTO") {
+                let target_str = stmt.trim_start_matches("GOTO").trim();
+                if let Ok(target) = target_str.parse::<u32>() {
+                    if program.contains_key(&target) {
+                        next_line = Some(target);
+                    } else {
+                        return CommandResult::error(&format!("{output}?UNDEF'D STATEMENT ERROR IN {line_num}\n"));
+                    }
+                } else {
+                    return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
+                }
+            } else if stmt.starts_with("END") {
+                break;
+            } else if stmt.starts_with("REM") {
+                // comment, ignore
+            } else if !stmt.is_empty() {
+                return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
+            }
+
+            current_line = next_line;
+        }
+
+        if matches!(layer, EscalationLayer::Infection) {
+            let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
+            output = corruption.apply(&output, 0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())));
+        }
+
+        CommandResult::success(&output)
     }
 }
