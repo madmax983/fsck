@@ -274,17 +274,17 @@ fn test_generated_filesystem_has_hidden_content() {
     // Navigate deeper where hidden content lives
     let dirs = fs.list_directories();
     if let Some(d1) = dirs.first() {
-            if fs.change_dir(d1).is_ok() {
-        let dirs = fs.list_directories();
-        if let Some(d2) = dirs.first() {
-            if fs.change_dir(d2).is_ok() {
-                // At depth 2+, try revealing hidden content
-                let revealed = fs.reveal_hidden_in_current();
-                // May or may not have hidden content (25% chance at depth 2)
-                // Just verify the mechanism works without panicking
-                let _ = revealed;
+        if fs.change_dir(d1).is_ok() {
+            let dirs = fs.list_directories();
+            if let Some(d2) = dirs.first() {
+                if fs.change_dir(d2).is_ok() {
+                    // At depth 2+, try revealing hidden content
+                    let revealed = fs.reveal_hidden_in_current();
+                    // May or may not have hidden content (25% chance at depth 2)
+                    // Just verify the mechanism works without panicking
+                    let _ = revealed;
+                }
             }
         }
-    }
     }
 }
