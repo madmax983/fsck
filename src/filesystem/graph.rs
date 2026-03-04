@@ -50,7 +50,13 @@ impl FilesystemGraph {
             return "/".to_string();
         }
 
-        let mut path = String::new();
+        // Calculate exact required capacity to avoid reallocations
+        let capacity: usize = self.path_stack[1..]
+            .iter()
+            .map(|&idx| 1 + self.graph[idx].name().len()) // 1 for '/' + length of name
+            .sum();
+
+        let mut path = String::with_capacity(capacity);
         for &idx in &self.path_stack[1..] {
             path.push('/');
             path.push_str(self.graph[idx].name());
