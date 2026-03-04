@@ -151,7 +151,22 @@ impl FilesystemGenerator {
             return;
         }
 
-        // Add 1-4 directories at this level
+        let chosen_names = Self::add_directories(fs, rng);
+        Self::add_files(fs, rng, library, current_depth, &chosen_names);
+        Self::add_victim_files(fs, rng, library, current_depth);
+        Self::add_hidden_content(fs, rng, current_depth);
+
+        // Recursively populate children
+        let children = fs.list_directories();
+        for child_name in children {
+            if fs.change_dir(&child_name).is_ok() {
+                Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
+                let _ = fs.change_dir("..");
+            }
+        }
+    }
+
+    fn add_directories<'a>(fs: &mut FilesystemGraph, rng: &mut ChaCha8Rng) -> Vec<&'a str> {
         let num_dirs = rng.gen_range(1..=4);
         let mut chosen_names: Vec<&str> = Vec::new();
 
@@ -171,8 +186,16 @@ impl FilesystemGenerator {
                 }
             }
         }
+        chosen_names
+    }
 
-        // Add files - mix of static, dynamic, and trapdoors
+    fn add_files(
+        fs: &mut FilesystemGraph,
+        rng: &mut ChaCha8Rng,
+        library: &ContentLibrary,
+        current_depth: u32,
+        chosen_names: &[&str],
+    ) {
         // Ensure paradox directories have at least 1-2 files
         let in_paradox = chosen_names.iter().any(|name| PARADOX_NAMES.contains(name));
         let min_files = 1;
@@ -230,7 +253,14 @@ impl FilesystemGenerator {
 
             fs.current_node_mut().add_file(file);
         }
+    }
 
+    fn add_victim_files(
+        fs: &mut FilesystemGraph,
+        rng: &mut ChaCha8Rng,
+        library: &ContentLibrary,
+        current_depth: u32,
+    ) {
         // Occasionally place victim history files (deeper = more likely)
         if current_depth >= 3 && rng.gen_bool(0.4) {
             let era = match current_depth {
@@ -242,14 +272,16 @@ impl FilesystemGenerator {
 
             if let Some(history) = library.history_for_era(era) {
                 if let Some(entry) = history.entries().first() {
-                let filename = format!("{}.LOG", history.name());
-                let content = format!("{}\n\n{}", entry.date(), entry.content());
-                fs.current_node_mut()
-                    .add_file(FileNode::new(&filename, &content));
+                    let filename = format!("{}.LOG", history.name());
+                    let content = format!("{}\n\n{}", entry.date(), entry.content());
+                    fs.current_node_mut()
+                        .add_file(FileNode::new(&filename, &content));
                 }
             }
         }
+    }
 
+    fn add_hidden_content(fs: &mut FilesystemGraph, rng: &mut ChaCha8Rng, current_depth: u32) {
         // Place hidden directories at depth 2+ (25% chance per level)
         if current_depth >= 2 && rng.gen_bool(0.25) {
             let name = HIDDEN_DIR_NAMES[rng.gen_range(0..HIDDEN_DIR_NAMES.len())];
@@ -266,15 +298,6 @@ impl FilesystemGenerator {
             let (name, content) = HIDDEN_FILES[rng.gen_range(0..HIDDEN_FILES.len())];
             fs.current_node_mut()
                 .add_file(FileNode::hidden(name, content));
-        }
-
-        // Recursively populate children
-        let children = fs.list_directories();
-        for child_name in children {
-            if fs.change_dir(&child_name).is_ok() {
-                Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
-                let _ = fs.change_dir("..");
-            }
         }
     }
 }
