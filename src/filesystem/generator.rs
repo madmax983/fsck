@@ -242,10 +242,10 @@ impl FilesystemGenerator {
 
             if let Some(history) = library.history_for_era(era) {
                 if let Some(entry) = history.entries().first() {
-                let filename = format!("{}.LOG", history.name());
-                let content = format!("{}\n\n{}", entry.date(), entry.content());
-                fs.current_node_mut()
-                    .add_file(FileNode::new(&filename, &content));
+                    let filename = format!("{}.LOG", history.name());
+                    let content = format!("{}\n\n{}", entry.date(), entry.content());
+                    fs.current_node_mut()
+                        .add_file(FileNode::new(&filename, &content));
                 }
             }
         }

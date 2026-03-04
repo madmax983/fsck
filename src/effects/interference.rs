@@ -41,7 +41,9 @@ impl InterferenceEffect {
         match self.effect_type {
             InterferenceType::Echo => {
                 let repeats = rng.r#gen_range(2..=4);
-                let mut result = String::new();
+                // Pre-allocate assuming max 3 spaces per repeat
+                let capacity = text.len() * repeats + (repeats.saturating_sub(1)) * 3;
+                let mut result = String::with_capacity(capacity);
                 for i in 0..repeats {
                     result.push_str(text);
                     if i < repeats - 1 {
@@ -51,7 +53,9 @@ impl InterferenceEffect {
                 result
             }
             InterferenceType::LineNoise => {
-                let mut result = String::new();
+                // Pre-allocate assuming ~1 noise char per 5 chars, plus max multibyte width
+                let capacity = text.len() + (text.len() / 5) * 4;
+                let mut result = String::with_capacity(capacity);
                 let noise_chars = ['░', '▒', '▓', '█', '·', '∙'];
 
                 for (i, ch) in text.chars().enumerate() {
