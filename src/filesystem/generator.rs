@@ -167,8 +167,9 @@ impl FilesystemGenerator {
     }
 
     fn add_directories<'a>(fs: &mut FilesystemGraph, rng: &mut ChaCha8Rng) -> Vec<&'a str> {
-        let num_dirs = rng.gen_range(1..=4);
-        let mut chosen_names: Vec<&str> = Vec::new();
+        let num_dirs: usize = rng.gen_range(1..=4);
+        // Pre-allocate vector to avoid reallocations during directory generation
+        let mut chosen_names: Vec<&str> = Vec::with_capacity(num_dirs);
 
         for _ in 0..num_dirs {
             let name = DIR_NAMES[rng.gen_range(0..DIR_NAMES.len())];
