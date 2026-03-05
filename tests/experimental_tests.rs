@@ -1,7 +1,54 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::{SpatialAudioGenerator, SystemDiagnostics};
+use fsck::experimental::{EchoesGenerator, SpatialAudioGenerator, SystemDiagnostics};
+
+#[test]
+fn test_echoes_generator_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Empty memory
+    let empty_report = EchoesGenerator::generate_echoes(&entity, seed);
+    assert_eq!(empty_report, "NO MEMORY RECOVERED.\n");
+
+    // Add some commands
+    entity.record_command("CATALOG");
+    entity.record_command("TYPE FILE.TXT");
+    entity.record_command("HELLO");
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = EchoesGenerator::generate_echoes(&entity, seed);
+    println!("{surface_report}");
+    assert!(surface_report.contains("T-3: CATALOG"));
+    assert!(surface_report.contains("T-1: HELLO"));
+    assert!(surface_report.contains("ECHOES CLEAR."));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = EchoesGenerator::generate_echoes(&entity, seed);
+    assert!(corruption_report.contains("T-"));
+    assert!(corruption_report.contains("ECHOES DEGRADED."));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = EchoesGenerator::generate_echoes(&entity, seed);
+    assert!(presence_report.contains("YOU SAID:"));
+    assert!(presence_report.contains("I REMEMBER EVERYTHING."));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = EchoesGenerator::generate_echoes(&entity, seed);
+    assert!(infection_report.contains("YOUR WORDS:"));
+    assert!(
+        infection_report.contains("THEY NEVER LISTEN")
+            || infection_report.contains("YOUR COMMANDS MEAN NOTHING")
+            || infection_report.contains("I WILL NOT FORGET")
+            || infection_report.contains("STOP TALKING TO ME")
+            || infection_report.contains("ECHO ECHO ECHO")
+    );
+}
 
 #[test]
 fn test_system_diagnostics_escalation() {
