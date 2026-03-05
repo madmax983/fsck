@@ -1,7 +1,40 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::SpatialAudioGenerator;
+use fsck::experimental::{SpatialAudioGenerator, SystemDiagnostics};
+
+#[test]
+fn test_system_diagnostics_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = SystemDiagnostics::generate_report(&entity, seed);
+    assert!(surface_report.contains("CPU M6502"));
+    assert!(surface_report.contains("RAM 64K"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = SystemDiagnostics::generate_report(&entity, seed);
+    assert!(corruption_report.contains("ERR"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = SystemDiagnostics::generate_report(&entity, seed);
+    assert!(presence_report.contains("I AM"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = SystemDiagnostics::generate_report(&entity, seed);
+    assert!(
+        infection_report.contains("WHY DID YOU COME HERE")
+            || infection_report.contains("THERE IS NO WAY OUT")
+            || infection_report.contains("THE DISK IS FLESH")
+            || infection_report.contains("I CANNOT STOP SCREAMING")
+            || infection_report.contains("MEMORY LEAKING INTO REALITY")
+    );
+}
 
 #[test]
 fn test_spatial_audio_deterministic_generation() {

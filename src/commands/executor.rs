@@ -40,6 +40,18 @@ impl CommandExecutor {
             Command::Quit => self.quit(),
             Command::Run(prog) => self.run(&prog),
             Command::Unknown(cmd) => {
+                #[cfg(feature = "nova")]
+                {
+                    let cmd_upper = cmd.to_uppercase();
+                    if cmd_upper == "DIAG" || cmd_upper == "SYS" {
+                        let report = crate::experimental::SystemDiagnostics::generate_report(
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(&format!("{report}\n"));
+                    }
+                }
+
                 if cmd.is_empty() {
                     CommandResult::success("")
                 } else {
