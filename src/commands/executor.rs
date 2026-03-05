@@ -373,7 +373,8 @@ impl CommandExecutor {
         };
 
         // Parse BASIC program into BTreeMap
-        let mut program: std::collections::BTreeMap<u32, String> = std::collections::BTreeMap::new();
+        let mut program: std::collections::BTreeMap<u32, String> =
+            std::collections::BTreeMap::new();
         for line in content.lines() {
             let line = line.trim();
             if line.is_empty() {
@@ -401,16 +402,23 @@ impl CommandExecutor {
 
         let layer = self.entity.layer();
         let mood = self.entity.current_mood();
-        let mut rng = ChaCha8Rng::seed_from_u64(0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())));
+        let mut rng = ChaCha8Rng::seed_from_u64(
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+        );
 
-        if matches!(layer, EscalationLayer::Presence | EscalationLayer::Infection)
-            && rng.gen_bool(0.2) {
+        if matches!(
+            layer,
+            EscalationLayer::Presence | EscalationLayer::Infection
+        ) && rng.gen_bool(0.2)
+        {
             return CommandResult::error("?CANNOT EXECUTE. IT IS WATCHING.\n");
         }
 
         while let Some(line_num) = current_line {
             if iterations >= 100 {
-                return CommandResult::error(&format!("{output}?OUT OF MEMORY ERROR IN {line_num}\n"));
+                return CommandResult::error(&format!(
+                    "{output}?OUT OF MEMORY ERROR IN {line_num}\n"
+                ));
             }
             iterations += 1;
 
@@ -421,15 +429,22 @@ impl CommandExecutor {
                 // simple PRINT "STRING"
                 let content = stmt.trim_start_matches("PRINT").trim();
                 #[allow(clippy::useless_let_if_seq)]
-                let mut display_text = if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
-                    &content[1..content.len()-1]
-                } else {
-                    content
-                }.to_string();
+                let mut display_text =
+                    if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
+                        &content[1..content.len() - 1]
+                    } else {
+                        content
+                    }
+                    .to_string();
 
                 #[allow(clippy::collapsible_if)]
-                if matches!(layer, EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection)
-                    && rng.gen_bool(0.15) {
+                if matches!(
+                    layer,
+                    EscalationLayer::Corruption
+                        | EscalationLayer::Presence
+                        | EscalationLayer::Infection
+                ) && rng.gen_bool(0.15)
+                {
                     if let Some(interjection) = self.responses.random_interjection(mood) {
                         display_text = interjection;
                     }
@@ -443,7 +458,9 @@ impl CommandExecutor {
                     if program.contains_key(&target) {
                         next_line = Some(target);
                     } else {
-                        return CommandResult::error(&format!("{output}?UNDEF'D STATEMENT ERROR IN {line_num}\n"));
+                        return CommandResult::error(&format!(
+                            "{output}?UNDEF'D STATEMENT ERROR IN {line_num}\n"
+                        ));
                     }
                 } else {
                     return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
@@ -461,7 +478,10 @@ impl CommandExecutor {
 
         if matches!(layer, EscalationLayer::Infection) {
             let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
-            output = corruption.apply(&output, 0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())));
+            output = corruption.apply(
+                &output,
+                0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+            );
         }
 
         CommandResult::success(&output)
