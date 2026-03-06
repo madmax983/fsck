@@ -1,7 +1,7 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::{SpatialAudioGenerator, SystemDiagnostics};
+use fsck::experimental::{NetworkScanner, SpatialAudioGenerator, SystemDiagnostics};
 
 #[test]
 fn test_system_diagnostics_escalation() {
@@ -98,5 +98,40 @@ fn test_spatial_audio_changes_with_interaction() {
     assert!(
         changed,
         "Anomaly should change as interactions increase (modifying the seeded rng state)"
+    );
+}
+
+#[test]
+fn test_network_scanner_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = NetworkScanner::generate_netstat(&entity, seed);
+    assert!(surface_report.contains("127.0.0.1:80"));
+    assert!(surface_report.contains("127.0.0.1:49152"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = NetworkScanner::generate_netstat(&entity, seed);
+    assert!(corruption_report.contains("UNKNOWN"));
+    assert!(corruption_report.contains("???"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = NetworkScanner::generate_netstat(&entity, seed);
+    assert!(presence_report.contains("ME:HERE"));
+    assert!(presence_report.contains("FLESH:80"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = NetworkScanner::generate_netstat(&entity, seed);
+    assert!(
+        infection_report.contains("THEY:LEFT")
+            || infection_report.contains("NO:ESCAPE")
+            || infection_report.contains("BLOOD:00")
+            || infection_report.contains("SCREAM:LOUD")
+            || infection_report.contains("MEMORY:LOST")
     );
 }

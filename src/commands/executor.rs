@@ -50,6 +50,14 @@ impl CommandExecutor {
                         );
                         return CommandResult::success(&format!("{report}\n"));
                     }
+                    #[cfg(feature = "nova")]
+                    if cmd_upper == "NETSTAT" {
+                        let report = crate::experimental::NetworkScanner::generate_netstat(
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(&format!("{report}\n"));
+                    }
                 }
 
                 if cmd.is_empty() {
