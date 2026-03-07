@@ -67,7 +67,9 @@ impl MetadataCorruptor {
         }
 
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
-        let mut result = String::new();
+        // ⚡ Bolt Optimization: Pre-allocate String capacity based on the original length
+        // to eliminate dynamic heap reallocations as the corrupted string is constructed.
+        let mut result = String::with_capacity(original.len());
 
         let corruption_rate = match self.depth {
             21..=35 => 0.15,
