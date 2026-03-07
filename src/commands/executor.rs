@@ -340,39 +340,33 @@ impl CommandExecutor {
         CommandResult::error(&format!("{response}\n"))
     }
 
-    #[allow(clippy::too_many_lines)]
-    fn run(&self, prog: &str) -> CommandResult {
-        let prog_upper = prog.to_uppercase();
-
-        // Easter Eggs
-        match prog_upper.as_str() {
+    fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
+        match prog_upper {
             "ESCAPE" => {
                 let mood = self.entity.current_mood();
                 let response = self.responses.quit_response(mood);
-                return CommandResult::success(&format!("{response}\n"));
+                Some(CommandResult::success(&format!("{response}\n")))
             }
-            "REMEMBER" => {
-                return CommandResult::success("?I REMEMBER EVERYTHING\n");
-            }
-            _ => {}
+            "REMEMBER" => Some(CommandResult::success("?I REMEMBER EVERYTHING\n")),
+            _ => None,
         }
+    }
 
-        let mut file_content = None;
+    fn find_program_content(&self, prog_upper: &str) -> Option<String> {
         let bas_name = format!("{prog_upper}.BAS");
 
         for file in self.fs.current_node().visible_files() {
             let name = file.name();
             if name == prog_upper || name == bas_name {
-                file_content = Some(file.read().into_owned());
-                break;
+                return Some(file.read().into_owned());
             }
         }
+        None
+    }
 
-        let Some(content) = file_content else {
-            return CommandResult::error("?PROGRAM NOT FOUND\n");
-        };
-
-        // Parse BASIC program into BTreeMap
+    fn parse_basic_program(
+        content: &str,
+    ) -> Result<std::collections::BTreeMap<u32, String>, String> {
         let mut program: std::collections::BTreeMap<u32, String> =
             std::collections::BTreeMap::new();
         for line in content.lines() {
@@ -388,10 +382,16 @@ impl CommandExecutor {
             if let Ok(line_num) = num_str.parse::<u32>() {
                 program.insert(line_num, stmt.trim().to_string());
             } else {
-                return CommandResult::error(&format!("?SYNTAX ERROR IN: {line}\n"));
+                return Err(format!("?SYNTAX ERROR IN: {line}\n"));
             }
         }
+        Ok(program)
+    }
 
+    fn execute_basic_program(
+        &self,
+        program: &std::collections::BTreeMap<u32, String>,
+    ) -> CommandResult {
         if program.is_empty() {
             return CommandResult::success("");
         }
@@ -485,5 +485,26 @@ impl CommandExecutor {
         }
 
         CommandResult::success(&output)
+    }
+
+    fn run(&self, prog: &str) -> CommandResult {
+        let prog_upper = prog.to_uppercase();
+
+        // Easter Eggs
+        if let Some(result) = self.check_run_easter_eggs(&prog_upper) {
+            return result;
+        }
+
+        let Some(content) = self.find_program_content(&prog_upper) else {
+            return CommandResult::error("?PROGRAM NOT FOUND\n");
+        };
+
+        // Parse BASIC program into BTreeMap
+        let program = match Self::parse_basic_program(&content) {
+            Ok(p) => p,
+            Err(e) => return CommandResult::error(&e),
+        };
+
+        self.execute_basic_program(&program)
     }
 }
