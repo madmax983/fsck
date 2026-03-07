@@ -49,7 +49,7 @@ fn test_add_child_directory() {
 fn test_navigate_to_child() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("GAMES");
-    assert!(fs.change_dir("GAMES").is_ok());
+    assert!(fs.change_dir("GAMES", 0, 0.0).is_ok());
     assert_eq!(fs.current_dir_name(), "GAMES");
 }
 
@@ -57,15 +57,15 @@ fn test_navigate_to_child() {
 fn test_navigate_parent() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("GAMES");
-    fs.change_dir("GAMES").unwrap();
-    assert!(fs.change_dir("..").is_ok());
+    fs.change_dir("GAMES", 0, 0.0).unwrap();
+    assert!(fs.change_dir("..", 0, 0.0).is_ok());
     assert_eq!(fs.current_path(), "/");
 }
 
 #[test]
 fn test_navigate_nonexistent_fails() {
     let mut fs = FilesystemGraph::new();
-    assert!(fs.change_dir("NOWHERE").is_err());
+    assert!(fs.change_dir("NOWHERE", 0, 0.0).is_err());
 }
 
 #[test]
@@ -73,7 +73,7 @@ fn test_depth_tracking() {
     let mut fs = FilesystemGraph::new();
     assert_eq!(fs.current_depth(), 0);
     fs.add_child("LEVEL1");
-    fs.change_dir("LEVEL1").unwrap();
+    fs.change_dir("LEVEL1", 0, 0.0).unwrap();
     assert_eq!(fs.current_depth(), 1);
 }
 
@@ -81,7 +81,7 @@ fn test_depth_tracking() {
 fn test_directory_can_contain_itself() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("VOID");
-    fs.change_dir("VOID").unwrap();
+    fs.change_dir("VOID", 0, 0.0).unwrap();
 
     // Create paradox: VOID contains VOID
     fs.add_paradox_to_self();
@@ -94,11 +94,11 @@ fn test_directory_can_contain_itself() {
 fn test_paradox_navigation_increases_depth() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("LOOP");
-    fs.change_dir("LOOP").unwrap();
+    fs.change_dir("LOOP", 0, 0.0).unwrap();
     fs.add_paradox_to_self();
 
     let initial_depth = fs.current_depth();
-    fs.change_dir("LOOP").unwrap();
+    fs.change_dir("LOOP", 0, 0.0).unwrap();
 
     // Depth increases even though we're "in the same place"
     assert!(fs.current_depth() > initial_depth);
@@ -108,12 +108,12 @@ fn test_paradox_navigation_increases_depth() {
 fn test_parent_navigation_from_paradox() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("STRANGE");
-    fs.change_dir("STRANGE").unwrap();
+    fs.change_dir("STRANGE", 0, 0.0).unwrap();
     fs.add_paradox_to_self();
-    fs.change_dir("STRANGE").unwrap(); // Enter the loop
+    fs.change_dir("STRANGE", 0, 0.0).unwrap(); // Enter the loop
 
     // Going back should return to the previous STRANGE
-    fs.change_dir("..").unwrap();
+    fs.change_dir("..", 0, 0.0).unwrap();
     assert_eq!(fs.current_dir_name(), "STRANGE");
 }
 
@@ -179,9 +179,9 @@ fn find_files_recursive_impl<F>(
     // Recursively check subdirectories
     let dirs = fs.list_directories();
     for dir in dirs {
-        if fs.change_dir(&dir).is_ok() {
+        if fs.change_dir(&dir, 0, 0.0).is_ok() {
             find_files_recursive_impl(fs, predicate, found, depth + 1);
-            let _ = fs.change_dir("..");
+            let _ = fs.change_dir("..", 0, 0.0);
         }
     }
 }
@@ -220,13 +220,13 @@ fn test_victim_files_appear_at_depth() {
     // Navigate to depth 3+ where victim files should appear
     let dirs = fs.list_directories();
     if let Some(dir1) = dirs.first() {
-        fs.change_dir(dir1).unwrap();
+        fs.change_dir(dir1, 0, 0.0).unwrap();
         let dirs = fs.list_directories();
         if let Some(dir2) = dirs.first() {
-            fs.change_dir(dir2).unwrap();
+            fs.change_dir(dir2, 0, 0.0).unwrap();
             let dirs = fs.list_directories();
             if let Some(dir3) = dirs.first() {
-                fs.change_dir(dir3).unwrap();
+                fs.change_dir(dir3, 0, 0.0).unwrap();
 
                 // At depth 3+, search for victim files in subtree
                 let mut victim_files = Vec::new();
@@ -383,25 +383,25 @@ fn test_generator_creates_paradox_directories() {
         for dir in &dirs {
             if names.contains(&dir.as_str()) {
                 // Check if this directory contains itself (paradox)
-                if fs.change_dir(dir).is_ok() {
+                if fs.change_dir(dir, 0, 0.0).is_ok() {
                     let children = fs.list_directories();
                     if children.contains(dir) {
-                        let _ = fs.change_dir("..");
+                        let _ = fs.change_dir("..", 0, 0.0);
                         return true;
                     }
-                    let _ = fs.change_dir("..");
+                    let _ = fs.change_dir("..", 0, 0.0);
                 }
             }
         }
 
         // Recurse into children
         for dir in dirs {
-            if fs.change_dir(&dir).is_ok() {
+            if fs.change_dir(&dir, 0, 0.0).is_ok() {
                 if search_for_paradox(fs, names) {
-                    let _ = fs.change_dir("..");
+                    let _ = fs.change_dir("..", 0, 0.0);
                     return true;
                 }
-                let _ = fs.change_dir("..");
+                let _ = fs.change_dir("..", 0, 0.0);
             }
         }
         false
@@ -423,25 +423,25 @@ fn test_paradox_enables_infinite_descent() {
     fn find_paradox_path(fs: &mut FilesystemGraph, names: &[&str]) -> Option<Vec<String>> {
         let dirs = fs.list_directories();
         for dir in &dirs {
-            if names.contains(&dir.as_str()) && fs.change_dir(dir).is_ok() {
+            if names.contains(&dir.as_str()) && fs.change_dir(dir, 0, 0.0).is_ok() {
                 let children = fs.list_directories();
                 if children.contains(dir) {
-                    let _ = fs.change_dir("..");
+                    let _ = fs.change_dir("..", 0, 0.0);
                     return Some(vec![dir.clone()]);
                 }
-                let _ = fs.change_dir("..");
+                let _ = fs.change_dir("..", 0, 0.0);
             }
         }
 
         // Recurse
         for dir in dirs {
-            if fs.change_dir(&dir).is_ok() {
+            if fs.change_dir(&dir, 0, 0.0).is_ok() {
                 if let Some(mut path) = find_paradox_path(fs, names) {
-                    let _ = fs.change_dir("..");
+                    let _ = fs.change_dir("..", 0, 0.0);
                     path.insert(0, dir);
                     return Some(path);
                 }
-                let _ = fs.change_dir("..");
+                let _ = fs.change_dir("..", 0, 0.0);
             }
         }
         None
@@ -456,16 +456,16 @@ fn test_paradox_enables_infinite_descent() {
     if let Some(path) = path {
         // Navigate to the paradox
         for dir in &path {
-            fs.change_dir(dir).unwrap();
+            fs.change_dir(dir, 0, 0.0).unwrap();
         }
 
         let paradox_name = path.last().unwrap();
         let initial_depth = fs.current_depth();
 
         // Enter the paradox multiple times
-        fs.change_dir(paradox_name).unwrap();
+        fs.change_dir(paradox_name, 0, 0.0).unwrap();
         let depth1 = fs.current_depth();
-        fs.change_dir(paradox_name).unwrap();
+        fs.change_dir(paradox_name, 0, 0.0).unwrap();
         let depth2 = fs.current_depth();
 
         assert!(
@@ -477,4 +477,35 @@ fn test_paradox_enables_infinite_descent() {
             "Second paradox descent should increase depth further"
         );
     }
+}
+
+#[test]
+fn test_disorienting_navigation() {
+    let mut fs = FilesystemGraph::new();
+
+    // Depth 0: /
+    fs.add_child("GRANDPARENT");
+    fs.change_dir("GRANDPARENT", 0, 0.0).unwrap();
+
+    // Depth 1: GRANDPARENT
+    fs.add_child("PARENT");
+    fs.add_child("SIBLING");
+
+    fs.change_dir("PARENT", 0, 0.0).unwrap();
+
+    // Depth 2: PARENT
+    fs.add_child("CHILD");
+    fs.change_dir("CHILD", 0, 0.0).unwrap();
+
+    // Depth 3: CHILD
+    assert_eq!(fs.current_dir_name(), "CHILD");
+
+    // Disorienting .. from CHILD (prob 1.0)
+    // Parent of CHILD is PARENT. Grandparent is GRANDPARENT.
+    // Siblings of PARENT are other children of GRANDPARENT, i.e., SIBLING.
+    // Therefore, .. should return to SIBLING.
+    fs.change_dir("..", 12345, 1.0).unwrap();
+
+    assert_eq!(fs.current_dir_name(), "SIBLING");
+    assert_eq!(fs.current_depth(), 2);
 }

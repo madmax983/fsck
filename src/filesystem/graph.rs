@@ -1,5 +1,7 @@
 use petgraph::Direction;
 use petgraph::graph::{DiGraph, NodeIndex};
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
 use thiserror::Error;
 
 use super::node::DirNode;
@@ -127,13 +129,48 @@ impl FilesystemGraph {
     /// Panics if path stack is empty.
     /// # Errors
     /// Returns an error if directory not found.
-    pub fn change_dir(&mut self, name: &str) -> Result<(), FilesystemError> {
+    pub fn change_dir(
+        &mut self,
+        name: &str,
+        seed: u64,
+        disorientation_prob: f64,
+    ) -> Result<(), FilesystemError> {
         let name_upper = name.to_uppercase();
 
         if name_upper == ".." {
             if self.path_stack.len() <= 1 {
                 return Err(FilesystemError::AboveRoot);
             }
+
+            // At Corruption layer+, `cd ..` occasionally returns to wrong parent
+            if self.path_stack.len() >= 3 {
+                let mut rng = ChaCha8Rng::seed_from_u64(seed);
+                if rng.gen_bool(disorientation_prob) {
+                    let grandparent = self.path_stack[self.path_stack.len() - 3];
+                    let current_parent = self.path_stack[self.path_stack.len() - 2];
+
+                    let siblings: Vec<NodeIndex> = self
+                        .graph
+                        .neighbors_directed(grandparent, Direction::Outgoing)
+                        .filter(|&idx| idx != current_parent && !self.graph[idx].is_hidden())
+                        .collect();
+
+                    if !siblings.is_empty() {
+                        let chosen_sibling = siblings[rng.gen_range(0..siblings.len())];
+
+                        // Pop the current node
+                        self.path_stack.pop();
+                        // Pop the true parent
+                        self.path_stack.pop();
+                        // Push the chosen sibling (the new "parent")
+                        self.path_stack.push(chosen_sibling);
+
+                        self.current = chosen_sibling;
+                        return Ok(());
+                    }
+                }
+            }
+
             self.path_stack.pop();
             self.current = *self.path_stack.last().unwrap();
             return Ok(());
