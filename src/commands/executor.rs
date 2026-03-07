@@ -113,7 +113,16 @@ impl CommandExecutor {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
 
-        match self.fs.change_dir(path) {
+        let layer = self.entity.layer();
+        let disorientation_prob = match layer {
+            EscalationLayer::Surface => 0.0,
+            EscalationLayer::Corruption => 0.1,
+            EscalationLayer::Presence => 0.25,
+            EscalationLayer::Infection => 0.5,
+        };
+        let seed = 0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
+
+        match self.fs.change_dir(path, seed, disorientation_prob) {
             Ok(()) => {
                 // Update entity with new depth
                 self.entity.update_depth(self.fs.current_depth());

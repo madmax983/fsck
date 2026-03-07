@@ -159,9 +159,9 @@ impl FilesystemGenerator {
         // Recursively populate children
         let children = fs.list_directories();
         for child_name in children {
-            if fs.change_dir(&child_name).is_ok() {
+            if fs.change_dir(&child_name, 0, 0.0).is_ok() {
                 Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
-                let _ = fs.change_dir("..");
+                let _ = fs.change_dir("..", 0, 0.0);
             }
         }
     }
@@ -180,9 +180,9 @@ impl FilesystemGenerator {
                 // Create paradox for certain directory names
                 if PARADOX_NAMES.contains(&name) && rng.gen_bool(0.8) {
                     // 80% chance to make it a paradox
-                    if fs.change_dir(name).is_ok() {
+                    if fs.change_dir(name, 0, 0.0).is_ok() {
                         fs.add_paradox_to_self();
-                        let _ = fs.change_dir("..");
+                        let _ = fs.change_dir("..", 0, 0.0);
                     }
                 }
             }
