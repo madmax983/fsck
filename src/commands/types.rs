@@ -62,29 +62,29 @@ pub enum Command {
 
 impl Command {
     #[must_use]
-    pub fn from_input(command: &str, args: &[String]) -> Self {
-        match command {
+    pub fn from_input(command: &str, args: &[&str]) -> Self {
+        match command.to_uppercase().as_str() {
             "CATALOG" | "DIR" | "LS" => Self::Catalog,
             "CD" | "CHDIR" => {
-                let path = args.first().cloned().unwrap_or_default();
+                let path = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
                 Self::ChangeDir(path)
             }
             "TYPE" | "CAT" => {
-                let file = args.first().cloned().unwrap_or_default();
+                let file = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
                 Self::Type(file)
             }
             "RUN" => {
-                let prog = args.first().cloned().unwrap_or_default();
+                let prog = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
                 Self::Run(prog)
             }
             "HOME" | "CLS" | "CLEAR" => Self::Home,
-            "FSCK" => Self::Fsck(args.to_vec()),
+            "FSCK" => Self::Fsck(args.iter().map(|s| s.to_uppercase()).collect()),
             "HELLO" | "HI" => Self::Hello,
             "WHO" | "WHOAMI" => Self::Who,
             "HELP" | "?" => Self::Help,
             "QUIT" | "EXIT" | "BYE" => Self::Quit,
             "" => Self::Unknown(String::new()),
-            other => Self::Unknown(other.to_string()),
+            _ => Self::Unknown(command.to_uppercase()),
         }
     }
 }

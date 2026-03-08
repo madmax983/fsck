@@ -39,8 +39,9 @@ fn test_parse_command_with_args() {
 
 #[test]
 fn test_parse_normalizes_to_uppercase() {
+    // It no longer normalizes to uppercase here, we do it when evaluating the command
     let result = InputParser::parse("catalog");
-    assert_eq!(result.command, "CATALOG");
+    assert_eq!(result.command, "catalog");
 }
 
 #[test]
