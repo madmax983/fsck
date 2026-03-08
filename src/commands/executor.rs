@@ -142,6 +142,22 @@ impl CommandExecutor {
             if file.name() == filename_upper {
                 let content = file.content();
 
+                #[cfg(feature = "nova")]
+                let content = {
+                    use crate::experimental::EmotionalBleed;
+                    use rand::SeedableRng;
+                    use rand_chacha::ChaCha8Rng;
+
+                    let interaction_seed =
+                        0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
+                    let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
+                    EmotionalBleed::inject_emotion(
+                        &content,
+                        self.entity.current_mood(),
+                        &mut rng,
+                    )
+                };
+
                 // Trapdoor files pull you deeper
                 let depth_increase = match filename_upper.as_str() {
                     "FALL.TXT" | "DEEPER.TXT" => 3,
