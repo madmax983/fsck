@@ -59,11 +59,6 @@ impl ContentLibrary {
             .map(|(_, content)| *content)
     }
 
-    /// Adds a dynamically generated history to the library.
-    pub fn add_history(&mut self, history: VictimHistory) {
-        self.histories.push(history);
-    }
-
     /// Creates all pre-written victim histories.
     fn create_histories() -> Vec<VictimHistory> {
         vec![
