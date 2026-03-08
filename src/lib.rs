@@ -69,7 +69,8 @@ impl Game {
                         &commands[..]
                     };
                     let joined_cmds = last_cmds.join(", ");
-                    let entry = VictimEntry::new("2024-??-??", &format!("THEY TYPED: {joined_cmds}"));
+                    let entry =
+                        VictimEntry::new("2024-??-??", &format!("THEY TYPED: {joined_cmds}"));
                     history.add_entry(entry);
                     prev_history = Some(history);
                 }
@@ -105,8 +106,8 @@ impl Game {
     pub fn save(&self) -> Result<(), String> {
         let json = self.state.to_json()?;
         GameStorage::save(StorageKey::GameState, &json)?;
-        let history_json = serde_json::to_string(self.state.command_history())
-            .map_err(|e| e.to_string())?;
+        let history_json =
+            serde_json::to_string(self.state.command_history()).map_err(|e| e.to_string())?;
         GameStorage::save(StorageKey::PlayerHistory, &history_json)
     }
 
