@@ -76,11 +76,12 @@ impl CommandExecutor {
         output.push_str("\nDISK VOLUME 254\n\n");
 
         for dir in self.fs.list_directories() {
-            writeln!(output, " *{dir:<15} DIR").unwrap();
+            writeln!(output, " *{dir:<15} DIR").expect("Writing to String buffer should not fail");
         }
 
         for file in self.fs.current_node().visible_files() {
-            writeln!(output, "  {:<15} TXT", file.name()).unwrap();
+            writeln!(output, "  {:<15} TXT", file.name())
+                .expect("Writing to String buffer should not fail");
         }
 
         output.push('\n');
@@ -91,7 +92,7 @@ impl CommandExecutor {
                 .responses
                 .random_interjection(self.entity.current_mood())
         {
-            writeln!(output, "\n{interjection}").unwrap();
+            writeln!(output, "\n{interjection}").expect("Writing to String buffer should not fail");
         }
 
         #[cfg(feature = "nova")]
@@ -101,7 +102,8 @@ impl CommandExecutor {
                 0xF5C0_0000,
             ) {
                 use std::fmt::Write;
-                writeln!(output, "\n{audio_hint}").unwrap();
+                writeln!(output, "\n{audio_hint}")
+                    .expect("Writing to String buffer should not fail");
             }
         }
 
@@ -204,7 +206,8 @@ impl CommandExecutor {
             let mut report = format!("{} SECTOR(S) RECOVERED:\n", revealed.len());
             for name in &revealed {
                 use std::fmt::Write;
-                writeln!(report, "  RECOVERED: {name}").unwrap();
+                writeln!(report, "  RECOVERED: {name}")
+                    .expect("Writing to String buffer should not fail");
             }
             report
         };
@@ -261,7 +264,8 @@ impl CommandExecutor {
                 // Clean, normal disk check
                 let total_sectors = 560;
 
-                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
+                writeln!(output, "READING {total_sectors} SECTORS")
+                    .expect("Writing to String buffer should not fail");
                 output.push_str("SECTOR 0000-022F: OK\n");
                 output.push_str("VTOC: OK\n");
                 output.push_str("CATALOG: OK\n\n");
@@ -271,10 +275,12 @@ impl CommandExecutor {
                 let total_sectors = 560 + rng.gen_range(0..100);
                 let bad_sectors = rng.gen_range(1..=3);
 
-                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
+                writeln!(output, "READING {total_sectors} SECTORS")
+                    .expect("Writing to String buffer should not fail");
                 output.push_str("SECTOR 0000-00FF: OK\n");
 
-                writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)").unwrap();
+                writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)")
+                    .expect("Writing to String buffer should not fail");
                 output.push_str("SECTOR 0200-022F: OK\n");
                 if fsck_count > 1 {
                     output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
@@ -285,7 +291,8 @@ impl CommandExecutor {
                 // Entity interjects mid-scan
                 let total_sectors = rng.gen_range(400..700);
 
-                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
+                writeln!(output, "READING {total_sectors} SECTORS")
+                    .expect("Writing to String buffer should not fail");
                 output.push_str("SECTOR 0000-00FF: OK\n");
                 output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
                 output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
@@ -296,13 +303,14 @@ impl CommandExecutor {
                     "VTOC: {} ENTRIES (EXPECTED 256)\n",
                     rng.gen_range(1..=1024)
                 )
-                .unwrap();
+                .expect("Writing to String buffer should not fail");
             }
             EscalationLayer::Infection => {
                 // Heavily corrupted scan
                 let total_sectors = rng.gen_range(0..=99999);
 
-                writeln!(output, "READING {total_sectors} SECTORS").unwrap();
+                writeln!(output, "READING {total_sectors} SECTORS")
+                    .expect("Writing to String buffer should not fail");
                 output.push_str("SECTOR 0000-????: ?????\n");
                 output.push_str("SECTOR ????-????: CANNOT\n");
                 output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");

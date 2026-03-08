@@ -172,7 +172,10 @@ impl FilesystemGraph {
             }
 
             self.path_stack.pop();
-            self.current = *self.path_stack.last().unwrap();
+            self.current = *self
+                .path_stack
+                .last()
+                .expect("path_stack should never be empty when popping");
             return Ok(());
         }
 
