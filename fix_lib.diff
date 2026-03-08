@@ -1,0 +1,22 @@
+--- src/lib.rs
++++ src/lib.rs
+@@ -79,7 +79,10 @@
+     /// Returns an error if serialization or storage operations fail
+     pub fn save(&self) -> Result<(), String> {
+         let json = self.state.to_json()?;
+-        GameStorage::save(StorageKey::GameState, &json)
++        GameStorage::save(StorageKey::GameState, &json)?;
++        let history_json = serde_json::to_string(self.state.command_history())
++            .map_err(|e| e.to_string())?;
++        GameStorage::save(StorageKey::PlayerHistory, &history_json)
+     }
+
+     pub fn process_input(&mut self, input: &str) -> String {
+@@ -93,6 +96,8 @@
+         self.state.update_depth(depth);
+         *self.state.entity_mut() = self.executor.entity().clone();
+
++        self.state.record_command(input);
++
+         // Auto-save after each command
+         let _ = self.save();

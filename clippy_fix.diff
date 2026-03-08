@@ -1,25 +1,34 @@
-<<<<<<< SEARCH
-    pub fn read(&self) -> String {
-        match &self.content {
-            NodeContent::Static(s) => s.clone(),
-            NodeContent::Dynamic(d) => d.borrow_mut().generate(),
-        }
-    }
+--- src/persistence/state.rs
++++ src/persistence/state.rs
+@@ -5,6 +5,7 @@
+ pub struct GameState {
+     seed: u64,
+     entity: Entity,
++    command_history: Vec<String>,
+     max_depth_reached: u32,
+     session_count: u32,
+     first_played: String, // Timestamp
+@@ -19,6 +20,7 @@
+         Self {
+             seed,
+             entity,
++            command_history: Vec::new(),
+             max_depth_reached: max_depth,
+             session_count: 1,
+             first_played,
+@@ -36,6 +38,15 @@
+         &self.entity
+     }
 
-    // Legacy method for static content - deprecated, use read() instead
-    pub fn content(&self) -> String {
-        self.read()
-    }
-=======
-    pub fn read(&self) -> std::borrow::Cow<'_, str> {
-        match &self.content {
-            NodeContent::Static(s) => std::borrow::Cow::Borrowed(s.as_str()),
-            NodeContent::Dynamic(d) => std::borrow::Cow::Owned(d.borrow_mut().generate()),
-        }
-    }
-
-    // Legacy method for static content - deprecated, use read() instead
-    pub fn content(&self) -> String {
-        self.read().into_owned()
-    }
->>>>>>> REPLACE
++    #[must_use]
++    pub fn command_history(&self) -> &[String] {
++        &self.command_history
++    }
++
++    pub fn record_command(&mut self, cmd: &str) {
++        self.command_history.push(cmd.to_string());
++    }
++
+     #[must_use]
+     pub const fn entity_mut(&mut self) -> &mut Entity {
+         &mut self.entity

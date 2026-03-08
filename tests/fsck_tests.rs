@@ -268,7 +268,7 @@ fn test_second_fsck_same_dir_finds_nothing_new() {
 #[test]
 fn test_generated_filesystem_has_hidden_content() {
     // Generate a deep filesystem — hidden content should appear
-    let mut fs = FilesystemGenerator::generate_with_content(42, 10);
+    let mut fs = FilesystemGenerator::generate_with_content(42, 10, None);
 
     // Run fsck at root — may or may not find hidden content (depth 0 = no hidden)
     // Navigate deeper where hidden content lives

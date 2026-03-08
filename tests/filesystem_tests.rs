@@ -119,16 +119,16 @@ fn test_parent_navigation_from_paradox() {
 
 #[test]
 fn test_same_seed_produces_same_structure() {
-    let fs1 = FilesystemGenerator::generate(12345, 5);
-    let fs2 = FilesystemGenerator::generate(12345, 5);
+    let fs1 = FilesystemGenerator::generate(12345, 5, None);
+    let fs2 = FilesystemGenerator::generate(12345, 5, None);
 
     assert_eq!(fs1.list_directories(), fs2.list_directories());
 }
 
 #[test]
 fn test_different_seeds_produce_different_structures() {
-    let fs1 = FilesystemGenerator::generate(12345, 5);
-    let fs2 = FilesystemGenerator::generate(54321, 5);
+    let fs1 = FilesystemGenerator::generate(12345, 5, None);
+    let fs2 = FilesystemGenerator::generate(54321, 5, None);
 
     // Very unlikely to be identical
     assert_ne!(fs1.list_directories(), fs2.list_directories());
@@ -136,7 +136,7 @@ fn test_different_seeds_produce_different_structures() {
 
 #[test]
 fn test_generation_respects_depth_limit() {
-    let fs = FilesystemGenerator::generate(99999, 3);
+    let fs = FilesystemGenerator::generate(99999, 3, None);
     // Root should have some children
     assert!(!fs.list_directories().is_empty());
 }
@@ -188,7 +188,7 @@ fn find_files_recursive_impl<F>(
 
 #[test]
 fn test_generated_filesystem_has_victim_files() {
-    let mut fs = FilesystemGenerator::generate_with_content(42, 8);
+    let mut fs = FilesystemGenerator::generate_with_content(42, 8, None);
 
     // Search for victim history files (.LOG extension)
     let mut victim_files = Vec::new();
@@ -215,7 +215,7 @@ fn test_generated_filesystem_has_victim_files() {
 
 #[test]
 fn test_victim_files_appear_at_depth() {
-    let mut fs = FilesystemGenerator::generate_with_content(12345, 8);
+    let mut fs = FilesystemGenerator::generate_with_content(12345, 8, None);
 
     // Navigate to depth 3+ where victim files should appear
     let dirs = fs.list_directories();
@@ -249,7 +249,7 @@ fn test_victim_files_appear_at_depth() {
 
 #[test]
 fn test_dynamic_files_present() {
-    let mut fs = FilesystemGenerator::generate_with_content(99, 5);
+    let mut fs = FilesystemGenerator::generate_with_content(99, 5, None);
 
     // Search for dynamic files
     let mut dynamic_files = Vec::new();
@@ -277,7 +277,7 @@ fn test_dynamic_files_present() {
 
 #[test]
 fn test_dynamic_files_have_creepy_names() {
-    let mut fs = FilesystemGenerator::generate_with_content(42, 8);
+    let mut fs = FilesystemGenerator::generate_with_content(42, 8, None);
 
     // Search for dynamic files
     let mut dynamic_files = Vec::new();
@@ -314,7 +314,7 @@ fn test_dynamic_files_have_creepy_names() {
 
 #[test]
 fn test_static_files_from_library() {
-    let mut fs = FilesystemGenerator::generate_with_content(777, 4);
+    let mut fs = FilesystemGenerator::generate_with_content(777, 4, None);
 
     // Search for known static files from the library
     let mut static_files = Vec::new();
@@ -340,7 +340,7 @@ fn test_static_files_from_library() {
 
 #[test]
 fn test_content_mix_in_filesystem() {
-    let mut fs = FilesystemGenerator::generate_with_content(99, 10);
+    let mut fs = FilesystemGenerator::generate_with_content(99, 10, None);
 
     let mut static_count = 0;
     let mut dynamic_count = 0;
@@ -373,7 +373,7 @@ fn test_content_mix_in_filesystem() {
 
 #[test]
 fn test_generator_creates_paradox_directories() {
-    let mut fs = FilesystemGenerator::generate_with_content(42, 10);
+    let mut fs = FilesystemGenerator::generate_with_content(42, 10, None);
 
     // Search recursively for paradox-named directories
     let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];
@@ -415,7 +415,7 @@ fn test_generator_creates_paradox_directories() {
 
 #[test]
 fn test_paradox_enables_infinite_descent() {
-    let mut fs = FilesystemGenerator::generate_with_content(999, 10);
+    let mut fs = FilesystemGenerator::generate_with_content(999, 10, None);
 
     // Find a paradox directory
     let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];

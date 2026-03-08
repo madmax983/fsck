@@ -4,7 +4,7 @@ use rand_chacha::ChaCha8Rng;
 
 use super::graph::FilesystemGraph;
 use super::node::FileNode;
-use crate::content::{ContentLibrary, DynamicContent, Era};
+use crate::content::{ContentLibrary, DynamicContent, Era, VictimHistory};
 
 /// `Apple IIe` era directory names
 const DIR_NAMES: &[&str] = &[
@@ -111,10 +111,13 @@ impl FilesystemGenerator {
     /// # Returns
     /// A fully populated `FilesystemGraph`
     #[must_use]
-    pub fn generate_with_content(seed: u64, initial_depth: u32) -> FilesystemGraph {
+    pub fn generate_with_content(seed: u64, initial_depth: u32, prev_history: Option<VictimHistory>) -> FilesystemGraph {
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
         let mut fs = FilesystemGraph::new();
-        let library = ContentLibrary::new();
+        let mut library = ContentLibrary::new();
+        if let Some(h) = prev_history {
+            library.add_history(h);
+        }
 
         Self::populate_level_with_content(&mut fs, &mut rng, &library, 0, initial_depth);
 
@@ -123,8 +126,8 @@ impl FilesystemGenerator {
 
     /// Legacy method for backward compatibility - now uses content library.
     #[must_use]
-    pub fn generate(seed: u64, initial_depth: u32) -> FilesystemGraph {
-        Self::generate_with_content(seed, initial_depth)
+    pub fn generate(seed: u64, initial_depth: u32, prev_history: Option<VictimHistory>) -> FilesystemGraph {
+        Self::generate_with_content(seed, initial_depth, prev_history)
     }
 
     /// Populates a filesystem level with content from the `ContentLibrary`.
@@ -268,7 +271,8 @@ impl FilesystemGenerator {
                 3..=8 => Era::Original,
                 9..=15 => Era::Technician,
                 16..=25 => Era::EstateSale,
-                _ => Era::Explorer,
+                26..=30 => Era::Explorer,
+                _ => Era::Current,
             };
 
             if let Some(history) = library.history_for_era(era) {

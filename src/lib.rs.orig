@@ -12,14 +12,12 @@ pub mod terminal;
 pub mod experimental;
 
 use commands::{Command, CommandExecutor};
-use content::{Era, VictimEntry, VictimHistory};
 use effects::PromptManipulator;
 use entity::Entity;
 use filesystem::FilesystemGenerator;
 use persistence::{GameState, GameStorage, StorageKey};
 use terminal::InputParser;
 
-#[allow(clippy::collapsible_if)]
 #[wasm_bindgen]
 pub struct Game {
     executor: CommandExecutor,
@@ -56,27 +54,7 @@ impl Game {
             (seed, entity, state)
         };
 
-        let mut prev_history = None;
-        #[allow(clippy::collapsible_if)]
-        if let Ok(Some(json)) = GameStorage::load(StorageKey::PlayerHistory) {
-            #[allow(clippy::collapsible_if)]
-            if let Ok(commands) = serde_json::from_str::<Vec<String>>(&json) {
-                if !commands.is_empty() {
-                    let mut history = VictimHistory::new(Era::Current, "THE LAST ONE", 2024);
-                    let last_cmds = if commands.len() > 10 {
-                        &commands[commands.len() - 10..]
-                    } else {
-                        &commands[..]
-                    };
-                    let joined_cmds = last_cmds.join(", ");
-                    let entry = VictimEntry::new("2024-??-??", &format!("THEY TYPED: {joined_cmds}"));
-                    history.add_entry(entry);
-                    prev_history = Some(history);
-                }
-            }
-        }
-
-        let fs = FilesystemGenerator::generate(seed, 5, prev_history);
+        let fs = FilesystemGenerator::generate(seed, 5);
         let executor = CommandExecutor::new(fs, entity);
 
         Self {
@@ -104,23 +82,18 @@ impl Game {
     /// Returns an error if serialization or storage operations fail
     pub fn save(&self) -> Result<(), String> {
         let json = self.state.to_json()?;
-        GameStorage::save(StorageKey::GameState, &json)?;
-        let history_json = serde_json::to_string(self.state.command_history())
-            .map_err(|e| e.to_string())?;
-        GameStorage::save(StorageKey::PlayerHistory, &history_json)
+        GameStorage::save(StorageKey::GameState, &json)
     }
 
     pub fn process_input(&mut self, input: &str) -> String {
         let parsed = InputParser::parse(input);
-        let command = Command::from_input(parsed.command, &parsed.args);
+        let command = Command::from_input(&parsed.command, &parsed.args);
         let result = self.executor.execute(command);
 
         // Update state
         let depth = self.executor.entity().layer() as u32;
         self.state.update_depth(depth);
         *self.state.entity_mut() = self.executor.entity().clone();
-
-        self.state.record_command(input);
 
         // Auto-save after each command
         let _ = self.save();

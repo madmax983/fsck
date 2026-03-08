@@ -6,8 +6,6 @@ use serde::{Deserialize, Serialize};
 pub struct GameState {
     seed: u64,
     entity: Entity,
-    #[serde(default)]
-    command_history: Vec<String>,
     max_depth_reached: u32,
     session_count: u32,
     first_played: String, // Timestamp
@@ -22,7 +20,6 @@ impl GameState {
         Self {
             seed,
             entity,
-            command_history: Vec::new(),
             max_depth_reached: max_depth,
             session_count: 1,
             first_played,
@@ -38,18 +35,6 @@ impl GameState {
     #[must_use]
     pub const fn entity(&self) -> &Entity {
         &self.entity
-    }
-
-    #[must_use]
-    pub fn command_history(&self) -> &[String] {
-        &self.command_history
-    }
-
-    pub fn record_command(&mut self, cmd: &str) {
-        self.command_history.push(cmd.to_string());
-        if self.command_history.len() > 100 {
-            self.command_history.remove(0);
-        }
     }
 
     #[must_use]
