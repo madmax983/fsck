@@ -1,20 +1,20 @@
 /// Parsed command from user input
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ParsedInput {
-    pub command: String,
-    pub args: Vec<String>,
+pub struct ParsedInput<'a> {
+    pub command: &'a str,
+    pub args: Vec<&'a str>,
 }
 
 /// Parser for Apple `IIe` style command input
 pub struct InputParser;
 
 impl InputParser {
-    pub fn parse(input: &str) -> ParsedInput {
-        let normalized = input.trim().to_uppercase();
-        let mut parts = normalized.split_whitespace();
+    #[must_use]
+    pub fn parse(input: &str) -> ParsedInput<'_> {
+        let mut parts = input.split_whitespace();
 
-        let command = parts.next().unwrap_or("").to_string();
-        let args: Vec<String> = parts.map(String::from).collect();
+        let command = parts.next().unwrap_or("");
+        let args: Vec<&str> = parts.collect();
 
         ParsedInput { command, args }
     }
