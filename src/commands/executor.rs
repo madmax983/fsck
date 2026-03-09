@@ -49,6 +49,20 @@ impl CommandExecutor {
                             0xF5C0_0000,
                         );
                         return CommandResult::success(&format!("{report}\n"));
+                    } else if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
+                        let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                        if parts.len() == 2 {
+                            let query = parts[1].trim();
+                            if !query.is_empty() {
+                                let results = crate::experimental::SearchTool::search(
+                                    &self.fs,
+                                    &self.entity,
+                                    query,
+                                    0xF5C0_0000,
+                                );
+                                return CommandResult::success(&format!("{results}\n"));
+                            }
+                        }
                     }
                 }
 
@@ -153,11 +167,7 @@ impl CommandExecutor {
                     let interaction_seed =
                         0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
                     let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
-                    EmotionalBleed::inject_emotion(
-                        &content,
-                        self.entity.current_mood(),
-                        &mut rng,
-                    )
+                    EmotionalBleed::inject_emotion(&content, self.entity.current_mood(), &mut rng)
                 };
 
                 // Trapdoor files pull you deeper
