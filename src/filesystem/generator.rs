@@ -111,7 +111,11 @@ impl FilesystemGenerator {
     /// # Returns
     /// A fully populated `FilesystemGraph`
     #[must_use]
-    pub fn generate_with_content(seed: u64, initial_depth: u32, prev_history: Option<VictimHistory>) -> FilesystemGraph {
+    pub fn generate_with_content(
+        seed: u64,
+        initial_depth: u32,
+        prev_history: Option<VictimHistory>,
+    ) -> FilesystemGraph {
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
         let mut fs = FilesystemGraph::new();
         let mut library = ContentLibrary::new();
@@ -126,7 +130,11 @@ impl FilesystemGenerator {
 
     /// Legacy method for backward compatibility - now uses content library.
     #[must_use]
-    pub fn generate(seed: u64, initial_depth: u32, prev_history: Option<VictimHistory>) -> FilesystemGraph {
+    pub fn generate(
+        seed: u64,
+        initial_depth: u32,
+        prev_history: Option<VictimHistory>,
+    ) -> FilesystemGraph {
         Self::generate_with_content(seed, initial_depth, prev_history)
     }
 

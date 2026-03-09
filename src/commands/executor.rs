@@ -153,11 +153,7 @@ impl CommandExecutor {
                     let interaction_seed =
                         0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
                     let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
-                    EmotionalBleed::inject_emotion(
-                        &content,
-                        self.entity.current_mood(),
-                        &mut rng,
-                    )
+                    EmotionalBleed::inject_emotion(&content, self.entity.current_mood(), &mut rng)
                 };
 
                 // Trapdoor files pull you deeper
@@ -421,6 +417,39 @@ impl CommandExecutor {
         Ok(program)
     }
 
+    fn execute_print_statement(
+        &self,
+        stmt: &str,
+        layer: EscalationLayer,
+        rng: &mut ChaCha8Rng,
+    ) -> String {
+        let content = stmt.trim_start_matches("PRINT").trim();
+        #[allow(clippy::useless_let_if_seq)]
+        let mut display_text =
+            if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
+                &content[1..content.len() - 1]
+            } else {
+                content
+            }
+            .to_string();
+
+        #[allow(clippy::collapsible_if)]
+        if matches!(
+            layer,
+            EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
+        ) && rng.gen_bool(0.15)
+        {
+            if let Some(interjection) = self
+                .responses
+                .random_interjection(self.entity.current_mood())
+            {
+                display_text = interjection;
+            }
+        }
+
+        display_text
+    }
+
     fn execute_basic_program(
         &self,
         program: &std::collections::BTreeMap<u32, String>,
@@ -434,7 +463,6 @@ impl CommandExecutor {
         let mut current_line = program.keys().next().copied();
 
         let layer = self.entity.layer();
-        let mood = self.entity.current_mood();
         let mut rng = ChaCha8Rng::seed_from_u64(
             0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
         );
@@ -459,30 +487,7 @@ impl CommandExecutor {
             let mut next_line = program.range((line_num + 1)..).next().map(|(k, _)| *k);
 
             if stmt.starts_with("PRINT") {
-                // simple PRINT "STRING"
-                let content = stmt.trim_start_matches("PRINT").trim();
-                #[allow(clippy::useless_let_if_seq)]
-                let mut display_text =
-                    if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
-                        &content[1..content.len() - 1]
-                    } else {
-                        content
-                    }
-                    .to_string();
-
-                #[allow(clippy::collapsible_if)]
-                if matches!(
-                    layer,
-                    EscalationLayer::Corruption
-                        | EscalationLayer::Presence
-                        | EscalationLayer::Infection
-                ) && rng.gen_bool(0.15)
-                {
-                    if let Some(interjection) = self.responses.random_interjection(mood) {
-                        display_text = interjection;
-                    }
-                }
-
+                let display_text = self.execute_print_statement(stmt, layer, &mut rng);
                 output.push_str(&display_text);
                 output.push('\n');
             } else if stmt.starts_with("GOTO") {
