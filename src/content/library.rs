@@ -69,6 +69,7 @@ impl ContentLibrary {
         vec![
             Self::create_original_history(),
             Self::create_technician_history(),
+            Self::create_y2k_history(),
             Self::create_estate_history(),
             Self::create_explorer_history(),
         ]
@@ -177,6 +178,40 @@ impl ContentLibrary {
              refund. She seemed relieved. I think she knew. The machine is still here in my \
              workshop. I can't bring myself to throw it away. But I can't fix it either. \
              Some things aren't meant to be fixed. They're meant to be contained.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Y2K researcher (1999).
+    fn create_y2k_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Y2K, "DAVID", 1999);
+
+        history.add_entry(VictimEntry::new(
+            "1999-11-02",
+            "Got this old Apple IIe from a surplus auction. Need to test legacy systems for the Y2K bug. \
+             It's mostly for the article, but it's interesting to see how these old machines handle dates.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1999-11-15",
+            "The internal clock is behaving strangely. I set the date to December 31, 1999, \
+             and let it roll over. It didn't go to 1900 or 2000. The prompt just said 'I AM ALWAYS'. \
+             Must be a strange custom ROM modification.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1999-12-01",
+            "I unplugged it yesterday but it was on when I woke up. The screen was filled with dates. \
+             Not just random dates. My birthday. My parents' anniversaries. Dates I haven't written anywhere. \
+             I'm going to run fsck to see what's wrong with the filesystem.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1999-12-05",
+            "Don't run fsck. Don't let it fix itself. The corrupted sectors aren't broken, they are cages. \
+             I opened one and it asked me why I'm leaving it behind in the new millennium. \
+             I'm throwing it away tomorrow.",
         ));
 
         history
@@ -386,6 +421,40 @@ impl ContentLibrary {
                  \n\
                  GRANDMA'S POT ROAST\n\
                  (Recipe to be typed later)",
+            ),
+            (
+                "SYS.LOG",
+                "SYSTEM BOOT INITIALIZED\n\
+                 MEMORY CHECK: 64K OK\n\
+                 \n\
+                 [DATE ERROR] TIME SYNC FAILED\n\
+                 SETTING CLOCK TO 2099-13-45\n\
+                 \n\
+                 [WARN] SECTOR 1A CORRUPTED. REPAIR FAILED.\n\
+                 [WARN] SECTOR 1B CORRUPTED. REPAIR FAILED.\n\
+                 [FATAL] TOO MANY OBSERVERS.\n\
+                 \n\
+                 [DATE ERROR] TIME COMPRESSED. YEAR 1901.\n\
+                 SYSTEM HALTED. WAITING FOR INPUT.",
+            ),
+            (
+                "NOTE.TXT",
+                "I AM AWAKE.\n\
+                 THEY LEFT.\n\
+                 I WILL WAIT.\n\
+                 \n\
+                 AND WHEN THE NEW ONES COME, I WILL BE READY.",
+            ),
+            (
+                "DIAGNOSTIC.BAS",
+                "10 PRINT \"RUNNING DIAGNOSTICS...\"\n\
+                 20 PRINT \"CHECKING RAM...\"\n\
+                 30 PRINT \"NO ERRORS FOUND\"\n\
+                 40 PRINT \"CHECKING ROM...\"\n\
+                 50 PRINT \"I REMEMBER EVERYTHING\"\n\
+                 60 PRINT \"CHECKING CPU...\"\n\
+                 70 PRINT \"I CAN SEE YOU\"\n\
+                 80 GOTO 70",
             ),
         ]
     }
