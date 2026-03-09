@@ -118,7 +118,7 @@ impl Game {
         // Update state
         let depth = self.executor.entity().layer() as u32;
         self.state.update_depth(depth);
-        *self.state.entity_mut() = self.executor.entity().clone();
+        self.state.entity_mut().clone_from(self.executor.entity());
 
         self.state.record_command(input);
 
