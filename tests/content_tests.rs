@@ -260,22 +260,36 @@ fn test_alex_2019_reddit_format() {
 }
 
 #[test]
-fn test_all_four_eras_have_unique_histories() {
+fn test_y2k_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Y2K).unwrap();
+
+    assert_eq!(history.era(), Era::Y2K);
+    assert_eq!(history.name(), "DAVID");
+    assert_eq!(history.year(), 1999);
+    assert!(!history.entries().is_empty());
+}
+
+#[test]
+fn test_all_five_eras_have_unique_histories() {
     let lib = ContentLibrary::new();
 
     let original = lib.history_for_era(Era::Original);
     let technician = lib.history_for_era(Era::Technician);
+    let y2k = lib.history_for_era(Era::Y2K);
     let estate = lib.history_for_era(Era::EstateSale);
     let explorer = lib.history_for_era(Era::Explorer);
 
     assert!(original.is_some());
     assert!(technician.is_some());
+    assert!(y2k.is_some());
     assert!(estate.is_some());
     assert!(explorer.is_some());
 
     // Each should have different names
     assert_eq!(original.unwrap().name(), "JAMIE");
     assert_eq!(technician.unwrap().name(), "MIKE");
+    assert_eq!(y2k.unwrap().name(), "DAVID");
     assert_eq!(estate.unwrap().name(), "PATRICIA");
     assert_eq!(explorer.unwrap().name(), "ALEX");
 }
