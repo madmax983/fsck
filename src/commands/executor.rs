@@ -64,6 +64,31 @@ impl CommandExecutor {
                             }
                         }
                     }
+
+                    #[cfg(feature = "nova")]
+                    if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
+                        let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                        if parts.len() == 2 {
+                            let filename = parts[1].trim().to_uppercase();
+                            if !filename.is_empty() {
+                                for file in self.fs.current_node().visible_files() {
+                                    if file.name() == filename {
+                                        let content = file.content();
+                                        let dump =
+                                            crate::experimental::HexDumpGenerator::generate_dump(
+                                                &content,
+                                                &self.entity,
+                                                0xF5C0_0000,
+                                            );
+                                        return CommandResult::success(&format!("{dump}\n"));
+                                    }
+                                }
+                                return CommandResult::error(&format!(
+                                    "?FILE NOT FOUND: {filename}\n"
+                                ));
+                            }
+                        }
+                    }
                 }
 
                 if cmd.is_empty() {

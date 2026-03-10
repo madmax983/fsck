@@ -5,6 +5,8 @@ pub mod emotional_bleed;
 #[cfg(feature = "nova")]
 pub mod grep;
 #[cfg(feature = "nova")]
+pub mod hexdump;
+#[cfg(feature = "nova")]
 pub mod spatial_audio;
 
 #[cfg(feature = "nova")]
@@ -13,5 +15,7 @@ pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
 #[cfg(feature = "nova")]
 pub use grep::SearchTool;
+#[cfg(feature = "nova")]
+pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
 pub use spatial_audio::SpatialAudioGenerator;
