@@ -51,7 +51,13 @@ impl CommandExecutor {
                 #[cfg(feature = "nova")]
                 {
                     let cmd_upper = cmd.to_uppercase();
-                    if cmd_upper == "DIAG" || cmd_upper == "SYS" {
+                    if cmd_upper == "PS" || cmd_upper == "TOP" || cmd_upper == "TASKS" {
+                        let report = crate::experimental::ProcessMonitor::generate_process_list(
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(&format!("{report}\n"));
+                    } else if cmd_upper == "DIAG" || cmd_upper == "SYS" {
                         let report = crate::experimental::SystemDiagnostics::generate_report(
                             &self.entity,
                             0xF5C0_0000,
