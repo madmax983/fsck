@@ -478,3 +478,47 @@ fn test_paradox_enables_infinite_descent() {
         );
     }
 }
+
+#[test]
+fn test_disorienting_navigation() {
+    let mut fs = FilesystemGraph::new();
+
+    // Build a deeper path directly
+    fs.add_child("A");
+    fs.change_dir("A").unwrap();
+    fs.add_child("B");
+    fs.change_dir("B").unwrap();
+    fs.add_child("C");
+    fs.change_dir("C").unwrap();
+    fs.add_child("D");
+    fs.change_dir("D").unwrap();
+    fs.add_child("E");
+    fs.change_dir("E").unwrap();
+
+    // Add sibling to E
+    fs.change_dir("..").unwrap();
+    fs.add_child("SIBLING");
+    fs.change_dir("E").unwrap();
+
+    let mut triggered = false;
+    for seed in 0..100 {
+        // Create F dynamically so we can pop it
+        fs.add_child("F");
+        fs.change_dir("F").unwrap(); // Depth 6
+
+        fs.change_dir_seeded("..", seed).unwrap();
+
+        let curr = fs.current_dir_name().to_string();
+        if curr != "E" {
+            triggered = true;
+            break;
+        }
+
+        // If it was normal, we are at E.
+    }
+
+    assert!(
+        triggered,
+        "Should have triggered disorienting navigation at least once with 100 seeds"
+    );
+}

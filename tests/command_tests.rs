@@ -37,10 +37,8 @@ fn test_run_not_found() {
 fn test_run_basic_program() {
     use fsck::filesystem::FileNode;
     let mut fs = FilesystemGraph::new();
-    fs.current_node_mut().add_file(FileNode::new(
-        "TEST.BAS",
-        "10 PRINT \"HELLO\"\n20 END",
-    ));
+    fs.current_node_mut()
+        .add_file(FileNode::new("TEST.BAS", "10 PRINT \"HELLO\"\n20 END"));
 
     let mut executor = CommandExecutor::new(fs, Entity::new());
     let result = executor.execute(Command::Run("TEST".to_string()));
@@ -52,10 +50,8 @@ fn test_run_basic_program() {
 fn test_run_infinite_loop() {
     use fsck::filesystem::FileNode;
     let mut fs = FilesystemGraph::new();
-    fs.current_node_mut().add_file(FileNode::new(
-        "LOOP.BAS",
-        "10 PRINT \"HI\"\n20 GOTO 10",
-    ));
+    fs.current_node_mut()
+        .add_file(FileNode::new("LOOP.BAS", "10 PRINT \"HI\"\n20 GOTO 10"));
 
     let mut executor = CommandExecutor::new(fs, Entity::new());
     let result = executor.execute(Command::Run("LOOP".to_string()));
@@ -67,10 +63,8 @@ fn test_run_infinite_loop() {
 fn test_run_depth_effects() {
     use fsck::filesystem::FileNode;
     let mut fs = FilesystemGraph::new();
-    fs.current_node_mut().add_file(FileNode::new(
-        "TEST.BAS",
-        "10 PRINT \"HI\"\n20 END",
-    ));
+    fs.current_node_mut()
+        .add_file(FileNode::new("TEST.BAS", "10 PRINT \"HI\"\n20 END"));
 
     let mut entity = Entity::new();
     entity.add_depth(15); // set to Infection layer (15 depth total, which translates to Infection depending on how the layers match)

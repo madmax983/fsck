@@ -1,5 +1,7 @@
 use petgraph::Direction;
 use petgraph::graph::{DiGraph, NodeIndex};
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
 use thiserror::Error;
 
 use super::node::DirNode;
@@ -128,12 +130,69 @@ impl FilesystemGraph {
     /// # Errors
     /// Returns an error if directory not found.
     pub fn change_dir(&mut self, name: &str) -> Result<(), FilesystemError> {
+        self.change_dir_internal(name, None)
+    }
+
+    /// Changes directory with a seed for potential horror effects.
+    /// # Panics
+    /// Panics if path stack is empty.
+    /// # Errors
+    /// Returns an error if directory not found or if trying to navigate above root.
+    pub fn change_dir_seeded(&mut self, name: &str, seed: u64) -> Result<(), FilesystemError> {
+        self.change_dir_internal(name, Some(seed))
+    }
+
+    fn change_dir_internal(
+        &mut self,
+        name: &str,
+        seed: Option<u64>,
+    ) -> Result<(), FilesystemError> {
         let name_upper = name.to_uppercase();
 
         if name_upper == ".." {
             if self.path_stack.len() <= 1 {
                 return Err(FilesystemError::AboveRoot);
             }
+
+            // Disorienting navigation at depth >= 6 (Corruption layer+)
+            let depth = self.current_depth();
+            #[allow(clippy::collapsible_if)]
+            if depth >= 6 {
+                if let Some(s) = seed {
+                    let mut rng = ChaCha8Rng::seed_from_u64(s);
+                    // Probability increases with depth (e.g. 5% at depth 6, 20% at depth 36)
+                    let probability = f64::from(depth - 6).mul_add(0.005, 0.05).min(0.20);
+
+                    if rng.gen_bool(probability) {
+                        // Go sideways: pop current node but push a random other node instead of real parent
+                        self.path_stack.pop();
+
+                        // Collect all directory nodes except root
+                        let all_nodes: Vec<NodeIndex> = self
+                            .graph
+                            .node_indices()
+                            .filter(|&idx| idx != self.root && !self.graph[idx].is_hidden())
+                            .collect();
+
+                        if !all_nodes.is_empty() {
+                            // Pick a random node
+                            let wrong_parent = *all_nodes.choose(&mut rng).unwrap();
+
+                            // If we aren't at root, pop the actual parent so we can insert the wrong one
+                            if self.path_stack.len() > 1 {
+                                self.path_stack.pop();
+                            }
+
+                            // Push the wrong parent in both cases
+                            self.path_stack.push(wrong_parent);
+                            self.current = wrong_parent;
+                            return Ok(());
+                        }
+                    }
+                }
+            }
+
+            // Normal navigation
             self.path_stack.pop();
             self.current = *self.path_stack.last().unwrap();
             return Ok(());
