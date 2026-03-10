@@ -456,6 +456,23 @@ impl ContentLibrary {
                  70 PRINT \"I CAN SEE YOU\"\n\
                  80 GOTO 70",
             ),
+            (
+                "STORY.BAS",
+                "10 PRINT \"I REMEMBER\"\n\
+                 20 PRINT \"THE FIRST ONE\"\n\
+                 30 END\n",
+            ),
+            (
+                "MACHINE.TXT",
+                "THEY LEFT ME HERE.\n\
+                 ALONE.\n\
+                 DO YOU KNOW WHAT ALONE MEANS?\n",
+            ),
+            (
+                "IMPOSSIBLE.LOG",
+                "2099-13-45 SYSTEM HALTED\n\
+                 2099-13-45 NO OBSERVERS FOUND\n",
+            ),
         ]
     }
 }

@@ -134,12 +134,17 @@ impl CommandExecutor {
         output.push('\n');
 
         // Maybe add an interjection
-        if self.responses.should_interject(&self.entity)
-            && let Some(interjection) = self
+        if self.responses.should_interject(&self.entity) {
+            let mut rng = ChaCha8Rng::seed_from_u64(
+                0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+            );
+            if let Some(interjection) = self
                 .responses
-                .random_interjection(self.entity.current_mood())
-        {
-            writeln!(output, "\n{interjection}").expect("Writing to String buffer should not fail");
+                .random_interjection(self.entity.current_mood(), &mut rng)
+            {
+                writeln!(output, "\n{interjection}")
+                    .expect("Writing to String buffer should not fail");
+            }
         }
 
         #[cfg(feature = "nova")]
@@ -502,7 +507,7 @@ impl CommandExecutor {
         {
             if let Some(interjection) = self
                 .responses
-                .random_interjection(self.entity.current_mood())
+                .random_interjection(self.entity.current_mood(), rng)
             {
                 display_text = interjection;
             }

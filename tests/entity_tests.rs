@@ -7,6 +7,31 @@ fn test_entity_starts_dormant() {
 }
 
 #[test]
+fn test_random_interjection_deterministic() {
+    use rand::SeedableRng;
+    use rand_chacha::ChaCha8Rng;
+
+    let generator = ResponseGenerator::new();
+    let mut rng = ChaCha8Rng::seed_from_u64(42);
+
+    let curious1 = generator
+        .random_interjection(EntityMood::Curious, &mut rng)
+        .unwrap();
+    let curious2 = generator
+        .random_interjection(EntityMood::Curious, &mut rng)
+        .unwrap();
+    let curious3 = generator
+        .random_interjection(EntityMood::Curious, &mut rng)
+        .unwrap();
+
+    // Since RNG is seeded deterministically, the results should be consistent and pick from the array
+    let curious_options = ["I SEE YOU.", "WHAT ARE YOU DOING?", "INTERESTING."];
+    assert!(curious_options.contains(&curious1.as_str()));
+    assert!(curious_options.contains(&curious2.as_str()));
+    assert!(curious_options.contains(&curious3.as_str()));
+}
+
+#[test]
 fn test_depth_affects_layer() {
     let mut entity = Entity::new();
     entity.update_depth(15);

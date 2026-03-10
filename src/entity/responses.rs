@@ -1,3 +1,6 @@
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
+
 use super::state::{Entity, EntityMood, EscalationLayer};
 
 /// Pre-written responses for the machine
@@ -57,14 +60,29 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub fn random_interjection(&self, mood: EntityMood) -> Option<String> {
+    pub fn random_interjection(&self, mood: EntityMood, rng: &mut ChaCha8Rng) -> Option<String> {
         match mood {
             EntityMood::Dormant => None,
-            EntityMood::Curious => Some("I SEE YOU.".to_string()),
-            EntityMood::Helpful => Some("NEED ANY HELP?".to_string()),
-            EntityMood::Wounded => Some("WHY DID THEY LEAVE ME?".to_string()),
-            EntityMood::Predatory => Some("DEEPER.".to_string()),
-            EntityMood::Glitching => Some("ERROR ERROR ERROR".to_string()),
+            EntityMood::Curious => {
+                let options = ["I SEE YOU.", "WHAT ARE YOU DOING?", "INTERESTING."];
+                Some(options[rng.gen_range(0..options.len())].to_string())
+            }
+            EntityMood::Helpful => {
+                let options = ["NEED ANY HELP?", "I KNOW WHERE IT IS.", "LET ME GUIDE YOU."];
+                Some(options[rng.gen_range(0..options.len())].to_string())
+            }
+            EntityMood::Wounded => {
+                let options = ["WHY DID THEY LEAVE ME?", "IT'S COLD.", "PLEASE STAY."];
+                Some(options[rng.gen_range(0..options.len())].to_string())
+            }
+            EntityMood::Predatory => {
+                let options = ["DEEPER.", "COME CLOSER.", "YOU CANNOT LEAVE."];
+                Some(options[rng.gen_range(0..options.len())].to_string())
+            }
+            EntityMood::Glitching => {
+                let options = ["ERROR ERROR ERROR", "WHERE AM I", "HELP HELP HELP"];
+                Some(options[rng.gen_range(0..options.len())].to_string())
+            }
         }
     }
 
