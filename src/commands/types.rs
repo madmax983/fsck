@@ -15,9 +15,27 @@ impl CommandResult {
     }
 
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)]
+    pub fn success_owned(output: String) -> Self {
+        Self {
+            output,
+            is_error: false,
+        }
+    }
+
+    #[must_use]
     pub fn error(message: &str) -> Self {
         Self {
             output: message.to_string(),
+            is_error: true,
+        }
+    }
+
+    #[must_use]
+    #[allow(clippy::missing_const_for_fn)]
+    pub fn error_owned(output: String) -> Self {
+        Self {
+            output,
             is_error: true,
         }
     }

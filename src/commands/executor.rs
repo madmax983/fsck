@@ -48,14 +48,14 @@ impl CommandExecutor {
                             &self.entity,
                             0xF5C0_0000,
                         );
-                        return CommandResult::success(&format!("{report}\n"));
+                        return CommandResult::success_owned(format!("{report}\n"));
                     }
                 }
 
                 if cmd.is_empty() {
                     CommandResult::success("")
                 } else {
-                    CommandResult::error(&format!("?SYNTAX ERROR: {cmd}\n"))
+                    CommandResult::error_owned(format!("?SYNTAX ERROR: {cmd}\n"))
                 }
             }
         }
@@ -105,7 +105,7 @@ impl CommandExecutor {
             }
         }
 
-        CommandResult::success(&output)
+        CommandResult::success_owned(output)
     }
 
     fn change_dir(&mut self, path: &str) -> CommandResult {
@@ -119,7 +119,7 @@ impl CommandExecutor {
                 self.entity.update_depth(self.fs.current_depth());
                 CommandResult::success("")
             }
-            Err(e) => CommandResult::error(&format!("?{}\n", e.to_string().to_uppercase())),
+            Err(e) => CommandResult::error_owned(format!("?{}\n", e.to_string().to_uppercase())),
         }
     }
 
@@ -145,11 +145,11 @@ impl CommandExecutor {
                     self.entity.add_depth(depth_increase);
                 }
 
-                return CommandResult::success(&format!("{content}\n"));
+                return CommandResult::success_owned(format!("{content}\n"));
             }
         }
 
-        CommandResult::error(&format!("?FILE NOT FOUND: {filename_upper}\n"))
+        CommandResult::error_owned(format!("?FILE NOT FOUND: {filename_upper}\n"))
     }
 
     fn home() -> CommandResult {
@@ -221,7 +221,7 @@ impl CommandExecutor {
             output = corruption.apply(&output, scan_seed);
         }
 
-        CommandResult::success(&output)
+        CommandResult::success_owned(output)
     }
 
     /// Generate sector scan output appropriate to the current layer
@@ -289,19 +289,19 @@ impl CommandExecutor {
 
     fn hello(&self) -> CommandResult {
         let response = self.responses.hello_response(self.entity.current_mood());
-        CommandResult::success(&format!("{response}\n"))
+        CommandResult::success_owned(format!("{response}\n"))
     }
 
     fn who(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.who_meta_response(&self.entity) {
-            return CommandResult::success(&meta_response);
+            return CommandResult::success_owned(meta_response);
         }
 
         let response = self
             .responses
             .who_response(self.entity.current_mood(), None);
-        CommandResult::success(&format!("{response}\n"))
+        CommandResult::success_owned(format!("{response}\n"))
     }
 
     fn help(&self) -> CommandResult {
@@ -309,7 +309,7 @@ impl CommandExecutor {
 
         // Deep layers get meta-horror response
         if let Some(meta_response) = self.responses.help_meta_response(&self.entity) {
-            return CommandResult::success(&format!("{meta_response}\n"));
+            return CommandResult::success_owned(format!("{meta_response}\n"));
         }
 
         // Surface/Corruption layers get command list, possibly with oddities
@@ -327,17 +327,17 @@ impl CommandExecutor {
 
         help_text.push('\n');
 
-        CommandResult::success(&help_text)
+        CommandResult::success_owned(help_text)
     }
 
     fn quit(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.quit_meta_response(&self.entity) {
-            return CommandResult::error(&meta_response);
+            return CommandResult::error_owned(meta_response);
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
-        CommandResult::error(&format!("{response}\n"))
+        CommandResult::error_owned(format!("{response}\n"))
     }
 
     #[allow(clippy::too_many_lines)]
@@ -349,7 +349,7 @@ impl CommandExecutor {
             "ESCAPE" => {
                 let mood = self.entity.current_mood();
                 let response = self.responses.quit_response(mood);
-                return CommandResult::success(&format!("{response}\n"));
+                return CommandResult::success_owned(format!("{response}\n"));
             }
             "REMEMBER" => {
                 return CommandResult::success("?I REMEMBER EVERYTHING\n");
@@ -388,7 +388,7 @@ impl CommandExecutor {
             if let Ok(line_num) = num_str.parse::<u32>() {
                 program.insert(line_num, stmt.trim().to_string());
             } else {
-                return CommandResult::error(&format!("?SYNTAX ERROR IN: {line}\n"));
+                return CommandResult::error_owned(format!("?SYNTAX ERROR IN: {line}\n"));
             }
         }
 
@@ -416,7 +416,7 @@ impl CommandExecutor {
 
         while let Some(line_num) = current_line {
             if iterations >= 100 {
-                return CommandResult::error(&format!(
+                return CommandResult::error_owned(format!(
                     "{output}?OUT OF MEMORY ERROR IN {line_num}\n"
                 ));
             }
@@ -458,19 +458,23 @@ impl CommandExecutor {
                     if program.contains_key(&target) {
                         next_line = Some(target);
                     } else {
-                        return CommandResult::error(&format!(
+                        return CommandResult::error_owned(format!(
                             "{output}?UNDEF'D STATEMENT ERROR IN {line_num}\n"
                         ));
                     }
                 } else {
-                    return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
+                    return CommandResult::error_owned(format!(
+                        "{output}?SYNTAX ERROR IN {line_num}\n"
+                    ));
                 }
             } else if stmt.starts_with("END") {
                 break;
             } else if stmt.starts_with("REM") {
                 // comment, ignore
             } else if !stmt.is_empty() {
-                return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
+                return CommandResult::error_owned(format!(
+                    "{output}?SYNTAX ERROR IN {line_num}\n"
+                ));
             }
 
             current_line = next_line;
@@ -484,6 +488,6 @@ impl CommandExecutor {
             );
         }
 
-        CommandResult::success(&output)
+        CommandResult::success_owned(output)
     }
 }
