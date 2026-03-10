@@ -12,15 +12,21 @@ impl SearchTool {
     fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
         let char_indices: Vec<(usize, char)> = content.char_indices().collect();
         // Find the index of the matched character in the characters array
-        let char_pos = char_indices.iter().position(|&(i, _)| i == start_idx).unwrap_or(0);
+        let char_pos = char_indices
+            .iter()
+            .position(|&(i, _)| i == start_idx)
+            .unwrap_or(0);
 
         // Count how many characters the query string represents
         // (query_len is in bytes, we need to know how many chars to skip past the match)
-        let query_chars = content[start_idx..].chars().take_while(|c| {
-            let mut buf = [0; 4];
-            let char_len = c.encode_utf8(&mut buf).len();
-            query_len >= char_len
-        }).count();
+        let query_chars = content[start_idx..]
+            .chars()
+            .take_while(|c| {
+                let mut buf = [0; 4];
+                let char_len = c.encode_utf8(&mut buf).len();
+                query_len >= char_len
+            })
+            .count();
         // A simple fallback if the above doesn't perfectly match
         let query_char_len = if query_chars == 0 { 1 } else { query_chars };
 

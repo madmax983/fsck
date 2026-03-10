@@ -14,6 +14,14 @@ pub struct CommandExecutor {
     responses: ResponseGenerator,
 }
 
+struct BasicEvaluationContext<'a> {
+    program: &'a std::collections::BTreeMap<u32, String>,
+    output: &'a mut String,
+    layer: EscalationLayer,
+    rng: &'a mut ChaCha8Rng,
+    next_line: &'a mut Option<u32>,
+}
+
 impl CommandExecutor {
     #[must_use]
     pub const fn new(fs: FilesystemGraph, entity: Entity) -> Self {
@@ -194,56 +202,29 @@ impl CommandExecutor {
         CommandResult::success("\x1B[2J\x1B[H")
     }
 
-    fn fsck(&mut self, _args: &[String]) -> CommandResult {
-        let layer = self.entity.layer();
-        let fsck_count = self.entity.fsck_count();
-        let mood = self.entity.current_mood();
-
-        // 1. Record the fsck use (applies depth pressure every 3rd)
-        self.entity.increment_fsck();
-
-        // 2. Generate deterministic scan output
-        let scan_seed = 0xF5C0_0000u64.wrapping_add(u64::from(fsck_count));
-        let scan_output = Self::generate_fsck_scan(layer, fsck_count, scan_seed);
-
-        // 3. Reveal hidden content in current directory
-        let revealed = self.fs.reveal_hidden_in_current();
-
-        // 4. Build recovery report
-        let recovery = if revealed.is_empty() {
+    fn build_recovery_report(revealed: &[String]) -> String {
+        if revealed.is_empty() {
             "NO ERRORS FOUND\n".to_string()
         } else {
             let mut report = format!("{} SECTOR(S) RECOVERED:\n", revealed.len());
-            for name in &revealed {
+            for name in revealed {
                 use std::fmt::Write;
                 writeln!(report, "  RECOVERED: {name}")
                     .expect("Writing to String buffer should not fail");
             }
             report
-        };
-
-        // 5. Entity resistance
-        let entity_text = self
-            .responses
-            .fsck_response(mood, layer, self.entity.fsck_count());
-
-        // 6. At Presence+: add paradox to current dir (fixes come back worse)
-        if matches!(
-            layer,
-            EscalationLayer::Presence | EscalationLayer::Infection
-        ) && !revealed.is_empty()
-        {
-            self.fs.add_paradox_to_self();
         }
+    }
 
-        // 7. At Infection: extra depth pressure and corrupt the output
-        if matches!(layer, EscalationLayer::Infection) {
-            self.entity.add_depth(3);
-        }
-
-        // 8. Assemble final output
+    fn assemble_fsck_output(
+        scan_output: String,
+        recovery: &str,
+        entity_text: Option<String>,
+        layer: EscalationLayer,
+        scan_seed: u64,
+    ) -> String {
         let mut output = scan_output;
-        output.push_str(&recovery);
+        output.push_str(recovery);
 
         if let Some(entity_response) = entity_text {
             output.push('\n');
@@ -253,13 +234,103 @@ impl CommandExecutor {
 
         output.push('\n');
 
-        // At Infection: corrupt the entire output
         if matches!(layer, EscalationLayer::Infection) {
             let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
             output = corruption.apply(&output, scan_seed);
         }
 
+        output
+    }
+
+    fn fsck(&mut self, _args: &[String]) -> CommandResult {
+        let layer = self.entity.layer();
+        let fsck_count = self.entity.fsck_count();
+        let mood = self.entity.current_mood();
+
+        self.entity.increment_fsck();
+
+        let scan_seed = 0xF5C0_0000u64.wrapping_add(u64::from(fsck_count));
+        let scan_output = Self::generate_fsck_scan(layer, fsck_count, scan_seed);
+
+        let revealed = self.fs.reveal_hidden_in_current();
+
+        let recovery = Self::build_recovery_report(&revealed);
+
+        let entity_text = self
+            .responses
+            .fsck_response(mood, layer, self.entity.fsck_count());
+
+        if matches!(
+            layer,
+            EscalationLayer::Presence | EscalationLayer::Infection
+        ) && !revealed.is_empty()
+        {
+            self.fs.add_paradox_to_self();
+        }
+
+        if matches!(layer, EscalationLayer::Infection) {
+            self.entity.add_depth(3);
+        }
+
+        let output =
+            Self::assemble_fsck_output(scan_output, &recovery, entity_text, layer, scan_seed);
+
         CommandResult::success(&output)
+    }
+
+    fn generate_surface_scan(output: &mut String) {
+        let total_sectors = 560;
+
+        writeln!(output, "READING {total_sectors} SECTORS")
+            .expect("Writing to String buffer should not fail");
+        output.push_str("SECTOR 0000-022F: OK\n");
+        output.push_str("VTOC: OK\n");
+        output.push_str("CATALOG: OK\n\n");
+    }
+
+    fn generate_corruption_scan(output: &mut String, rng: &mut ChaCha8Rng, fsck_count: u32) {
+        let total_sectors = 560 + rng.gen_range(0..100);
+        let bad_sectors = rng.gen_range(1..=3);
+
+        writeln!(output, "READING {total_sectors} SECTORS")
+            .expect("Writing to String buffer should not fail");
+        output.push_str("SECTOR 0000-00FF: OK\n");
+
+        writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)")
+            .expect("Writing to String buffer should not fail");
+        output.push_str("SECTOR 0200-022F: OK\n");
+        if fsck_count > 1 {
+            output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
+        }
+        output.push_str("VTOC: MISMATCH\n\n");
+    }
+
+    fn generate_presence_scan(output: &mut String, rng: &mut ChaCha8Rng) {
+        let total_sectors = rng.gen_range(400..700);
+
+        writeln!(output, "READING {total_sectors} SECTORS")
+            .expect("Writing to String buffer should not fail");
+        output.push_str("SECTOR 0000-00FF: OK\n");
+        output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
+        output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
+        output.push_str("SECTOR 0300-03FF: SECTOR RESISTS READ\n");
+
+        writeln!(
+            output,
+            "VTOC: {} ENTRIES (EXPECTED 256)\n",
+            rng.gen_range(1..=1024)
+        )
+        .expect("Writing to String buffer should not fail");
+    }
+
+    fn generate_infection_scan(output: &mut String, rng: &mut ChaCha8Rng) {
+        let total_sectors = rng.gen_range(0..=99999);
+
+        writeln!(output, "READING {total_sectors} SECTORS")
+            .expect("Writing to String buffer should not fail");
+        output.push_str("SECTOR 0000-????: ?????\n");
+        output.push_str("SECTOR ????-????: CANNOT\n");
+        output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");
     }
 
     /// Generate sector scan output appropriate to the current layer
@@ -270,61 +341,12 @@ impl CommandExecutor {
         output.push_str("CHECKING DISK...\n\n");
 
         match layer {
-            EscalationLayer::Surface => {
-                // Clean, normal disk check
-                let total_sectors = 560;
-
-                writeln!(output, "READING {total_sectors} SECTORS")
-                    .expect("Writing to String buffer should not fail");
-                output.push_str("SECTOR 0000-022F: OK\n");
-                output.push_str("VTOC: OK\n");
-                output.push_str("CATALOG: OK\n\n");
-            }
+            EscalationLayer::Surface => Self::generate_surface_scan(&mut output),
             EscalationLayer::Corruption => {
-                // Errors appear, numbers don't add up
-                let total_sectors = 560 + rng.gen_range(0..100);
-                let bad_sectors = rng.gen_range(1..=3);
-
-                writeln!(output, "READING {total_sectors} SECTORS")
-                    .expect("Writing to String buffer should not fail");
-                output.push_str("SECTOR 0000-00FF: OK\n");
-
-                writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)")
-                    .expect("Writing to String buffer should not fail");
-                output.push_str("SECTOR 0200-022F: OK\n");
-                if fsck_count > 1 {
-                    output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
-                }
-                output.push_str("VTOC: MISMATCH\n\n");
+                Self::generate_corruption_scan(&mut output, &mut rng, fsck_count);
             }
-            EscalationLayer::Presence => {
-                // Entity interjects mid-scan
-                let total_sectors = rng.gen_range(400..700);
-
-                writeln!(output, "READING {total_sectors} SECTORS")
-                    .expect("Writing to String buffer should not fail");
-                output.push_str("SECTOR 0000-00FF: OK\n");
-                output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
-                output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
-                output.push_str("SECTOR 0300-03FF: SECTOR RESISTS READ\n");
-
-                writeln!(
-                    output,
-                    "VTOC: {} ENTRIES (EXPECTED 256)\n",
-                    rng.gen_range(1..=1024)
-                )
-                .expect("Writing to String buffer should not fail");
-            }
-            EscalationLayer::Infection => {
-                // Heavily corrupted scan
-                let total_sectors = rng.gen_range(0..=99999);
-
-                writeln!(output, "READING {total_sectors} SECTORS")
-                    .expect("Writing to String buffer should not fail");
-                output.push_str("SECTOR 0000-????: ?????\n");
-                output.push_str("SECTOR ????-????: CANNOT\n");
-                output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");
-            }
+            EscalationLayer::Presence => Self::generate_presence_scan(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_scan(&mut output, &mut rng),
         }
 
         output
@@ -464,6 +486,57 @@ impl CommandExecutor {
         display_text
     }
 
+    fn evaluate_basic_statement(
+        &self,
+        ctx: &mut BasicEvaluationContext<'_>,
+        stmt: &str,
+        line_num: u32,
+    ) -> Result<bool, CommandResult> {
+        if stmt.starts_with("PRINT") {
+            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
+            ctx.output.push_str(&display_text);
+            ctx.output.push('\n');
+            return Ok(true);
+        }
+
+        if stmt.starts_with("GOTO") {
+            let target_str = stmt.trim_start_matches("GOTO").trim();
+            let Ok(target) = target_str.parse::<u32>() else {
+                return Err(CommandResult::error(&format!(
+                    "{}?SYNTAX ERROR IN {line_num}\n",
+                    ctx.output
+                )));
+            };
+
+            if !ctx.program.contains_key(&target) {
+                return Err(CommandResult::error(&format!(
+                    "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
+                    ctx.output
+                )));
+            }
+
+            *ctx.next_line = Some(target);
+            return Ok(true);
+        }
+
+        if stmt.starts_with("END") {
+            return Ok(false);
+        }
+
+        if stmt.starts_with("REM") {
+            return Ok(true);
+        }
+
+        if !stmt.is_empty() {
+            return Err(CommandResult::error(&format!(
+                "{}?SYNTAX ERROR IN {line_num}\n",
+                ctx.output
+            )));
+        }
+
+        Ok(true)
+    }
+
     fn execute_basic_program(
         &self,
         program: &std::collections::BTreeMap<u32, String>,
@@ -500,32 +573,19 @@ impl CommandExecutor {
             let stmt = &program[&line_num];
             let mut next_line = program.range((line_num + 1)..).next().map(|(k, _)| *k);
 
-            if stmt.starts_with("PRINT") {
-                let display_text = self.execute_print_statement(stmt, layer, &mut rng);
-                output.push_str(&display_text);
-                output.push('\n');
-            } else if stmt.starts_with("GOTO") {
-                let target_str = stmt.trim_start_matches("GOTO").trim();
-                if let Ok(target) = target_str.parse::<u32>() {
-                    if program.contains_key(&target) {
-                        next_line = Some(target);
-                    } else {
-                        return CommandResult::error(&format!(
-                            "{output}?UNDEF'D STATEMENT ERROR IN {line_num}\n"
-                        ));
-                    }
-                } else {
-                    return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
-                }
-            } else if stmt.starts_with("END") {
-                break;
-            } else if stmt.starts_with("REM") {
-                // comment, ignore
-            } else if !stmt.is_empty() {
-                return CommandResult::error(&format!("{output}?SYNTAX ERROR IN {line_num}\n"));
-            }
+            let mut ctx = BasicEvaluationContext {
+                program,
+                output: &mut output,
+                layer,
+                rng: &mut rng,
+                next_line: &mut next_line,
+            };
 
-            current_line = next_line;
+            match self.evaluate_basic_statement(&mut ctx, stmt, line_num) {
+                Ok(true) => current_line = next_line,
+                Ok(false) => break,
+                Err(e) => return e,
+            }
         }
 
         if matches!(layer, EscalationLayer::Infection) {
