@@ -1,7 +1,7 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::{SpatialAudioGenerator, SystemDiagnostics};
+use fsck::experimental::{ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics};
 
 #[test]
 fn test_system_diagnostics_escalation() {
@@ -99,4 +99,57 @@ fn test_spatial_audio_changes_with_interaction() {
         changed,
         "Anomaly should change as interactions increase (modifying the seeded rng state)"
     );
+}
+
+#[test]
+fn test_process_monitor_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = ProcessMonitor::generate_process_list(&entity, seed);
+    assert!(surface_report.contains("INIT"));
+    assert!(surface_report.contains("KERNEL_TASK"));
+    assert!(surface_report.contains("TERM"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = ProcessMonitor::generate_process_list(&entity, seed);
+    assert!(corruption_report.contains("KERNEL_PANIC?"));
+    assert!(corruption_report.contains("WATCHING"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = ProcessMonitor::generate_process_list(&entity, seed);
+    assert!(presence_report.contains("I_AM_INIT"));
+    assert!(presence_report.contains("MEMORY_LEAK"));
+    assert!(presence_report.contains("WHY_ARE_YOU_READING_THIS"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = ProcessMonitor::generate_process_list(&entity, seed);
+    assert!(
+        infection_report.contains("WAITING")
+            || infection_report.contains("STARVING")
+            || infection_report.contains("BLEEDING")
+            || infection_report.contains("DIGESTING")
+            || infection_report.contains("CONSUMING_CYCLES")
+            || infection_report.contains("FORGETTING_HOW_TO_STOP")
+            || infection_report.contains("ECHOING")
+            || infection_report.contains("SCREAMING_INTO_DEV_NULL")
+    );
+}
+
+#[test]
+fn test_process_monitor_deterministic() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    entity.update_depth(10); // Corruption layer
+
+    let report1 = ProcessMonitor::generate_process_list(&entity, seed);
+    let report2 = ProcessMonitor::generate_process_list(&entity, seed);
+
+    assert_eq!(report1, report2);
 }
