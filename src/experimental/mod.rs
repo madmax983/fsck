@@ -7,6 +7,8 @@ pub mod grep;
 #[cfg(feature = "nova")]
 pub mod hexdump;
 #[cfg(feature = "nova")]
+pub mod modem;
+#[cfg(feature = "nova")]
 pub mod spatial_audio;
 
 #[cfg(feature = "nova")]
@@ -17,5 +19,7 @@ pub use emotional_bleed::EmotionalBleed;
 pub use grep::SearchTool;
 #[cfg(feature = "nova")]
 pub use hexdump::HexDumpGenerator;
+#[cfg(feature = "nova")]
+pub use modem::ModemSimulator;
 #[cfg(feature = "nova")]
 pub use spatial_audio::SpatialAudioGenerator;

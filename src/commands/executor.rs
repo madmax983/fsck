@@ -97,6 +97,22 @@ impl CommandExecutor {
                             }
                         }
                     }
+
+                    #[cfg(feature = "nova")]
+                    if cmd_upper.starts_with("DIAL ") {
+                        let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                        if parts.len() == 2 {
+                            let number = parts[1].trim();
+                            if !number.is_empty() {
+                                let output = crate::experimental::ModemSimulator::dial(
+                                    number,
+                                    &self.entity,
+                                    0xF5C0_0000,
+                                );
+                                return CommandResult::success(&output);
+                            }
+                        }
+                    }
                 }
 
                 if cmd.is_empty() {
