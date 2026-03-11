@@ -8,6 +8,20 @@ fn test_create_victim_history() {
 }
 
 #[test]
+fn test_new_generic_files_exist() {
+    let library = ContentLibrary::new();
+    let files = library.generic_files();
+
+    let has_story_bas = files.iter().any(|(n, _)| *n == "STORY.BAS");
+    let has_machine_txt = files.iter().any(|(n, _)| *n == "MACHINE.TXT");
+    let has_impossible_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE.LOG");
+
+    assert!(has_story_bas);
+    assert!(has_machine_txt);
+    assert!(has_impossible_log);
+}
+
+#[test]
 fn test_history_has_entries() {
     let mut history = VictimHistory::new(Era::Original, "JAMIE", 1984);
     history.add_entry(VictimEntry::new(
