@@ -8,6 +8,8 @@ pub struct GameState {
     entity: Entity,
     #[serde(default)]
     command_history: Vec<String>,
+    #[serde(default)]
+    notable_actions: Vec<String>,
     max_depth_reached: u32,
     session_count: u32,
     first_played: String, // Timestamp
@@ -23,6 +25,7 @@ impl GameState {
             seed,
             entity,
             command_history: Vec::new(),
+            notable_actions: Vec::new(),
             max_depth_reached: max_depth,
             session_count: 1,
             first_played,
@@ -45,10 +48,31 @@ impl GameState {
         &self.command_history
     }
 
+    #[must_use]
+    pub fn notable_actions(&self) -> &[String] {
+        &self.notable_actions
+    }
+
     pub fn record_command(&mut self, cmd: &str) {
-        self.command_history.push(cmd.to_string());
+        let cmd_string = cmd.to_string();
+        self.command_history.push(cmd_string.clone());
         if self.command_history.len() > 100 {
             self.command_history.remove(0);
+        }
+
+        let cmd_upper = cmd.to_uppercase();
+        if cmd_upper.contains("FSCK")
+            || cmd_upper.contains("QUIT")
+            || cmd_upper.contains("RUN ESCAPE")
+            || cmd_upper.contains("CD ..")
+            || cmd_upper.contains("HELP")
+            || cmd_upper.contains("HELLO")
+            || cmd_upper.contains("WHO")
+        {
+            self.notable_actions.push(cmd_string);
+            if self.notable_actions.len() > 20 {
+                self.notable_actions.remove(0);
+            }
         }
     }
 

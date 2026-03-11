@@ -13,6 +13,8 @@ pub enum Era {
     EstateSale,
     /// 2019 - Urban explorer
     Explorer,
+    /// Previous player's session
+    Previous,
     /// Current player
     Current,
 }

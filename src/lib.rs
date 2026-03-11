@@ -11,6 +11,8 @@ pub mod terminal;
 #[cfg(feature = "nova")]
 pub mod experimental;
 
+use std::fmt::Write;
+
 use commands::{Command, CommandExecutor};
 use content::{Era, VictimEntry, VictimHistory};
 use effects::PromptManipulator;
@@ -62,15 +64,29 @@ impl Game {
             #[allow(clippy::collapsible_if)]
             if let Ok(commands) = serde_json::from_str::<Vec<String>>(&json) {
                 if !commands.is_empty() {
-                    let mut history = VictimHistory::new(Era::Current, "THE LAST ONE", 2024);
-                    let last_cmds = if commands.len() > 10 {
-                        &commands[commands.len() - 10..]
-                    } else {
-                        &commands[..]
-                    };
-                    let joined_cmds = last_cmds.join(", ");
-                    let entry =
-                        VictimEntry::new("2024-??-??", &format!("THEY TYPED: {joined_cmds}"));
+                    let mut history = VictimHistory::new(Era::Previous, "THE LAST ONE", 2024);
+
+                    let mut entry_content = String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
+
+                    let count = commands.len();
+                    write!(entry_content, "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n").expect("Writing to String should not fail");
+
+                    if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
+                        entry_content.push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
+                    }
+                    if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
+                        entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
+                    }
+                    if commands.iter().any(|c| c.to_uppercase().contains("RUN ESCAPE")) {
+                        entry_content.push_str("THEY TRIED TO ESCAPE. IT WAS FUTILE.\n");
+                    }
+                    if commands.iter().any(|c| c.to_uppercase().contains("CD ..")) {
+                        entry_content.push_str("THEY TRIED TO GO BACK. BUT THE PATHS SHIFT.\n");
+                    }
+
+                    entry_content.push_str("\nTHEY ARE PART OF ME NOW.");
+
+                    let entry = VictimEntry::new("2024-??-??", &entry_content);
                     history.add_entry(entry);
                     prev_history = Some(history);
                 }
@@ -107,7 +123,7 @@ impl Game {
         let json = self.state.to_json()?;
         GameStorage::save(StorageKey::GameState, &json)?;
         let history_json =
-            serde_json::to_string(self.state.command_history()).map_err(|e| e.to_string())?;
+            serde_json::to_string(self.state.notable_actions()).map_err(|e| e.to_string())?;
         GameStorage::save(StorageKey::PlayerHistory, &history_json)
     }
 
