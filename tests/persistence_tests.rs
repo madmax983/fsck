@@ -54,6 +54,26 @@ fn test_gamestate_tracks_session_count() {
 }
 
 #[test]
+fn test_gamestate_records_notable_actions() {
+    let entity = Entity::new();
+    let mut state = GameState::new(42, entity, 0);
+
+    state.record_command("CATALOG");
+    assert_eq!(state.notable_actions().len(), 0);
+
+    state.record_command("FSCK");
+    assert_eq!(state.notable_actions().len(), 1);
+    assert_eq!(state.notable_actions()[0], "FSCK");
+
+    state.record_command("cd ..");
+    assert_eq!(state.notable_actions().len(), 2);
+    assert_eq!(state.notable_actions()[1], "cd ..");
+
+    state.record_command("RUN ESCAPE");
+    assert_eq!(state.notable_actions().len(), 3);
+}
+
+#[test]
 fn test_game_detects_returning_player() {
     // Create a new game (first session)
     let game = fsck::Game::new();

@@ -274,8 +274,9 @@ impl FilesystemGenerator {
         current_depth: u32,
     ) {
         // Occasionally place victim history files (deeper = more likely)
-        if current_depth >= 3 && rng.gen_bool(0.4) {
+        if current_depth >= 1 && rng.gen_bool(0.4) {
             let era = match current_depth {
+                1..=2 => Era::Previous,
                 3..=8 => Era::Original,
                 9..=15 => Era::Technician,
                 16..=25 => Era::EstateSale,
