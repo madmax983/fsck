@@ -63,6 +63,25 @@ impl CommandExecutor {
                             0xF5C0_0000,
                         );
                         return CommandResult::success(&format!("{report}\n"));
+                    } else if cmd_upper == "NETSTAT" || cmd_upper == "IFCONFIG" {
+                        let report = crate::experimental::NetworkSimulator::generate_netstat(
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(&format!("{report}\n"));
+                    } else if cmd_upper.starts_with("PING ") {
+                        let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                        if parts.len() == 2 {
+                            let host = parts[1].trim();
+                            if !host.is_empty() {
+                                let result = crate::experimental::NetworkSimulator::ping(
+                                    host,
+                                    &self.entity,
+                                    0xF5C0_0000,
+                                );
+                                return CommandResult::success(&format!("{result}\n"));
+                            }
+                        }
                     } else if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
                         let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
                         if parts.len() == 2 {

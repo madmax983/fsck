@@ -1,8 +1,12 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
+
+#[cfg(feature = "nova")]
 use fsck::experimental::{ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics};
 
+#[cfg(feature = "nova")]
+#[cfg(feature = "nova")]
 #[test]
 fn test_system_diagnostics_escalation() {
     let mut entity = Entity::new();
@@ -36,6 +40,8 @@ fn test_system_diagnostics_escalation() {
     );
 }
 
+#[cfg(feature = "nova")]
+#[cfg(feature = "nova")]
 #[test]
 fn test_spatial_audio_deterministic_generation() {
     let mut entity = Entity::new();
@@ -62,6 +68,7 @@ fn test_spatial_audio_deterministic_generation() {
     );
 }
 
+#[cfg(feature = "nova")]
 #[test]
 fn test_spatial_audio_changes_with_interaction() {
     let mut entity = Entity::new();
@@ -101,6 +108,7 @@ fn test_spatial_audio_changes_with_interaction() {
     );
 }
 
+#[cfg(feature = "nova")]
 #[test]
 fn test_process_monitor_escalation() {
     let mut entity = Entity::new();
@@ -141,6 +149,7 @@ fn test_process_monitor_escalation() {
     );
 }
 
+#[cfg(feature = "nova")]
 #[test]
 fn test_process_monitor_deterministic() {
     let mut entity = Entity::new();
@@ -152,4 +161,58 @@ fn test_process_monitor_deterministic() {
     let report2 = ProcessMonitor::generate_process_list(&entity, seed);
 
     assert_eq!(report1, report2);
+}
+
+#[cfg(feature = "nova")]
+#[test]
+fn test_network_simulator_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_netstat = fsck::experimental::NetworkSimulator::generate_netstat(&entity, seed);
+    assert!(surface_netstat.contains("Local"));
+    assert!(surface_netstat.contains("ESTABLISHED"));
+    assert!(surface_netstat.contains("127.0.0.1"));
+
+    let surface_ping = fsck::experimental::NetworkSimulator::ping("127.0.0.1", &entity, seed);
+    assert!(surface_ping.contains("PING 127.0.0.1: 56 data bytes"));
+    assert!(surface_ping.contains("time="));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_netstat = fsck::experimental::NetworkSimulator::generate_netstat(&entity, seed);
+    assert!(corruption_netstat.contains("127.0.0.1"));
+    assert!(corruption_netstat.contains("UNKNOWN") || corruption_netstat.contains("DROPPED"));
+
+    let corruption_ping = fsck::experimental::NetworkSimulator::ping("localhost", &entity, seed);
+    assert!(corruption_ping.contains("Packet loss") || corruption_ping.contains("timeout"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_netstat = fsck::experimental::NetworkSimulator::generate_netstat(&entity, seed);
+    assert!(
+        presence_netstat.contains("LISTENING_TO_YOU")
+            || presence_netstat.contains("INSIDE_THE_HOUSE")
+    );
+
+    let presence_ping = fsck::experimental::NetworkSimulator::ping("hello", &entity, seed);
+    assert!(presence_ping.contains("I AM HERE") || presence_ping.contains("time=9999"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_netstat = fsck::experimental::NetworkSimulator::generate_netstat(&entity, seed);
+    assert!(
+        infection_netstat.contains("NO_WAY_OUT")
+            || infection_netstat.contains("BEYOND_REACH")
+            || infection_netstat.contains("PORT_666")
+    );
+
+    let infection_ping = fsck::experimental::NetworkSimulator::ping("anyone", &entity, seed);
+    assert!(
+        infection_ping.contains("ALONE")
+            || infection_ping.contains("SILENCE")
+            || infection_ping.contains("THEY_ARE_GONE")
+    );
 }

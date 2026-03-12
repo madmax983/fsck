@@ -23,3 +23,8 @@ pub use hexdump::HexDumpGenerator;
 pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]
 pub use spatial_audio::SpatialAudioGenerator;
+#[cfg(feature = "nova")]
+pub mod network;
+
+#[cfg(feature = "nova")]
+pub use network::NetworkSimulator;
