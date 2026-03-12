@@ -75,4 +75,53 @@ export class GameAudio {
             }, i * 50);
         }
     }
+
+    playPresence() {
+        if (!this.enabled) return;
+
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        // Low frequency drone
+        oscillator.frequency.value = 50;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, this.audioContext.currentTime + 1);
+        gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 3);
+
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 3);
+    }
+
+    playInfection() {
+        if (!this.enabled) return;
+
+        const oscillator1 = this.audioContext.createOscillator();
+        const oscillator2 = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator1.connect(gainNode);
+        oscillator2.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        // Dissonant frequencies
+        oscillator1.frequency.value = 120;
+        oscillator1.type = 'sawtooth';
+
+        oscillator2.frequency.value = 123; // Creates beating/dissonance
+        oscillator2.type = 'square';
+
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, this.audioContext.currentTime + 0.5);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 2);
+
+        oscillator1.start(this.audioContext.currentTime);
+        oscillator2.start(this.audioContext.currentTime);
+        oscillator1.stop(this.audioContext.currentTime + 2);
+        oscillator2.stop(this.audioContext.currentTime + 2);
+    }
 }

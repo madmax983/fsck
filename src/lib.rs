@@ -163,6 +163,34 @@ impl Game {
         self.state.session_count() > 1
     }
 
+    #[must_use]
+    pub fn get_audio_trigger(&self) -> String {
+        use rand::{Rng, SeedableRng};
+        use rand_chacha::ChaCha8Rng;
+
+        let depth = self.get_depth();
+        if depth < 16 {
+            return String::new();
+        }
+
+        // Use seed + interaction count for deterministic RNG
+        let seed = self.state.seed().wrapping_add(self.executor.entity().interaction_count() as u64);
+        let mut rng = ChaCha8Rng::seed_from_u64(seed);
+
+        if depth >= 26 {
+            // Infection layer (20% chance)
+            if rng.gen_bool(0.2) {
+                return "INFECTION".to_string();
+            }
+        } else if depth >= 16 {
+            // Presence layer (10% chance)
+            if rng.gen_bool(0.1) {
+                return "PRESENCE".to_string();
+            }
+        }
+        String::new()
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     const fn generate_seed() -> u64 {
         42
