@@ -66,18 +66,28 @@ impl Game {
                 if !commands.is_empty() {
                     let mut history = VictimHistory::new(Era::Previous, "THE LAST ONE", 2024);
 
-                    let mut entry_content = String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
+                    let mut entry_content =
+                        String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
 
                     let count = commands.len();
-                    write!(entry_content, "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n").expect("Writing to String should not fail");
+                    write!(
+                        entry_content,
+                        "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n"
+                    )
+                    .expect("Writing to String should not fail");
 
                     if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
-                        entry_content.push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
+                        entry_content.push_str(
+                            "THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n",
+                        );
                     }
                     if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
                         entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
                     }
-                    if commands.iter().any(|c| c.to_uppercase().contains("RUN ESCAPE")) {
+                    if commands
+                        .iter()
+                        .any(|c| c.to_uppercase().contains("RUN ESCAPE"))
+                    {
                         entry_content.push_str("THEY TRIED TO ESCAPE. IT WAS FUTILE.\n");
                     }
                     if commands.iter().any(|c| c.to_uppercase().contains("CD ..")) {
