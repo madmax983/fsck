@@ -27,7 +27,11 @@ async function main() {
         scrollback: 1000,
     });
 
-    term.open(document.getElementById('terminal'));
+    const terminalElement = document.getElementById('terminal');
+    term.open(terminalElement);
+
+    // Add base CRT styling
+    terminalElement.classList.add('crt-overlay');
 
     // Initialize audio (requires user gesture)
     const audio = new GameAudio();
@@ -57,6 +61,24 @@ async function main() {
             // Play error sound for syntax errors
             if (output.includes('ERROR')) {
                 audio.playError();
+            }
+
+            // Clear previous depth classes
+            terminalElement.classList.remove('depth-presence', 'depth-infection');
+
+            // Apply new depth visual and audio effects
+            if (depth >= 16 && depth < 26) {
+                terminalElement.classList.add('depth-presence');
+            } else if (depth >= 26) {
+                terminalElement.classList.add('depth-infection');
+            }
+
+            // Play deterministic ambient audio triggers
+            const audioTrigger = game.get_audio_trigger();
+            if (audioTrigger === "PRESENCE") {
+                audio.playPresence();
+            } else if (audioTrigger === "INFECTION") {
+                audio.playInfection();
             }
 
             // Play glitch sound at deep levels

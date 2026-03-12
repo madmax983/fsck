@@ -49,3 +49,43 @@ body {
     80% { transform: translate(2px, -2px); }
     100% { transform: translate(0); }
 }
+
+/* CRT Scanline effect */
+.crt-overlay {
+    position: relative;
+}
+
+.crt-overlay::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+/* Screen flicker animation for Presence layer */
+@keyframes flicker {
+    0% { opacity: 0.95; }
+    5% { opacity: 0.85; }
+    10% { opacity: 0.95; }
+    15% { opacity: 1; }
+    50% { opacity: 0.95; }
+    55% { opacity: 0.9; }
+    60% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+.depth-presence {
+    animation: flicker 3s infinite alternate;
+}
+
+/* Aggressive shake/glitch for Infection layer */
+.depth-infection {
+    animation: glitch 0.5s infinite, shake 5s infinite;
+}

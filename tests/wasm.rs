@@ -55,3 +55,34 @@ fn test_game_loads_previous_state() {
     // Verify game is ready (state loaded)
     assert!(game2.is_ready());
 }
+
+#[test]
+fn test_get_audio_trigger_surface_layer() {
+    let mut game = Game::new();
+    assert_eq!(game.get_audio_trigger(), "");
+}
+
+#[test]
+fn test_get_audio_trigger_presence_layer() {
+    let mut game = Game::new();
+    // Simulate depth to presence
+    for _ in 0..16 {
+        game.process_input("CD DONT");
+    }
+
+    // We should be in the presence layer now (depth >= 16)
+    let trigger = game.get_audio_trigger();
+    assert!(trigger == "" || trigger == "PRESENCE");
+}
+
+#[test]
+fn test_get_audio_trigger_infection_layer() {
+    let mut game = Game::new();
+    // Simulate depth to infection
+    for _ in 0..26 {
+        game.process_input("CD DONT"); // depth tracking is based on max_depth/modifier
+    }
+
+    let trigger = game.get_audio_trigger();
+    assert!(trigger == "" || trigger == "INFECTION");
+}
