@@ -56,7 +56,7 @@ impl CommandExecutor {
                             &self.entity,
                             0xF5C0_0000,
                         );
-                        return CommandResult::success(&format!("{report}\n"));
+                        return CommandResult::success(format!("{report}\n"));
                     } else if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
                         let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
                         if parts.len() == 2 {
@@ -68,7 +68,7 @@ impl CommandExecutor {
                                     query,
                                     0xF5C0_0000,
                                 );
-                                return CommandResult::success(&format!("{results}\n"));
+                                return CommandResult::success(format!("{results}\n"));
                             }
                         }
                     }
@@ -88,10 +88,10 @@ impl CommandExecutor {
                                                 &self.entity,
                                                 0xF5C0_0000,
                                             );
-                                        return CommandResult::success(&format!("{dump}\n"));
+                                        return CommandResult::success(format!("{dump}\n"));
                                     }
                                 }
-                                return CommandResult::error(&format!(
+                                return CommandResult::error(format!(
                                     "?FILE NOT FOUND: {filename}\n"
                                 ));
                             }
@@ -102,7 +102,7 @@ impl CommandExecutor {
                 if cmd.is_empty() {
                     CommandResult::success("")
                 } else {
-                    CommandResult::error(&format!("?SYNTAX ERROR: {cmd}\n"))
+                    CommandResult::error(format!("?SYNTAX ERROR: {cmd}\n"))
                 }
             }
         }
@@ -154,7 +154,7 @@ impl CommandExecutor {
             }
         }
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn change_dir(&mut self, path: &str) -> CommandResult {
@@ -177,7 +177,7 @@ impl CommandExecutor {
                 self.entity.update_depth(self.fs.current_depth());
                 CommandResult::success("")
             }
-            Err(e) => CommandResult::error(&format!("?{}\n", e.to_string().to_uppercase())),
+            Err(e) => CommandResult::error(format!("?{}\n", e.to_string().to_uppercase())),
         }
     }
 
@@ -215,11 +215,11 @@ impl CommandExecutor {
                     self.entity.add_depth(depth_increase);
                 }
 
-                return CommandResult::success(&format!("{content}\n"));
+                return CommandResult::success(format!("{content}\n"));
             }
         }
 
-        CommandResult::error(&format!("?FILE NOT FOUND: {filename_upper}\n"))
+        CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"))
     }
 
     fn home() -> CommandResult {
@@ -300,7 +300,7 @@ impl CommandExecutor {
         let output =
             Self::assemble_fsck_output(scan_output, &recovery, entity_text, layer, scan_seed);
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn generate_surface_scan(output: &mut String) {
@@ -379,19 +379,19 @@ impl CommandExecutor {
 
     fn hello(&self) -> CommandResult {
         let response = self.responses.hello_response(self.entity.current_mood());
-        CommandResult::success(&format!("{response}\n"))
+        CommandResult::success(format!("{response}\n"))
     }
 
     fn who(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.who_meta_response(&self.entity) {
-            return CommandResult::success(&meta_response);
+            return CommandResult::success(meta_response);
         }
 
         let response = self
             .responses
             .who_response(self.entity.current_mood(), None);
-        CommandResult::success(&format!("{response}\n"))
+        CommandResult::success(format!("{response}\n"))
     }
 
     fn help(&self) -> CommandResult {
@@ -399,7 +399,7 @@ impl CommandExecutor {
 
         // Deep layers get meta-horror response
         if let Some(meta_response) = self.responses.help_meta_response(&self.entity) {
-            return CommandResult::success(&format!("{meta_response}\n"));
+            return CommandResult::success(format!("{meta_response}\n"));
         }
 
         // Surface/Corruption layers get command list, possibly with oddities
@@ -417,7 +417,7 @@ impl CommandExecutor {
 
         help_text.push('\n');
 
-        CommandResult::success(&help_text)
+        CommandResult::success(help_text)
     }
 
     fn quit(&self) -> CommandResult {
@@ -427,7 +427,7 @@ impl CommandExecutor {
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
-        CommandResult::error(&format!("{response}\n"))
+        CommandResult::error(format!("{response}\n"))
     }
 
     fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
@@ -435,7 +435,7 @@ impl CommandExecutor {
             "ESCAPE" => {
                 let mood = self.entity.current_mood();
                 let response = self.responses.quit_response(mood);
-                Some(CommandResult::success(&format!("{response}\n")))
+                Some(CommandResult::success(format!("{response}\n")))
             }
             "REMEMBER" => Some(CommandResult::success("?I REMEMBER EVERYTHING\n")),
             _ => None,
@@ -527,14 +527,14 @@ impl CommandExecutor {
         if stmt.starts_with("GOTO") {
             let target_str = stmt.trim_start_matches("GOTO").trim();
             let Ok(target) = target_str.parse::<u32>() else {
-                return Err(CommandResult::error(&format!(
+                return Err(CommandResult::error(format!(
                     "{}?SYNTAX ERROR IN {line_num}\n",
                     ctx.output
                 )));
             };
 
             if !ctx.program.contains_key(&target) {
-                return Err(CommandResult::error(&format!(
+                return Err(CommandResult::error(format!(
                     "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
                     ctx.output
                 )));
@@ -553,7 +553,7 @@ impl CommandExecutor {
         }
 
         if !stmt.is_empty() {
-            return Err(CommandResult::error(&format!(
+            return Err(CommandResult::error(format!(
                 "{}?SYNTAX ERROR IN {line_num}\n",
                 ctx.output
             )));
@@ -589,7 +589,7 @@ impl CommandExecutor {
 
         while let Some(line_num) = current_line {
             if iterations >= 100 {
-                return CommandResult::error(&format!(
+                return CommandResult::error(format!(
                     "{output}?OUT OF MEMORY ERROR IN {line_num}\n"
                 ));
             }
@@ -621,7 +621,7 @@ impl CommandExecutor {
             );
         }
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn run(&self, prog: &str) -> CommandResult {
@@ -639,7 +639,7 @@ impl CommandExecutor {
         // Parse BASIC program into BTreeMap
         let program = match Self::parse_basic_program(&content) {
             Ok(p) => p,
-            Err(e) => return CommandResult::error(&e),
+            Err(e) => return CommandResult::error(e),
         };
 
         self.execute_basic_program(&program)
