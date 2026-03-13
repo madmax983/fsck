@@ -1,5 +1,6 @@
 use crate::entity::Entity;
 use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 /// Complete game state for persistence
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7,7 +8,7 @@ pub struct GameState {
     seed: u64,
     entity: Entity,
     #[serde(default)]
-    command_history: Vec<String>,
+    command_history: VecDeque<String>,
     max_depth_reached: u32,
     session_count: u32,
     first_played: String, // Timestamp
@@ -22,7 +23,7 @@ impl GameState {
         Self {
             seed,
             entity,
-            command_history: Vec::new(),
+            command_history: VecDeque::new(),
             max_depth_reached: max_depth,
             session_count: 1,
             first_played,
@@ -41,14 +42,14 @@ impl GameState {
     }
 
     #[must_use]
-    pub fn command_history(&self) -> &[String] {
+    pub const fn command_history(&self) -> &VecDeque<String> {
         &self.command_history
     }
 
     pub fn record_command(&mut self, cmd: &str) {
-        self.command_history.push(cmd.to_string());
+        self.command_history.push_back(cmd.to_string());
         if self.command_history.len() > 100 {
-            self.command_history.remove(0);
+            self.command_history.pop_front();
         }
     }
 
