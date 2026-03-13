@@ -1,4 +1,6 @@
 #[cfg(feature = "nova")]
+pub mod defrag;
+#[cfg(feature = "nova")]
 pub mod diagnostics;
 #[cfg(feature = "nova")]
 pub mod emotional_bleed;
@@ -11,6 +13,8 @@ pub mod process_monitor;
 #[cfg(feature = "nova")]
 pub mod spatial_audio;
 
+#[cfg(feature = "nova")]
+pub use defrag::DefragTool;
 #[cfg(feature = "nova")]
 pub use diagnostics::SystemDiagnostics;
 #[cfg(feature = "nova")]
