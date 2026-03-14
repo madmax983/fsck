@@ -8,17 +8,20 @@ use std::fmt::Write;
 pub struct SearchTool;
 
 impl SearchTool {
-    /// Extract a safe snippet from the content avoiding char boundary panics
+    /// Extract a safe snippet from the content avoiding char boundary panics.
+    /// Optimized to avoid O(N) heap allocations by iterating over char indices.
     fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
-        let char_indices: Vec<(usize, char)> = content.char_indices().collect();
-        // Find the index of the matched character in the characters array
-        let char_pos = char_indices
-            .iter()
-            .position(|&(i, _)| i == start_idx)
-            .unwrap_or(0);
+        let prefix = &content[..start_idx];
+        let mut chars_before = 0;
+        let mut start_byte = start_idx;
+        for (i, _) in prefix.char_indices().rev() {
+            start_byte = i;
+            chars_before += 1;
+            if chars_before == 10 {
+                break;
+            }
+        }
 
-        // Count how many characters the query string represents
-        // (query_len is in bytes, we need to know how many chars to skip past the match)
         let query_chars = content[start_idx..]
             .chars()
             .take_while(|c| {
@@ -27,17 +30,17 @@ impl SearchTool {
                 query_len >= char_len
             })
             .count();
-        // A simple fallback if the above doesn't perfectly match
         let query_char_len = if query_chars == 0 { 1 } else { query_chars };
 
-        let snippet_start = char_pos.saturating_sub(10);
-        let snippet_end = (char_pos + query_char_len + 10).min(char_indices.len());
-
-        let mut result = String::new();
-        for &(_, ch) in &char_indices[snippet_start..snippet_end] {
-            result.push(ch);
+        let mut end_byte = start_idx;
+        for (chars_after, (i, c)) in content[start_idx..].char_indices().enumerate() {
+            if chars_after == query_char_len + 10 {
+                break;
+            }
+            end_byte = start_idx + i + c.len_utf8();
         }
-        result
+
+        content[start_byte..end_byte].to_string()
     }
 
     /// Searches for a query string within the current directory.
