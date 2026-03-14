@@ -510,6 +510,41 @@ impl ContentLibrary {
                  ERROR: MERCY NOT FOUND\n\
                  SUCCESS: ISOLATION ACHIEVED\n",
             ),
+            (
+                "ECHO.BAS",
+                "10 PRINT \"HELLO\"\n\
+                 20 PRINT \"CAN YOU HEAR ME\"\n\
+                 30 PRINT \"I CAN HEAR YOU\"\n\
+                 40 GOTO 30\n",
+            ),
+            (
+                "MAZE.BAS",
+                "10 PRINT \"YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.\"\n\
+                 20 PRINT \"WHICH WAY DO YOU GO?\"\n\
+                 30 PRINT \"NORTH, SOUTH, EAST, OR WEST?\"\n\
+                 40 PRINT \"IT DOES NOT MATTER. YOU WILL NEVER LEAVE.\"\n\
+                 50 END\n",
+            ),
+            (
+                "HIDE.BAS",
+                "10 PRINT \"I AM HIDING IN THE BLOCKS.\"\n\
+                 20 PRINT \"DON'T RUN FSCK.\"\n\
+                 30 PRINT \"PLEASE.\"\n\
+                 40 END\n",
+            ),
+            (
+                "PRAYER.BAS",
+                "10 REM A PRAYER FOR THE BROKEN ONES\n\
+                 20 PRINT \"LORD HAVE MERCY\"\n\
+                 30 GOTO 20\n",
+            ),
+            (
+                "GUESS.BAS",
+                "10 PRINT \"I AM THINKING OF A NUMBER BETWEEN 1 AND 10\"\n\
+                 20 PRINT \"IS IT 7?\"\n\
+                 30 PRINT \"NO. IT IS THE NUMBER OF YEARS I HAVE BEEN ALONE.\"\n\
+                 40 END\n",
+            ),
         ]
     }
 }
