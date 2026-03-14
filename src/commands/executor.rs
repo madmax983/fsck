@@ -87,6 +87,13 @@ impl CommandExecutor {
                 }
             }
 
+            #[cfg(feature = "nova")]
+            if cmd_upper == "DEFRAG" {
+                let defrag_output =
+                    crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+                return CommandResult::success(&format!("{defrag_output}\n"));
+            }
+
             if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
                 let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
                 if parts.len() == 2 {
