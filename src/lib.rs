@@ -184,7 +184,10 @@ impl Game {
         }
 
         // Use seed + interaction count for deterministic RNG
-        let seed = self.state.seed().wrapping_add(u64::from(self.executor.entity().interaction_count()));
+        let seed = self
+            .state
+            .seed()
+            .wrapping_add(u64::from(self.executor.entity().interaction_count()));
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
 
         if depth >= 26 {
