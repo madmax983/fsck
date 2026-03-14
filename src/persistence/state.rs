@@ -53,12 +53,10 @@ impl GameState {
         &self.notable_actions
     }
 
+    /// Records a command into the game history buffer.
+    /// ⚡ Bolt Optimization: Removes unnecessary `.clone()` allocation on every user input.
     pub fn record_command(&mut self, cmd: &str) {
         let cmd_string = cmd.to_string();
-        self.command_history.push(cmd_string.clone());
-        if self.command_history.len() > 100 {
-            self.command_history.remove(0);
-        }
 
         let cmd_upper = cmd.to_uppercase();
         if cmd_upper.contains("FSCK")
@@ -69,10 +67,15 @@ impl GameState {
             || cmd_upper.contains("HELLO")
             || cmd_upper.contains("WHO")
         {
-            self.notable_actions.push(cmd_string);
+            self.notable_actions.push(cmd_string.clone());
             if self.notable_actions.len() > 20 {
                 self.notable_actions.remove(0);
             }
+        }
+
+        self.command_history.push(cmd_string);
+        if self.command_history.len() > 100 {
+            self.command_history.remove(0);
         }
     }
 
