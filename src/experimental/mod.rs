@@ -9,6 +9,8 @@ pub mod grep;
 #[cfg(feature = "nova")]
 pub mod hexdump;
 #[cfg(feature = "nova")]
+pub mod ping;
+#[cfg(feature = "nova")]
 pub mod process_monitor;
 #[cfg(feature = "nova")]
 pub mod spatial_audio;
@@ -23,6 +25,8 @@ pub use emotional_bleed::EmotionalBleed;
 pub use grep::SearchTool;
 #[cfg(feature = "nova")]
 pub use hexdump::HexDumpGenerator;
+#[cfg(feature = "nova")]
+pub use ping::PingTool;
 #[cfg(feature = "nova")]
 pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]
