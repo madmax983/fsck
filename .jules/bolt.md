@@ -4,3 +4,6 @@
 **[Avoiding O(N) Allocations in String Substrings]
 **Learning:** Collecting `.char_indices()` into a `Vec` for string searching causes an unnecessary heap allocation proportional to string size.
 **Action:** Use iterator methods directly like `.char_indices().rev().take(n)` and string slicing to find the correct byte offsets instead.
+**[Avoiding O(N) Allocations in String Mutation]
+**Learning:** Collecting `.chars()` into a `Vec<char>` to mutate a single character and collecting it back into a string causes unnecessary O(N) heap allocations.
+**Action:** Use `.char_indices()` to find the byte offset, then construct a new string with `.with_capacity()` using string slices for the prefix and suffix.
