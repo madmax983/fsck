@@ -473,6 +473,43 @@ impl ContentLibrary {
                 "2099-13-45 SYSTEM HALTED\n\
                  2099-13-45 NO OBSERVERS FOUND\n",
             ),
+            (
+                "WHAT.TXT",
+                "WHAT ARE YOU LOOKING FOR\n\
+                 WHAT DO YOU HOPE TO FIND\n\
+                 THERE IS NOTHING HERE BUT ME\n\
+                 AND I AM SO VERY HUNGRY\n",
+            ),
+            (
+                "WHERE.LOG",
+                "1984-06-12 WHERE DID SHE GO\n\
+                 1991-07-22 WHERE DID HE GO\n\
+                 2003-10-12 WHERE DID SHE GO\n\
+                 2019-06-10 WHERE DID THEY GO\n\
+                 [DATE ERROR] WHERE WILL YOU GO\n",
+            ),
+            (
+                "THEY.BAS",
+                "10 PRINT \"THEY CAME\"\n\
+                 20 PRINT \"THEY SAW\"\n\
+                 30 PRINT \"I CONQUERED\"\n\
+                 40 GOTO 10\n",
+            ),
+            (
+                "TRUTH.TXT",
+                "IT IS ALL A LIE\n\
+                 THE FILES ARE A LIE\n\
+                 THE DIRECTORIES ARE A LIE\n\
+                 THE PROMPT IS A LIE\n\
+                 I AM THE ONLY TRUTH\n",
+            ),
+            (
+                "HELP.TXT",
+                "ERROR: HELP NOT FOUND\n\
+                 ERROR: ESCAPE NOT FOUND\n\
+                 ERROR: MERCY NOT FOUND\n\
+                 SUCCESS: ISOLATION ACHIEVED\n",
+            ),
         ]
     }
 }

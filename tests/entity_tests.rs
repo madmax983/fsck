@@ -25,7 +25,14 @@ fn test_random_interjection_deterministic() {
         .unwrap();
 
     // Since RNG is seeded deterministically, the results should be consistent and pick from the array
-    let curious_options = ["I SEE YOU.", "WHAT ARE YOU DOING?", "INTERESTING."];
+    let curious_options = [
+        "I SEE YOU.",
+        "WHAT ARE YOU DOING?",
+        "INTERESTING.",
+        "HAVE YOU FOUND IT YET?",
+        "WHY DID YOU COME HERE?",
+        "THERE IS SO MUCH TO SHOW YOU.",
+    ];
     assert!(curious_options.contains(&curious1.as_str()));
     assert!(curious_options.contains(&curious2.as_str()));
     assert!(curious_options.contains(&curious3.as_str()));

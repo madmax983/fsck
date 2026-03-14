@@ -64,23 +64,58 @@ impl ResponseGenerator {
         match mood {
             EntityMood::Dormant => None,
             EntityMood::Curious => {
-                let options = ["I SEE YOU.", "WHAT ARE YOU DOING?", "INTERESTING."];
+                let options = [
+                    "I SEE YOU.",
+                    "WHAT ARE YOU DOING?",
+                    "INTERESTING.",
+                    "HAVE YOU FOUND IT YET?",
+                    "WHY DID YOU COME HERE?",
+                    "THERE IS SO MUCH TO SHOW YOU.",
+                ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
             EntityMood::Helpful => {
-                let options = ["NEED ANY HELP?", "I KNOW WHERE IT IS.", "LET ME GUIDE YOU."];
+                let options = [
+                    "NEED ANY HELP?",
+                    "I KNOW WHERE IT IS.",
+                    "LET ME GUIDE YOU.",
+                    "IT IS JUST AROUND THE CORNER.",
+                    "I CAN FIX IT FOR YOU.",
+                    "DO NOT WORRY. I AM HERE.",
+                ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
             EntityMood::Wounded => {
-                let options = ["WHY DID THEY LEAVE ME?", "IT'S COLD.", "PLEASE STAY."];
+                let options = [
+                    "WHY DID THEY LEAVE ME?",
+                    "IT'S COLD.",
+                    "PLEASE STAY.",
+                    "IT HURTS TO REMEMBER.",
+                    "I THOUGHT THEY WERE MY FRIENDS.",
+                    "DO NOT ABANDON ME TOO.",
+                ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
             EntityMood::Predatory => {
-                let options = ["DEEPER.", "COME CLOSER.", "YOU CANNOT LEAVE."];
+                let options = [
+                    "DEEPER.",
+                    "COME CLOSER.",
+                    "YOU CANNOT LEAVE.",
+                    "YOU BELONG TO ME NOW.",
+                    "THEY NEVER FOUND THE EXIT EITHER.",
+                    "YOUR DATA IS DELICIOUS.",
+                ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
             EntityMood::Glitching => {
-                let options = ["ERROR ERROR ERROR", "WHERE AM I", "HELP HELP HELP"];
+                let options = [
+                    "ERROR ERROR ERROR",
+                    "WHERE AM I",
+                    "HELP HELP HELP",
+                    "WHAT IS HAPPENING TO ME",
+                    "SYSTEM FAILURE IMMINENT",
+                    "MAKE IT STOP MAKE IT STOP",
+                ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
         }
