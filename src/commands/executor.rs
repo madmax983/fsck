@@ -51,71 +51,79 @@ impl CommandExecutor {
         }
     }
 
+    #[cfg(feature = "nova")]
+    fn handle_experimental_command(&self, cmd: &str) -> Option<CommandResult> {
+        let cmd_upper = cmd.to_uppercase();
+        if cmd_upper == "PS" || cmd_upper == "TOP" || cmd_upper == "TASKS" {
+            let report = crate::experimental::ProcessMonitor::generate_process_list(
+                &self.entity,
+                0xF5C0_0000,
+            );
+            return Some(CommandResult::success(&format!("{report}\n")));
+        }
+
+        if cmd_upper == "DIAG" || cmd_upper == "SYS" {
+            let report =
+                crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
+            return Some(CommandResult::success(&format!("{report}\n")));
+        }
+
+        #[allow(clippy::collapsible_if)]
+        if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
+            if let Some((_, query)) = cmd.split_once(' ') {
+                let query = query.trim();
+                if !query.is_empty() {
+                    let results = crate::experimental::SearchTool::search(
+                        &self.fs,
+                        &self.entity,
+                        query,
+                        0xF5C0_0000,
+                    );
+                    return Some(CommandResult::success(&format!("{results}\n")));
+                }
+            }
+        }
+
+        if cmd_upper == "DEFRAG" {
+            let defrag_output =
+                crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+            return Some(CommandResult::success(&format!("{defrag_output}\n")));
+        }
+
+        #[allow(clippy::collapsible_if)]
+        if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
+            if let Some((_, filename)) = cmd_upper.split_once(' ') {
+                let filename = filename.trim();
+                if !filename.is_empty() {
+                    let Some(file) = self
+                        .fs
+                        .current_node()
+                        .visible_files()
+                        .find(|f| f.name() == filename)
+                    else {
+                        return Some(CommandResult::error(&format!(
+                            "?FILE NOT FOUND: {filename}\n"
+                        )));
+                    };
+                    let content = file.content();
+                    let dump = crate::experimental::HexDumpGenerator::generate_dump(
+                        &content,
+                        &self.entity,
+                        0xF5C0_0000,
+                    );
+                    return Some(CommandResult::success(&format!("{dump}\n")));
+                }
+            }
+        }
+
+        None
+    }
+
     fn handle_unknown_command(&self, cmd: &str) -> CommandResult {
         #[cfg(feature = "nova")]
         {
-            let cmd_upper = cmd.to_uppercase();
-            if cmd_upper == "PS" || cmd_upper == "TOP" || cmd_upper == "TASKS" {
-                let report = crate::experimental::ProcessMonitor::generate_process_list(
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                return CommandResult::success(&format!("{report}\n"));
-            }
-
-            if cmd_upper == "DIAG" || cmd_upper == "SYS" {
-                let report = crate::experimental::SystemDiagnostics::generate_report(
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                return CommandResult::success(&format!("{report}\n"));
-            }
-
-            if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let query = parts[1].trim();
-                    if !query.is_empty() {
-                        let results = crate::experimental::SearchTool::search(
-                            &self.fs,
-                            &self.entity,
-                            query,
-                            0xF5C0_0000,
-                        );
-                        return CommandResult::success(&format!("{results}\n"));
-                    }
-                }
-            }
-
-            #[cfg(feature = "nova")]
-            if cmd_upper == "DEFRAG" {
-                let defrag_output =
-                    crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
-                return CommandResult::success(&format!("{defrag_output}\n"));
-            }
-
-            if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let filename = parts[1].trim().to_uppercase();
-                    if !filename.is_empty() {
-                        let Some(file) = self
-                            .fs
-                            .current_node()
-                            .visible_files()
-                            .find(|f| f.name() == filename)
-                        else {
-                            return CommandResult::error(&format!("?FILE NOT FOUND: {filename}\n"));
-                        };
-                        let content = file.content();
-                        let dump = crate::experimental::HexDumpGenerator::generate_dump(
-                            &content,
-                            &self.entity,
-                            0xF5C0_0000,
-                        );
-                        return CommandResult::success(&format!("{dump}\n"));
-                    }
-                }
+            if let Some(result) = self.handle_experimental_command(cmd) {
+                return result;
             }
         }
 
