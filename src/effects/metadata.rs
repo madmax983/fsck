@@ -24,13 +24,16 @@ impl MetadataCorruptor {
         match self.depth {
             11..=30 => {
                 // Mild corruption - change a digit
-                let mut chars: Vec<char> = original.chars().collect();
-                if let Some(pos) = chars.iter().position(char::is_ascii_digit) {
+                // ⚡ Bolt Optimization: Avoid O(N) allocation by mutating a string in place
+                // rather than collecting chars into a Vec.
+                let mut result = original.to_string();
+                if let Some((pos, _)) = result.char_indices().find(|(_, c)| c.is_ascii_digit()) {
                     if let Some(digit) = char::from_digit(rng.r#gen_range(0..10), 10) {
-                        chars[pos] = digit;
+                        let mut b = [0; 4];
+                        result.replace_range(pos..=pos, digit.encode_utf8(&mut b));
                     }
                 }
-                chars.into_iter().collect()
+                result
             }
             31..=60 => {
                 // Presence - impossible dates
