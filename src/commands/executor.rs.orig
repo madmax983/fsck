@@ -117,21 +117,6 @@ impl CommandExecutor {
                     }
                 }
             }
-
-            if cmd_upper.starts_with("TRACE ") || cmd_upper.starts_with("TRACEROUTE ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let target = parts[1].trim();
-                    if !target.is_empty() {
-                        let trace_output = crate::experimental::NetworkTrace::generate_trace(
-                            &self.entity,
-                            0xF5C0_0000,
-                            target,
-                        );
-                        return CommandResult::success(&format!("{trace_output}\n"));
-                    }
-                }
-            }
         }
 
         if cmd.is_empty() {
