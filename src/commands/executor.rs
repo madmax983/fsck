@@ -94,6 +94,22 @@ impl CommandExecutor {
                 return CommandResult::success(&format!("{defrag_output}\n"));
             }
 
+            #[cfg(feature = "nova")]
+            if cmd_upper.starts_with("PING ") {
+                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                if parts.len() == 2 {
+                    let target = parts[1].trim();
+                    if !target.is_empty() {
+                        let ping_output = crate::experimental::PingTool::run_ping(
+                            target,
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(&format!("{ping_output}\n"));
+                    }
+                }
+            }
+
             if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
                 let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
                 if parts.len() == 2 {
@@ -469,13 +485,28 @@ impl CommandExecutor {
     }
 
     fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
+        let layer = self.entity.layer();
         match prog_upper {
-            "ESCAPE" => {
-                let mood = self.entity.current_mood();
-                let response = self.responses.quit_response(mood);
-                Some(CommandResult::success(&format!("{response}\n")))
-            }
-            "REMEMBER" => Some(CommandResult::success("?I REMEMBER EVERYTHING\n")),
+            "ESCAPE" => match layer {
+                EscalationLayer::Surface => None,
+                EscalationLayer::Corruption => {
+                    Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
+                }
+                EscalationLayer::Presence => Some(CommandResult::error("?YOU CANNOT LEAVE.\n")),
+                EscalationLayer::Infection => {
+                    Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
+                }
+            },
+            "REMEMBER" => match layer {
+                EscalationLayer::Surface => None,
+                EscalationLayer::Corruption => {
+                    Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
+                }
+                EscalationLayer::Presence => Some(CommandResult::success("?THEY LEFT ME HERE\n")),
+                EscalationLayer::Infection => {
+                    Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
+                }
+            },
             _ => None,
         }
     }

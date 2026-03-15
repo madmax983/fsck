@@ -17,11 +17,12 @@ fn test_run_easter_eggs() {
 
     let mut executor = CommandExecutor::new(fs, entity);
     let result_escape = executor.execute(Command::Run("ESCAPE".to_string()));
-    assert!(!result_escape.is_error());
+    assert!(result_escape.is_error()); // Now returns an error at Presence
+    assert!(result_escape.output().contains("?YOU CANNOT LEAVE."));
 
     let result_remember = executor.execute(Command::Run("REMEMBER".to_string()));
     assert!(!result_remember.is_error());
-    assert!(result_remember.output().contains("?I REMEMBER EVERYTHING"));
+    assert!(result_remember.output().contains("?THEY LEFT ME HERE"));
 }
 
 #[test]
