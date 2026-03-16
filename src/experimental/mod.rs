@@ -3,6 +3,8 @@ pub mod diagnostics;
 pub mod emotional_bleed;
 pub mod grep;
 pub mod hexdump;
+#[cfg(feature = "nova")]
+pub mod memdump;
 pub mod network_trace;
 
 pub mod ping;
@@ -14,6 +16,8 @@ pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
 pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
+#[cfg(feature = "nova")]
+pub use memdump::MemoryDumpGenerator;
 pub use network_trace::NetworkTrace;
 pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;

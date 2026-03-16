@@ -51,12 +51,21 @@ impl CommandExecutor {
         }
     }
 
+    #[allow(clippy::too_many_lines)]
     fn handle_unknown_command(&self, cmd: &str) -> CommandResult {
         #[cfg(feature = "nova")]
         {
             let cmd_upper = cmd.to_uppercase();
             if cmd_upper == "PS" || cmd_upper == "TOP" || cmd_upper == "TASKS" {
                 let report = crate::experimental::ProcessMonitor::generate_process_list(
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                return CommandResult::success(&format!("{report}\n"));
+            }
+
+            if cmd_upper == "MEMDUMP" || cmd_upper == "EXPORT" {
+                let report = crate::experimental::MemoryDumpGenerator::generate_dump(
                     &self.entity,
                     0xF5C0_0000,
                 );
