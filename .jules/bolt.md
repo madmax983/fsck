@@ -7,3 +7,7 @@
 **[Avoiding O(N) Allocations in String Mutation]
 **Learning:** Collecting `.chars()` into a `Vec<char>` to mutate a single character and collecting it back into a string causes unnecessary O(N) heap allocations.
 **Action:** Use `.char_indices()` to find the byte offset, then construct a new string with `.with_capacity()` using string slices for the prefix and suffix.
+
+**[Avoiding Redundant Allocations with impl Into<String>]**
+**Learning:** Passing `&format!(...)` to a constructor that takes `&str` and calls `.to_string()` allocates two `String`s on the heap (one inside `format!`, and another in `.to_string()`).
+**Action:** To prevent double heap allocations when a struct stores a `String`, have its constructor methods accept `impl Into<String>` instead of `&str`. This allows callers to pass owned `String`s directly using `.into()`, moving the allocated string instead of allocating a duplicate.
