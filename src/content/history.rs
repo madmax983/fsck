@@ -11,6 +11,8 @@ pub enum Era {
     Y2K,
     /// 2003 - Estate sale buyer
     EstateSale,
+    /// 2010 - Amateur hacker
+    Hacker,
     /// 2019 - Urban explorer
     Explorer,
     /// Previous player's session
