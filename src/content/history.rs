@@ -7,6 +7,8 @@ pub enum Era {
     Original,
     /// 1991 - The repair technician
     Technician,
+    /// 1995 - BBS Sysop
+    Sysop,
     /// 1999 - Y2K panic researcher
     Y2K,
     /// 2003 - Estate sale buyer
@@ -116,6 +118,8 @@ impl VictimHistory {
     /// Creates a victim history from a previous player's session commands.
     #[must_use]
     pub fn from_previous_session(commands: &[String]) -> Option<Self> {
+        use std::fmt::Write;
+
         if commands.is_empty() {
             return None;
         }
@@ -124,7 +128,6 @@ impl VictimHistory {
         let mut entry_content = String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
 
         let count = commands.len();
-        use std::fmt::Write;
         write!(
             entry_content,
             "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n"

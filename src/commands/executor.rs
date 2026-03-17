@@ -69,7 +69,7 @@ impl CommandExecutor {
                     &self.entity,
                     0xF5C0_0000,
                 );
-                return CommandResult::success(&format!("{report}\n"));
+                return CommandResult::success(format!("{report}\n"));
             }
 
             if cmd_upper == "DIAG" || cmd_upper == "SYS" {
