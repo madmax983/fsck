@@ -7,6 +7,8 @@ pub enum Era {
     Original,
     /// 1991 - The repair technician
     Technician,
+    /// 1995 - BBS Sysop
+    Sysop,
     /// 1999 - Y2K panic researcher
     Y2K,
     /// 2003 - Estate sale buyer
