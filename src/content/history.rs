@@ -119,7 +119,6 @@ impl VictimHistory {
     #[must_use]
     pub fn from_previous_session(commands: &[String]) -> Option<Self> {
         use std::fmt::Write;
-
         if commands.is_empty() {
             return None;
         }
@@ -135,9 +134,8 @@ impl VictimHistory {
         .expect("Writing to String should not fail");
 
         if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
-            entry_content.push_str(
-                "THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n",
-            );
+            entry_content
+                .push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
         }
         if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
             entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
