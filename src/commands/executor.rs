@@ -56,6 +56,21 @@ impl CommandExecutor {
         #[cfg(feature = "nova")]
         {
             let cmd_upper = cmd.to_uppercase();
+            if cmd_upper.starts_with("SPEAK ") || cmd_upper.starts_with("SAY ") {
+                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
+                if parts.len() == 2 {
+                    let text = parts[1].trim();
+                    if !text.is_empty() {
+                        let voice_output = crate::experimental::VoiceSynthesizer::synthesize(
+                            text,
+                            &self.entity,
+                            0xF5C0_0000,
+                        );
+                        return CommandResult::success(format!("{voice_output}\n"));
+                    }
+                }
+            }
+
             if cmd_upper == "PS" || cmd_upper == "TOP" || cmd_upper == "TASKS" {
                 let report = crate::experimental::ProcessMonitor::generate_process_list(
                     &self.entity,
@@ -69,7 +84,7 @@ impl CommandExecutor {
                     &self.entity,
                     0xF5C0_0000,
                 );
-                return CommandResult::success(&format!("{report}\n"));
+                return CommandResult::success(format!("{report}\n"));
             }
 
             if cmd_upper == "DIAG" || cmd_upper == "SYS" {

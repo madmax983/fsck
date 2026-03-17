@@ -10,6 +10,8 @@ pub mod network_trace;
 pub mod ping;
 pub mod process_monitor;
 pub mod spatial_audio;
+#[cfg(feature = "nova")]
+pub mod voice;
 
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
@@ -22,3 +24,5 @@ pub use network_trace::NetworkTrace;
 pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;
 pub use spatial_audio::SpatialAudioGenerator;
+#[cfg(feature = "nova")]
+pub use voice::VoiceSynthesizer;
