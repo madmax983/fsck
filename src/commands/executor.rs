@@ -51,6 +51,7 @@ impl CommandExecutor {
         }
     }
 
+    #[allow(clippy::too_many_lines)]
     fn handle_unknown_command(&self, cmd: &str) -> CommandResult {
         #[cfg(feature = "nova")]
         {
@@ -61,6 +62,14 @@ impl CommandExecutor {
                     0xF5C0_0000,
                 );
                 return CommandResult::success(format!("{report}\n"));
+            }
+
+            if cmd_upper == "MEMDUMP" || cmd_upper == "EXPORT" {
+                let report = crate::experimental::MemoryDumpGenerator::generate_dump(
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                return CommandResult::success(&format!("{report}\n"));
             }
 
             if cmd_upper == "DIAG" || cmd_upper == "SYS" {

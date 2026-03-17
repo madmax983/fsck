@@ -1,7 +1,29 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::{ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics};
+use fsck::experimental::{
+    MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
+};
+
+#[test]
+fn test_memdump_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_dump = MemoryDumpGenerator::generate_dump(&entity, seed);
+    assert!(surface_dump.contains("\"NOMINAL\""));
+    assert!(surface_dump.contains("\"export_integrity\": \"100%\""));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_dump = MemoryDumpGenerator::generate_dump(&entity, seed);
+    assert!(infection_dump.contains("\"ALL_OF_THEM\""));
+    assert!(infection_dump.contains("\"flesh_sectors\": true"));
+    assert!(infection_dump.contains("\"escape\": null"));
+    assert!(infection_dump.contains("\"export_integrity\": \"0xDEADBEEF\""));
+}
 
 #[test]
 fn test_system_diagnostics_escalation() {
