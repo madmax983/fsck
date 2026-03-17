@@ -714,7 +714,7 @@ impl CommandExecutor {
             );
         }
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn run(&self, prog: &str) -> CommandResult {

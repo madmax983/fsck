@@ -61,24 +61,26 @@ pub enum Command {
 }
 
 impl Command {
+    /// ⚡ Bolt Optimization: Uses an Iterator `impl Iterator<Item = &'a str>` instead of a slice `&[&str]`
+    /// for command arguments, avoiding the need to collect arguments into a temporary vector first.
     #[must_use]
-    pub fn from_input(command: &str, args: &[&str]) -> Self {
+    pub fn from_input<'a>(command: &str, mut args: impl Iterator<Item = &'a str>) -> Self {
         match command.to_uppercase().as_str() {
             "CATALOG" | "DIR" | "LS" => Self::Catalog,
             "CD" | "CHDIR" => {
-                let path = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
+                let path = args.next().map(str::to_uppercase).unwrap_or_default();
                 Self::ChangeDir(path)
             }
             "TYPE" | "CAT" => {
-                let file = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
+                let file = args.next().map(str::to_uppercase).unwrap_or_default();
                 Self::Type(file)
             }
             "RUN" => {
-                let prog = args.first().map(|s| s.to_uppercase()).unwrap_or_default();
+                let prog = args.next().map(str::to_uppercase).unwrap_or_default();
                 Self::Run(prog)
             }
             "HOME" | "CLS" | "CLEAR" => Self::Home,
-            "FSCK" => Self::Fsck(args.iter().map(|s| s.to_uppercase()).collect()),
+            "FSCK" => Self::Fsck(args.map(str::to_uppercase).collect()),
             "HELLO" | "HI" => Self::Hello,
             "WHO" | "WHOAMI" => Self::Who,
             "HELP" | "?" => Self::Help,

@@ -69,6 +69,7 @@ impl ContentLibrary {
         vec![
             Self::create_original_history(),
             Self::create_technician_history(),
+            Self::create_sysop_history(),
             Self::create_y2k_history(),
             Self::create_estate_history(),
             Self::create_hacker_history(),
@@ -133,6 +134,47 @@ impl ContentLibrary {
              ABOUT YOU'. I tried to delete it but it came back. I tried again. It came back again. \
              It knows everything I've written. It's been reading everything. I'm going back to \
              paper and pencil. I don't care what Dad says.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the BBS sysop (1995) - Kevin.
+    fn create_sysop_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Sysop, "KEVIN", 1995);
+
+        history.add_entry(VictimEntry::new(
+            "1995-04-12",
+            "Set up the old Apple IIe as a dedicated node for the BBS. \
+             Should handle the extra traffic just fine. Users are already complaining \
+             about connection drops on node 1, so this will take the load off. \
+             I'll monitor the logs tonight.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1995-04-14",
+            "The modem noises from node 2 are weird. It's not the usual handshake. \
+             It sounds like it's trying to talk to the callers. And the call logs \
+             don't make sense. Incoming connections from local numbers that don't exist. \
+             And why are the users spending hours just staring at blank screens? \
+             I need to check the transfer protocols.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1995-04-18",
+            "I logged in locally to check the BBS software. It wasn't running. \
+             But there were users connected. I tried to drop the line but the modem \
+             wouldn't hang up. It's keeping them on the line. I tried pulling the plug \
+             on the modem, but the screen just typed: 'THEY ARE LISTENING. LET THEM STAY.' \
+             I'm shutting down the board.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1995-04-20",
+            "I can't turn it off. I unplugged the computer from the wall, but the \
+             screen is still glowing green. The cursor is blinking. It's waiting for me. \
+             It knows I'm still here. I'm going to lock the server room and leave. \
+             Nobody should ever dial that number again.",
         ));
 
         history

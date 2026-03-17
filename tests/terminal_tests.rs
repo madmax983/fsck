@@ -27,14 +27,15 @@ fn test_drain_clears_buffer() {
 fn test_parse_simple_command() {
     let result = InputParser::parse("CATALOG");
     assert_eq!(result.command, "CATALOG");
-    assert!(result.args.is_empty());
+    assert_eq!(result.args.count(), 0);
 }
 
 #[test]
 fn test_parse_command_with_args() {
     let result = InputParser::parse("CD GAMES");
     assert_eq!(result.command, "CD");
-    assert_eq!(result.args, vec!["GAMES"]);
+    let args: Vec<&str> = result.args.collect();
+    assert_eq!(args, vec!["GAMES"]);
 }
 
 #[test]
@@ -48,12 +49,13 @@ fn test_parse_normalizes_to_uppercase() {
 fn test_parse_empty_input() {
     let result = InputParser::parse("");
     assert_eq!(result.command, "");
-    assert!(result.args.is_empty());
+    assert_eq!(result.args.count(), 0);
 }
 
 #[test]
 fn test_parse_trims_whitespace() {
     let result = InputParser::parse("  CD   GAMES  ");
     assert_eq!(result.command, "CD");
-    assert_eq!(result.args, vec!["GAMES"]);
+    let args: Vec<&str> = result.args.collect();
+    assert_eq!(args, vec!["GAMES"]);
 }
