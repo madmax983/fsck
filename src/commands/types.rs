@@ -7,17 +7,17 @@ pub struct CommandResult {
 
 impl CommandResult {
     #[must_use]
-    pub fn success(output: &str) -> Self {
+    pub fn success(output: impl Into<String>) -> Self {
         Self {
-            output: output.to_string(),
+            output: output.into(),
             is_error: false,
         }
     }
 
     #[must_use]
-    pub fn error(message: &str) -> Self {
+    pub fn error(message: impl Into<String>) -> Self {
         Self {
-            output: message.to_string(),
+            output: message.into(),
             is_error: true,
         }
     }
