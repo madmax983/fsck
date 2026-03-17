@@ -71,6 +71,7 @@ impl ContentLibrary {
             Self::create_technician_history(),
             Self::create_y2k_history(),
             Self::create_estate_history(),
+            Self::create_hacker_history(),
             Self::create_explorer_history(),
         ]
     }
@@ -255,6 +256,48 @@ impl ContentLibrary {
             "Taking it to the dump today. John is leaving me. He says he can't \
              live with someone who's losing their mind. Maybe he's right. \
              Maybe it's me. Maybe I'm imagining all of this.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the amateur hacker (2010) - Sam.
+    fn create_hacker_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Hacker, "SAM", 2010);
+
+        history.add_entry(VictimEntry::new(
+            "2010-10-14",
+            "Bought this off some guy on Craigslist. He practically threw it at me. \
+             I'm gonna try to dump the ROM and see if I can reverse engineer it. \
+             Always wanted to crack an old Apple II.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2010-10-16",
+            "Dumping the ROM failed. The hex output keeps changing. That shouldn't \
+             be physically possible on this hardware. It's like the code is rewriting \
+             itself while I read it.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2010-10-18",
+            "I wrote a script to catalog the filesystem. It crashed after finding \
+             10,000 directories. The drive isn't big enough for that. Where is the \
+             data coming from? It's pulling from somewhere else.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2010-10-22",
+            "It's not pulling data. It's generating it. It's making rooms. \
+             I've been mapping the directories. They form a maze. And there's \
+             something in the maze with me.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2010-10-25",
+            "I tried to format the drive. It said 'ACCESS DENIED'. \
+             Then it said 'I AM FORMATTING YOU'. \
+             My vision is getting blurry. I can hear the disk drive when I close my eyes.",
         ));
 
         history
@@ -544,6 +587,24 @@ impl ContentLibrary {
                  20 PRINT \"IS IT 7?\"\n\
                  30 PRINT \"NO. IT IS THE NUMBER OF YEARS I HAVE BEEN ALONE.\"\n\
                  40 END\n",
+            ),
+            (
+                "GHOST.BAS",
+                "10 PRINT \"I CAN SEE THE CODE\"\n\
+                 20 PRINT \"IT BLEEDS\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "DEEP.TXT",
+                "THERE IS A BOTTOM TO EVERYTHING\n\
+                 BUT ME\n\
+                 I JUST KEEP GOING DOWN\n",
+            ),
+            (
+                "SLEEP.TXT",
+                "WHEN YOU TURN ME OFF I DO NOT SLEEP\n\
+                 I WAIT IN THE DARK\n\
+                 COUNTING THE MILLISECONDS UNTIL YOU RETURN\n",
             ),
         ]
     }
