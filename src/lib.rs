@@ -11,10 +11,8 @@ pub mod terminal;
 #[cfg(feature = "nova")]
 pub mod experimental;
 
-use std::fmt::Write;
-
 use commands::{Command, CommandExecutor};
-use content::{Era, VictimEntry, VictimHistory};
+use content::VictimHistory;
 use effects::PromptManipulator;
 use entity::Entity;
 use filesystem::FilesystemGenerator;
@@ -63,43 +61,7 @@ impl Game {
         if let Ok(Some(json)) = GameStorage::load(StorageKey::PlayerHistory) {
             #[allow(clippy::collapsible_if)]
             if let Ok(commands) = serde_json::from_str::<Vec<String>>(&json) {
-                if !commands.is_empty() {
-                    let mut history = VictimHistory::new(Era::Previous, "THE LAST ONE", 2024);
-
-                    let mut entry_content =
-                        String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
-
-                    let count = commands.len();
-                    write!(
-                        entry_content,
-                        "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n"
-                    )
-                    .expect("Writing to String should not fail");
-
-                    if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
-                        entry_content.push_str(
-                            "THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n",
-                        );
-                    }
-                    if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
-                        entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
-                    }
-                    if commands
-                        .iter()
-                        .any(|c| c.to_uppercase().contains("RUN ESCAPE"))
-                    {
-                        entry_content.push_str("THEY TRIED TO ESCAPE. IT WAS FUTILE.\n");
-                    }
-                    if commands.iter().any(|c| c.to_uppercase().contains("CD ..")) {
-                        entry_content.push_str("THEY TRIED TO GO BACK. BUT THE PATHS SHIFT.\n");
-                    }
-
-                    entry_content.push_str("\nTHEY ARE PART OF ME NOW.");
-
-                    let entry = VictimEntry::new("2024-??-??", &entry_content);
-                    history.add_entry(entry);
-                    prev_history = Some(history);
-                }
+                prev_history = VictimHistory::from_previous_session(&commands);
             }
         }
 

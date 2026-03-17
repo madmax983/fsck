@@ -84,3 +84,34 @@ fn test_game_detects_returning_player() {
     // Note: In a real scenario with persistence, loading a saved game
     // would increment session_count and return true
 }
+use fsck::content::{Era, VictimHistory};
+
+#[test]
+fn test_generate_victim_history_from_actions() {
+    let commands = vec![
+        "FSCK".to_string(),
+        "CATALOG".to_string(),
+        "cd ..".to_string(),
+        "RUN ESCAPE".to_string(),
+        "QUIT".to_string(),
+    ];
+
+    let history_opt = VictimHistory::from_previous_session(&commands);
+    assert!(history_opt.is_some());
+    let history = history_opt.unwrap();
+
+    assert_eq!(history.name(), "THE LAST ONE");
+    assert_eq!(history.era(), Era::Previous);
+    assert_eq!(history.entries().len(), 1);
+
+    let generated_content = history.entries()[0].content();
+    assert!(generated_content.contains("THEY ATTEMPTED 5 NOTABLE ACTIONS"));
+    assert!(generated_content.contains("THEY RAN FSCK. IT HURT."));
+    assert!(generated_content.contains("THEY TRIED TO QUIT."));
+    assert!(generated_content.contains("THEY TRIED TO ESCAPE."));
+    assert!(generated_content.contains("THEY TRIED TO GO BACK."));
+    assert!(generated_content.contains("THEY ARE PART OF ME NOW."));
+
+    // Ensure it returns None if empty
+    assert!(VictimHistory::from_previous_session(&[]).is_none());
+}
