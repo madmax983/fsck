@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Write;
 
 /// Time periods for victim histories
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -124,7 +125,6 @@ impl VictimHistory {
         let mut entry_content = String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
 
         let count = commands.len();
-        use std::fmt::Write;
         write!(
             entry_content,
             "THEY ATTEMPTED {count} NOTABLE ACTIONS BEFORE THEY LEFT.\n\n"
@@ -132,9 +132,8 @@ impl VictimHistory {
         .expect("Writing to String should not fail");
 
         if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
-            entry_content.push_str(
-                "THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n",
-            );
+            entry_content
+                .push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
         }
         if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
             entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");

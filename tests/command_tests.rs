@@ -88,13 +88,13 @@ fn test_command_result_error() {
 
 #[test]
 fn test_command_from_string() {
-    let cmd = Command::from_input("CATALOG", &[]);
+    let cmd = Command::from_input("CATALOG", std::iter::empty::<&str>());
     assert!(matches!(cmd, Command::Catalog));
 }
 
 #[test]
 fn test_unknown_command() {
-    let cmd = Command::from_input("XYZZY", &[]);
+    let cmd = Command::from_input("XYZZY", std::iter::empty::<&str>());
     assert!(matches!(cmd, Command::Unknown(_)));
 }
 

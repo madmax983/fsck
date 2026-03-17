@@ -101,7 +101,7 @@ impl Game {
 
     pub fn process_input(&mut self, input: &str) -> String {
         let parsed = InputParser::parse(input);
-        let command = Command::from_input(parsed.command, &parsed.args);
+        let command = Command::from_input(parsed.command, parsed.args);
         let result = self.executor.execute(command);
 
         // Update state
