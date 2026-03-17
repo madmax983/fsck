@@ -1,8 +1,10 @@
 /// Parsed command from user input
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct ParsedInput<'a> {
     pub command: &'a str,
-    pub args: Vec<&'a str>,
+    /// ⚡ Bolt Optimization: Uses `SplitWhitespace` iterator instead of allocating a `Vec<&str>`
+    /// for command arguments, eliminating a heap allocation on every parsed user input.
+    pub args: core::str::SplitWhitespace<'a>,
 }
 
 /// Parser for Apple `IIe` style command input
@@ -14,8 +16,10 @@ impl InputParser {
         let mut parts = input.split_whitespace();
 
         let command = parts.next().unwrap_or("");
-        let args: Vec<&str> = parts.collect();
 
-        ParsedInput { command, args }
+        ParsedInput {
+            command,
+            args: parts,
+        }
     }
 }

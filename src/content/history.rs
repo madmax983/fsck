@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Write;
 
 /// Time periods for victim histories
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
