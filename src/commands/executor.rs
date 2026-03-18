@@ -51,15 +51,16 @@ impl CommandExecutor {
         }
     }
 
-    #[allow(clippy::too_many_lines)]
+    #[allow(clippy::too_many_lines, clippy::collapsible_if)]
     fn handle_unknown_command(&self, cmd: &str) -> CommandResult {
         #[cfg(feature = "nova")]
         {
             let cmd_upper = cmd.to_uppercase();
+            // ⚡ Bolt Optimization: Replace `.splitn(2, ' ').collect::<Vec<_>>()` with `.split_once(' ')`
+            // to avoid O(n) heap allocation for a temporary `Vec` when splitting commands.
             if cmd_upper.starts_with("SPEAK ") || cmd_upper.starts_with("SAY ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let text = parts[1].trim();
+                if let Some((_, text_raw)) = cmd.split_once(' ') {
+                    let text = text_raw.trim();
                     if !text.is_empty() {
                         let voice_output = crate::experimental::VoiceSynthesizer::synthesize(
                             text,
@@ -95,10 +96,10 @@ impl CommandExecutor {
                 return CommandResult::success(format!("{report}\n"));
             }
 
+            // ⚡ Bolt Optimization: Eliminate temporary `Vec` allocation from `.splitn().collect()`
             if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let query = parts[1].trim();
+                if let Some((_, query_raw)) = cmd.split_once(' ') {
+                    let query = query_raw.trim();
                     if !query.is_empty() {
                         let results = crate::experimental::SearchTool::search(
                             &self.fs,
@@ -119,10 +120,10 @@ impl CommandExecutor {
             }
 
             #[cfg(feature = "nova")]
+            // ⚡ Bolt Optimization: Replace `.splitn(2, ' ').collect::<Vec<_>>()` with `.split_once(' ')`
             if cmd_upper.starts_with("PING ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let target = parts[1].trim();
+                if let Some((_, target_raw)) = cmd.split_once(' ') {
+                    let target = target_raw.trim();
                     if !target.is_empty() {
                         let ping_output = crate::experimental::PingTool::run_ping(
                             target,
@@ -134,10 +135,10 @@ impl CommandExecutor {
                 }
             }
 
+            // ⚡ Bolt Optimization: Use `split_once` to prevent heap allocations
             if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let filename = parts[1].trim().to_uppercase();
+                if let Some((_, filename_raw)) = cmd.split_once(' ') {
+                    let filename = filename_raw.trim().to_uppercase();
                     if !filename.is_empty() {
                         let Some(file) = self
                             .fs
@@ -158,10 +159,10 @@ impl CommandExecutor {
                 }
             }
 
+            // ⚡ Bolt Optimization: Remove intermediate `Vec` when parsing trace targets
             if cmd_upper.starts_with("TRACE ") || cmd_upper.starts_with("TRACEROUTE ") {
-                let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
-                if parts.len() == 2 {
-                    let target = parts[1].trim();
+                if let Some((_, target_raw)) = cmd.split_once(' ') {
+                    let target = target_raw.trim();
                     if !target.is_empty() {
                         let trace_output = crate::experimental::NetworkTrace::generate_trace(
                             &self.entity,

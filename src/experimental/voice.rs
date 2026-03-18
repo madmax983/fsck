@@ -2,7 +2,6 @@ use crate::entity::{Entity, EscalationLayer};
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
-
 /// Synthesizes text with distortion based on entity state.
 pub struct VoiceSynthesizer;
 
