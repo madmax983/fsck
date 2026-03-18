@@ -162,6 +162,11 @@ impl Game {
             if rng.gen_bool(0.1) {
                 return "PRESENCE".to_string();
             }
+        } else if depth >= 6 {
+            // Corruption layer (15% chance)
+            if rng.gen_bool(0.15) {
+                return "CORRUPTION".to_string();
+            }
         }
         String::new()
     }

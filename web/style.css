@@ -69,6 +69,19 @@ body {
     pointer-events: none;
 }
 
+/* Subtle flicker animation for Corruption layer */
+@keyframes subtleFlicker {
+    0% { opacity: 1; }
+    48% { opacity: 1; }
+    50% { opacity: 0.9; }
+    52% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+.depth-corruption {
+    animation: subtleFlicker 4s infinite;
+}
+
 /* Screen flicker animation for Presence layer */
 @keyframes flicker {
     0% { opacity: 0.95; }
@@ -88,4 +101,5 @@ body {
 /* Aggressive shake/glitch for Infection layer */
 .depth-infection {
     animation: glitch 0.5s infinite, shake 5s infinite;
+    --xterm-foreground: #aaffaa; /* Sickly green shift */
 }

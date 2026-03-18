@@ -63,6 +63,18 @@ fn test_get_audio_trigger_surface_layer() {
 }
 
 #[test]
+fn test_get_audio_trigger_corruption_layer() {
+    let mut game = Game::new();
+    // Simulate depth to corruption
+    for _ in 0..6 {
+        game.process_input("CD DONT");
+    }
+
+    let trigger = game.get_audio_trigger();
+    assert!(trigger == "" || trigger == "CORRUPTION");
+}
+
+#[test]
 fn test_get_audio_trigger_presence_layer() {
     let mut game = Game::new();
     // Simulate depth to presence
