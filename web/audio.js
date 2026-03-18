@@ -52,6 +52,27 @@ export class GameAudio {
         oscillator.stop(this.audioContext.currentTime + 0.2);
     }
 
+    playCorruption() {
+        if (!this.enabled) return;
+
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        // Very subtle high pitch ringing
+        oscillator.frequency.value = 14000;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+        gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 2);
+
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 2);
+    }
+
     playGlitch() {
         if (!this.enabled) return;
 

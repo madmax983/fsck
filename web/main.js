@@ -49,8 +49,13 @@ async function main() {
     // Input buffer
     let inputBuffer = '';
 
+    // Typing state to prevent input during entity typing
+    let isTyping = false;
+
     // Handle keyboard input
     term.onKey(({ key, domEvent }) => {
+        if (isTyping) return; // Block input while entity is speaking
+
         const ev = domEvent;
 
         if (ev.key === 'Enter') {
@@ -64,10 +69,12 @@ async function main() {
             }
 
             // Clear previous depth classes
-            terminalElement.classList.remove('depth-presence', 'depth-infection');
+            terminalElement.classList.remove('depth-corruption', 'depth-presence', 'depth-infection');
 
             // Apply new depth visual and audio effects
-            if (depth >= 16 && depth < 26) {
+            if (depth >= 6 && depth < 16) {
+                terminalElement.classList.add('depth-corruption');
+            } else if (depth >= 16 && depth < 26) {
                 terminalElement.classList.add('depth-presence');
             } else if (depth >= 26) {
                 terminalElement.classList.add('depth-infection');
@@ -75,14 +82,16 @@ async function main() {
 
             // Play deterministic ambient audio triggers
             const audioTrigger = game.get_audio_trigger();
-            if (audioTrigger === "PRESENCE") {
+            if (audioTrigger === "CORRUPTION") {
+                audio.playCorruption();
+            } else if (audioTrigger === "PRESENCE") {
                 audio.playPresence();
             } else if (audioTrigger === "INFECTION") {
                 audio.playInfection();
             }
 
             // Play glitch sound at deep levels
-            if (depth > 40) {
+            if (depth > 40 && Math.random() < 0.2) {
                 audio.playGlitch();
             }
 
@@ -139,9 +148,43 @@ async function main() {
             }
 
             if (output) {
-                term.write(output);
+                // Determine if this is entity output that should be "typed"
+                // Usually entity output doesn't start with normal file reading/catalog stuff
+                // In deeper levels, the entity speaks directly and it's scary if it types itself.
+                const isEntityOutput = depth >= 16 && (
+                    output.includes("?") ||
+                    output.includes("YOU") ||
+                    output.includes("HELLO") ||
+                    output.includes("HELP") ||
+                    output.includes("I ") ||
+                    output.includes(" ME ") ||
+                    output.includes("ERROR") ||
+                    output.includes("STOP")
+                ) && !output.includes("VOLUME") && !output.includes("SECTORS");
+
+                if (isEntityOutput) {
+                    isTyping = true;
+                    let charIndex = 0;
+                    const chars = [...output];
+                    const typeInterval = setInterval(() => {
+                        if (charIndex < chars.length) {
+                            term.write(chars[charIndex]);
+                            // Random typing sound
+                            if (Math.random() < 0.3) audio.playKeystroke();
+                            charIndex++;
+                        } else {
+                            clearInterval(typeInterval);
+                            term.write(game.get_prompt());
+                            isTyping = false;
+                        }
+                    }, 50); // 50ms per character
+                } else {
+                    term.write(output);
+                    term.write(game.get_prompt());
+                }
+            } else {
+                term.write(game.get_prompt());
             }
-            term.write(game.get_prompt());
             inputBuffer = '';
         } else if (ev.key === 'Backspace') {
             if (inputBuffer.length > 0) {
