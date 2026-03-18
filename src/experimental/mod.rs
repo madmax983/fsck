@@ -5,6 +5,8 @@ pub mod grep;
 pub mod hexdump;
 #[cfg(feature = "nova")]
 pub mod memdump;
+#[cfg(feature = "nova")]
+pub mod memory_bleed;
 pub mod network_trace;
 
 pub mod ping;
@@ -20,6 +22,8 @@ pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
+#[cfg(feature = "nova")]
+pub use memory_bleed::MemoryBleed;
 pub use network_trace::NetworkTrace;
 pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;

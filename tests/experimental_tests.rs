@@ -175,3 +175,24 @@ fn test_process_monitor_deterministic() {
 
     assert_eq!(report1, report2);
 }
+
+#[test]
+fn test_memory_bleed_escalation() {
+    use fsck::experimental::MemoryBleed;
+    use fsck::filesystem::FilesystemGenerator;
+
+    let seed = 42;
+    let fs = FilesystemGenerator::generate(seed, 5, None);
+    let mut entity = Entity::new();
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_timeline = MemoryBleed::generate_timeline(&fs, &entity, seed);
+    assert!(surface_timeline.contains("TIMELINE EXTRACTION"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_timeline = MemoryBleed::generate_timeline(&fs, &entity, seed);
+    assert!(infection_timeline != surface_timeline);
+    assert!(!infection_timeline.is_empty());
+}

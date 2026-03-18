@@ -79,6 +79,16 @@ impl CommandExecutor {
                 return CommandResult::success(format!("{report}\n"));
             }
 
+            #[cfg(feature = "nova")]
+            if cmd_upper == "BLEED" || cmd_upper == "TIMELINE" {
+                let report = crate::experimental::MemoryBleed::generate_timeline(
+                    &self.fs,
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                return CommandResult::success(format!("{report}\n"));
+            }
+
             if cmd_upper == "MEMDUMP" || cmd_upper == "EXPORT" {
                 let report = crate::experimental::MemoryDumpGenerator::generate_dump(
                     &self.entity,
