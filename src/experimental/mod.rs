@@ -1,3 +1,5 @@
+#[cfg(feature = "nova")]
+pub mod astro;
 pub mod defrag;
 pub mod diagnostics;
 pub mod emotional_bleed;
@@ -13,6 +15,8 @@ pub mod spatial_audio;
 #[cfg(feature = "nova")]
 pub mod voice;
 
+#[cfg(feature = "nova")]
+pub use astro::AstroDisplay;
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;

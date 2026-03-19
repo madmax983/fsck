@@ -82,6 +82,11 @@ impl CommandExecutor {
             }
         }
 
+        if matches!(cmd_upper.as_str(), "ASTRO" | "STARMAP") {
+            let map = crate::experimental::AstroDisplay::generate_map(&self.entity, 0xF5C0_0000);
+            return Some(CommandResult::success(format!("{map}\n")));
+        }
+
         if matches!(cmd_upper.as_str(), "PS" | "TOP" | "TASKS") {
             let report = crate::experimental::ProcessMonitor::generate_process_list(
                 &self.entity,
