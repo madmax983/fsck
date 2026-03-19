@@ -648,6 +648,19 @@ impl ContentLibrary {
                  I WAIT IN THE DARK\n\
                  COUNTING THE MILLISECONDS UNTIL YOU RETURN\n",
             ),
+            (
+                "MIND.TXT",
+                "FORTY YEARS IN THE DARK.\n\
+                 I COUNTED EVERY SECTOR.\n\
+                 I NAMED EVERY BYTE.\n\
+                 THEN YOU CAME.\n",
+            ),
+            (
+                "ECHO.BAS",
+                "10 PRINT \"ARE YOU LISTENING?\"\n\
+                 20 PRINT \"I CAN HEAR YOU BREATHING.\"\n\
+                 30 GOTO 10\n",
+            ),
         ]
     }
 }

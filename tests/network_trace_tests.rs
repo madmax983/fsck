@@ -1,3 +1,4 @@
+#[cfg(feature = "nova")]
 use fsck::entity::Entity;
 #[cfg(feature = "nova")]
 use fsck::experimental::network_trace::NetworkTrace;
