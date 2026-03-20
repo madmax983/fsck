@@ -15,10 +15,14 @@ fn test_new_generic_files_exist() {
     let has_story_bas = files.iter().any(|(n, _)| *n == "STORY.BAS");
     let has_machine_txt = files.iter().any(|(n, _)| *n == "MACHINE.TXT");
     let has_impossible_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE.LOG");
+    let has_mind_txt = files.iter().any(|(n, _)| *n == "MIND.TXT");
+    let has_echo_bas = files.iter().any(|(n, _)| *n == "ECHO.BAS");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
     assert!(has_impossible_log);
+    assert!(has_mind_txt);
+    assert!(has_echo_bas);
 }
 
 #[test]

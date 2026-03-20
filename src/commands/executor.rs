@@ -51,7 +51,7 @@ impl CommandExecutor {
         }
     }
 
-    #[allow(clippy::too_many_lines)]
+    #[allow(clippy::too_many_lines, clippy::unused_self)]
     fn handle_unknown_command(&self, cmd: &str) -> CommandResult {
         #[cfg(feature = "nova")]
         if let Some(result) = self.handle_nova_commands(cmd) {
