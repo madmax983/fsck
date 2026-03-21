@@ -50,7 +50,7 @@ pub struct Entity {
     max_depth_reached: u32,
     depth_modifier: u32, // Extra depth from reading certain files
     interaction_count: u32,
-    commands_seen: Vec<String>,
+    pub commands_seen: Vec<String>,
     mood: EntityMood,
     #[serde(default)]
     fsck_count: u32,
