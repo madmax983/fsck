@@ -67,75 +67,61 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
-        let cmd_upper = cmd.to_uppercase();
+        let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
+        let cmd_word_upper = cmd_word.to_uppercase();
+        let arg = arg.trim();
 
-        if cmd_upper.starts_with("SPEAK ") || cmd_upper.starts_with("SAY ") {
-            let (_, arg) = cmd.split_once(' ')?;
-            let text = arg.trim();
-            if !text.is_empty() {
+        match cmd_word_upper.as_str() {
+            "SPEAK" | "SAY" if !arg.is_empty() => {
                 let voice_output = crate::experimental::VoiceSynthesizer::synthesize(
-                    text,
+                    arg,
                     &self.entity,
                     0xF5C0_0000,
                 );
-                return Some(CommandResult::success(format!("{voice_output}\n")));
+                Some(CommandResult::success(format!("{voice_output}\n")))
             }
-        }
-
-        if matches!(cmd_upper.as_str(), "PS" | "TOP" | "TASKS") {
-            let report = crate::experimental::ProcessMonitor::generate_process_list(
-                &self.entity,
-                0xF5C0_0000,
-            );
-            return Some(CommandResult::success(format!("{report}\n")));
-        }
-
-        if matches!(cmd_upper.as_str(), "MEMDUMP" | "EXPORT") {
-            let report =
-                crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
-            return Some(CommandResult::success(format!("{report}\n")));
-        }
-
-        if matches!(cmd_upper.as_str(), "DIAG" | "SYS") {
-            let report =
-                crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
-            return Some(CommandResult::success(format!("{report}\n")));
-        }
-
-        if cmd_upper.starts_with("SEARCH ") || cmd_upper.starts_with("FIND ") {
-            let (_, arg) = cmd.split_once(' ')?;
-            let query = arg.trim();
-            if !query.is_empty() {
+            "PS" | "TOP" | "TASKS" if arg.is_empty() => {
+                let report = crate::experimental::ProcessMonitor::generate_process_list(
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                Some(CommandResult::success(format!("{report}\n")))
+            }
+            "MEMDUMP" | "EXPORT" if arg.is_empty() => {
+                let report = crate::experimental::MemoryDumpGenerator::generate_dump(
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                Some(CommandResult::success(format!("{report}\n")))
+            }
+            "DIAG" | "SYS" if arg.is_empty() => {
+                let report = crate::experimental::SystemDiagnostics::generate_report(
+                    &self.entity,
+                    0xF5C0_0000,
+                );
+                Some(CommandResult::success(format!("{report}\n")))
+            }
+            "SEARCH" | "FIND" if !arg.is_empty() => {
                 let results = crate::experimental::SearchTool::search(
                     &self.fs,
                     &self.entity,
-                    query,
+                    arg,
                     0xF5C0_0000,
                 );
-                return Some(CommandResult::success(format!("{results}\n")));
+                Some(CommandResult::success(format!("{results}\n")))
             }
-        }
-
-        if cmd_upper == "DEFRAG" {
-            let defrag_output =
-                crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
-            return Some(CommandResult::success(format!("{defrag_output}\n")));
-        }
-
-        if cmd_upper.starts_with("PING ") {
-            let (_, arg) = cmd.split_once(' ')?;
-            let target = arg.trim();
-            if !target.is_empty() {
+            "DEFRAG" if arg.is_empty() => {
+                let defrag_output =
+                    crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+                Some(CommandResult::success(format!("{defrag_output}\n")))
+            }
+            "PING" if !arg.is_empty() => {
                 let ping_output =
-                    crate::experimental::PingTool::run_ping(target, &self.entity, 0xF5C0_0000);
-                return Some(CommandResult::success(format!("{ping_output}\n")));
+                    crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
+                Some(CommandResult::success(format!("{ping_output}\n")))
             }
-        }
-
-        if cmd_upper.starts_with("DUMP ") || cmd_upper.starts_with("HEXDUMP ") {
-            let (_, arg) = cmd.split_once(' ')?;
-            let filename = arg.trim().to_uppercase();
-            if !filename.is_empty() {
+            "DUMP" | "HEXDUMP" if !arg.is_empty() => {
+                let filename = arg.to_uppercase();
                 let Some(file) = self
                     .fs
                     .current_node()
@@ -152,24 +138,18 @@ impl CommandExecutor {
                     &self.entity,
                     0xF5C0_0000,
                 );
-                return Some(CommandResult::success(format!("{dump}\n")));
+                Some(CommandResult::success(format!("{dump}\n")))
             }
-        }
-
-        if cmd_upper.starts_with("TRACE ") || cmd_upper.starts_with("TRACEROUTE ") {
-            let (_, arg) = cmd.split_once(' ')?;
-            let target = arg.trim();
-            if !target.is_empty() {
+            "TRACE" | "TRACEROUTE" if !arg.is_empty() => {
                 let trace_output = crate::experimental::NetworkTrace::generate_trace(
                     &self.entity,
                     0xF5C0_0000,
-                    target,
+                    arg,
                 );
-                return Some(CommandResult::success(format!("{trace_output}\n")));
+                Some(CommandResult::success(format!("{trace_output}\n")))
             }
+            _ => None,
         }
-
-        None
     }
 
     #[must_use]
@@ -372,78 +352,74 @@ impl CommandExecutor {
         CommandResult::success(&output)
     }
 
-    fn generate_surface_scan(output: &mut String) {
+    fn generate_surface_scan() -> String {
         let total_sectors = 560;
 
-        writeln!(output, "READING {total_sectors} SECTORS")
-            .expect("Writing to String buffer should not fail");
-        output.push_str("SECTOR 0000-022F: OK\n");
-        output.push_str("VTOC: OK\n");
-        output.push_str("CATALOG: OK\n\n");
+        format!(
+            "READING {total_sectors} SECTORS\n\
+            SECTOR 0000-022F: OK\n\
+            VTOC: OK\n\
+            CATALOG: OK\n\n"
+        )
     }
 
-    fn generate_corruption_scan(output: &mut String, rng: &mut ChaCha8Rng, fsck_count: u32) {
+    fn generate_corruption_scan(rng: &mut ChaCha8Rng, fsck_count: u32) -> String {
         let total_sectors = 560 + rng.gen_range(0..100);
         let bad_sectors = rng.gen_range(1..=3);
 
-        writeln!(output, "READING {total_sectors} SECTORS")
-            .expect("Writing to String buffer should not fail");
-        output.push_str("SECTOR 0000-00FF: OK\n");
+        let loop_warning = if fsck_count > 1 {
+            "SECTOR 0100-01FF: SCAN LOOP DETECTED\n"
+        } else {
+            ""
+        };
 
-        writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)")
-            .expect("Writing to String buffer should not fail");
-        output.push_str("SECTOR 0200-022F: OK\n");
-        if fsck_count > 1 {
-            output.push_str("SECTOR 0100-01FF: SCAN LOOP DETECTED\n");
-        }
-        output.push_str("VTOC: MISMATCH\n\n");
-    }
-
-    fn generate_presence_scan(output: &mut String, rng: &mut ChaCha8Rng) {
-        let total_sectors = rng.gen_range(400..700);
-
-        writeln!(output, "READING {total_sectors} SECTORS")
-            .expect("Writing to String buffer should not fail");
-        output.push_str("SECTOR 0000-00FF: OK\n");
-        output.push_str("SECTOR 0100-01FF: ACCESS DENIED\n");
-        output.push_str("SECTOR 0200-02FF: CONFLICTING RESULTS\n");
-        output.push_str("SECTOR 0300-03FF: SECTOR RESISTS READ\n");
-
-        writeln!(
-            output,
-            "VTOC: {} ENTRIES (EXPECTED 256)\n",
-            rng.gen_range(1..=1024)
+        format!(
+            "READING {total_sectors} SECTORS\n\
+            SECTOR 0000-00FF: OK\n\
+            SECTOR 0100-01FF: {bad_sectors} ERROR(S)\n\
+            SECTOR 0200-022F: OK\n\
+            {loop_warning}\
+            VTOC: MISMATCH\n\n"
         )
-        .expect("Writing to String buffer should not fail");
     }
 
-    fn generate_infection_scan(output: &mut String, rng: &mut ChaCha8Rng) {
+    fn generate_presence_scan(rng: &mut ChaCha8Rng) -> String {
+        let total_sectors = rng.gen_range(400..700);
+        let vtoc_entries = rng.gen_range(1..=1024);
+
+        format!(
+            "READING {total_sectors} SECTORS\n\
+            SECTOR 0000-00FF: OK\n\
+            SECTOR 0100-01FF: ACCESS DENIED\n\
+            SECTOR 0200-02FF: CONFLICTING RESULTS\n\
+            SECTOR 0300-03FF: SECTOR RESISTS READ\n\
+            VTOC: {vtoc_entries} ENTRIES (EXPECTED 256)\n\n"
+        )
+    }
+
+    fn generate_infection_scan(rng: &mut ChaCha8Rng) -> String {
         let total_sectors = rng.gen_range(0..=99999);
 
-        writeln!(output, "READING {total_sectors} SECTORS")
-            .expect("Writing to String buffer should not fail");
-        output.push_str("SECTOR 0000-????: ?????\n");
-        output.push_str("SECTOR ????-????: CANNOT\n");
-        output.push_str("VTOC: VTOC: VTOC: VTOC:\n\n");
+        format!(
+            "READING {total_sectors} SECTORS\n\
+            SECTOR 0000-????: ?????\n\
+            SECTOR ????-????: CANNOT\n\
+            VTOC: VTOC: VTOC: VTOC:\n\n"
+        )
     }
 
     /// Generate sector scan output appropriate to the current layer
     fn generate_fsck_scan(layer: EscalationLayer, fsck_count: u32, seed: u64) -> String {
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
-        let mut output = String::new();
 
-        output.push_str("CHECKING DISK...\n\n");
+        let scan_result = match layer {
+            EscalationLayer::Surface => Self::generate_surface_scan(),
+            EscalationLayer::Corruption => Self::generate_corruption_scan(&mut rng, fsck_count),
+            EscalationLayer::Presence => Self::generate_presence_scan(&mut rng),
+            EscalationLayer::Infection => Self::generate_infection_scan(&mut rng),
+        };
 
-        match layer {
-            EscalationLayer::Surface => Self::generate_surface_scan(&mut output),
-            EscalationLayer::Corruption => {
-                Self::generate_corruption_scan(&mut output, &mut rng, fsck_count);
-            }
-            EscalationLayer::Presence => Self::generate_presence_scan(&mut output, &mut rng),
-            EscalationLayer::Infection => Self::generate_infection_scan(&mut output, &mut rng),
-        }
-
-        output
+        format!("CHECKING DISK...\n\n{scan_result}")
     }
 
     fn hello(&self) -> CommandResult {
@@ -541,25 +517,18 @@ impl CommandExecutor {
     fn parse_basic_program(
         content: &str,
     ) -> Result<std::collections::BTreeMap<u32, String>, String> {
-        let mut program: std::collections::BTreeMap<u32, String> =
-            std::collections::BTreeMap::new();
-        for line in content.lines() {
-            let line = line.trim();
-            if line.is_empty() {
-                continue;
-            }
-
-            // A line should start with a number
-            let first_space = line.find(' ');
-            let (num_str, stmt) = first_space.map_or((line, ""), |idx| line.split_at(idx));
-
-            if let Ok(line_num) = num_str.parse::<u32>() {
-                program.insert(line_num, stmt.trim().to_string());
-            } else {
-                return Err(format!("?SYNTAX ERROR IN: {line}\n"));
-            }
-        }
-        Ok(program)
+        content
+            .lines()
+            .map(str::trim)
+            .filter(|line| !line.is_empty())
+            .map(|line| {
+                let (num_str, stmt) = line.split_once(' ').unwrap_or((line, ""));
+                num_str
+                    .parse::<u32>()
+                    .map(|line_num| (line_num, stmt.trim().to_string()))
+                    .map_err(|_| format!("?SYNTAX ERROR IN: {line}\n"))
+            })
+            .collect()
     }
 
     fn execute_print_statement(
