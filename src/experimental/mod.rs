@@ -13,6 +13,8 @@ pub mod process_monitor;
 pub mod sleep_mode;
 pub mod spatial_audio;
 #[cfg(feature = "nova")]
+pub mod undelete;
+#[cfg(feature = "nova")]
 pub mod voice;
 
 pub use defrag::DefragTool;
@@ -28,5 +30,7 @@ pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]
 pub use sleep_mode::SleepMode;
 pub use spatial_audio::SpatialAudioGenerator;
+#[cfg(feature = "nova")]
+pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;

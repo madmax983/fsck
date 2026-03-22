@@ -115,6 +115,12 @@ impl CommandExecutor {
                     crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
                 Some(CommandResult::success(format!("{defrag_output}\n")))
             }
+            #[cfg(feature = "nova")]
+            "UNDELETE" | "RECOVER" if arg.is_empty() => {
+                let undelete_output =
+                    crate::experimental::UndeleteTool::run_undelete(&self.entity, 0xF5C0_0000);
+                Some(CommandResult::success(format!("{undelete_output}\n")))
+            }
             "PING" if !arg.is_empty() => {
                 let ping_output =
                     crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
