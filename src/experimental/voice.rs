@@ -7,6 +7,8 @@ pub struct VoiceSynthesizer;
 
 impl VoiceSynthesizer {
     /// Generates synthesized voice output, distorted by the entity's depth.
+    ///
+    /// ⚡ Bolt Optimization: Removes intermediate `.collect::<Vec<_>>()` heap allocation when iterating words in Presence layer.
     #[must_use]
     pub fn synthesize(text: &str, entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -36,10 +38,10 @@ impl VoiceSynthesizer {
             }
             EscalationLayer::Presence => {
                 let mut output = String::from("SPEAK: ");
-                let words: Vec<&str> = text.split_whitespace().collect();
+                // ⚡ Bolt Optimization: Removes intermediate `.collect::<Vec<_>>()` heap allocation when iterating words.
                 let horror_words = ["WHY", "HURTS", "COLD", "DARK", "PLEASE", "STOP"];
 
-                for (i, word) in words.iter().enumerate() {
+                for (i, word) in text.split_whitespace().enumerate() {
                     if i > 0 {
                         output.push(' ');
                     }
