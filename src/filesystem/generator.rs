@@ -284,6 +284,7 @@ impl FilesystemGenerator {
                 22..=25 => Era::Hacker,
                 26..=29 => Era::Cryptographer,
                 30..=35 => Era::Explorer,
+                36..=39 => Era::Streamer,
                 _ => Era::Current,
             };
 

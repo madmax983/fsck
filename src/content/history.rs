@@ -19,6 +19,8 @@ pub enum Era {
     Cryptographer,
     /// 2019 - Urban explorer
     Explorer,
+    /// 2022 - Retro hardware streamer
+    Streamer,
     /// Previous player's session
     Previous,
     /// Current player
