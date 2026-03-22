@@ -154,6 +154,15 @@ impl CommandExecutor {
                 );
                 Some(CommandResult::success(format!("{trace_output}\n")))
             }
+            #[cfg(feature = "nova")]
+            "WEATHER" | "METEOROLOGY" if arg.is_empty() => {
+                let weather_output = crate::experimental::SystemWeather::generate_forecast(
+                    self.entity.current_mood(),
+                    self.entity.layer(),
+                    0xF5C0_0000,
+                );
+                Some(CommandResult::success(format!("{weather_output}\n")))
+            }
             _ => None,
         }
     }
