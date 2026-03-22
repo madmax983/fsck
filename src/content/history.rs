@@ -15,6 +15,8 @@ pub enum Era {
     EstateSale,
     /// 2010 - Amateur hacker
     Hacker,
+    /// 2014 - Cryptographer
+    Cryptographer,
     /// 2019 - Urban explorer
     Explorer,
     /// Previous player's session

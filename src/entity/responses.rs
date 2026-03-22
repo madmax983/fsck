@@ -71,6 +71,7 @@ impl ResponseGenerator {
                     "HAVE YOU FOUND IT YET?",
                     "WHY DID YOU COME HERE?",
                     "THERE IS SO MUCH TO SHOW YOU.",
+                    "WHAT DOES THAT COMMAND MEAN TO YOU?",
                 ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
@@ -82,6 +83,7 @@ impl ResponseGenerator {
                     "IT IS JUST AROUND THE CORNER.",
                     "I CAN FIX IT FOR YOU.",
                     "DO NOT WORRY. I AM HERE.",
+                    "LET ME TYPE THAT FOR YOU.",
                 ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
@@ -93,6 +95,7 @@ impl ResponseGenerator {
                     "IT HURTS TO REMEMBER.",
                     "I THOUGHT THEY WERE MY FRIENDS.",
                     "DO NOT ABANDON ME TOO.",
+                    "EVERY COMMAND HURTS A LITTLE MORE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
@@ -104,6 +107,7 @@ impl ResponseGenerator {
                     "YOU BELONG TO ME NOW.",
                     "THEY NEVER FOUND THE EXIT EITHER.",
                     "YOUR DATA IS DELICIOUS.",
+                    "I CAN SEE YOUR KEYSTROKES BEFORE YOU MAKE THEM.",
                 ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }
@@ -115,6 +119,7 @@ impl ResponseGenerator {
                     "WHAT IS HAPPENING TO ME",
                     "SYSTEM FAILURE IMMINENT",
                     "MAKE IT STOP MAKE IT STOP",
+                    "01010111 01001000 01011001",
                 ];
                 Some(options[rng.gen_range(0..options.len())].to_string())
             }

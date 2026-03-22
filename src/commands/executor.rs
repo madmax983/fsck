@@ -238,7 +238,18 @@ impl CommandExecutor {
         let filename_upper = filename.to_uppercase();
         for file in self.fs.current_node().visible_files() {
             if file.name() == filename_upper {
-                let content = file.content();
+                let mut content = file.content();
+
+                // Dynamic injection of player's commands for specific generic files
+                if filename_upper == "OBSERVE.TXT" {
+                    let mut appended_commands = String::from("\n\nI SAW YOU TYPE:\n");
+                    for cmd in &self.entity.commands_seen {
+                        appended_commands.push_str("  ");
+                        appended_commands.push_str(cmd);
+                        appended_commands.push('\n');
+                    }
+                    content.push_str(&appended_commands);
+                }
 
                 #[cfg(feature = "nova")]
                 let content = {

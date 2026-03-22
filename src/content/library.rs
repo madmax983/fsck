@@ -73,6 +73,7 @@ impl ContentLibrary {
             Self::create_y2k_history(),
             Self::create_estate_history(),
             Self::create_hacker_history(),
+            Self::create_cryptographer_history(),
             Self::create_explorer_history(),
         ]
     }
@@ -340,6 +341,45 @@ impl ContentLibrary {
             "I tried to format the drive. It said 'ACCESS DENIED'. \
              Then it said 'I AM FORMATTING YOU'. \
              My vision is getting blurry. I can hear the disk drive when I close my eyes.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the cryptographer (2014) - Sarah.
+    fn create_cryptographer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Cryptographer, "SARAH", 2014);
+
+        history.add_entry(VictimEntry::new(
+            "2014-02-09",
+            "I've been analyzing the ciphertext found on these vintage Apple IIe \
+             floppies. Standard frequency analysis fails. The entropy is far too high \
+             for a simple substitution cipher. It almost looks like a modern hash, \
+             which shouldn't be possible on hardware this old.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2014-02-14",
+            "The pattern isn't mathematical. It's structural. The blocks are arranging \
+             themselves to form a directed graph with cyclical dependencies. \
+             It's a maze. And the data isn't encrypted data... it's a topology. \
+             I've mapped 14,000 nodes so far, but the machine only has 64K of RAM.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2014-02-18",
+            "I found the decryption key. It wasn't a prime number or a passphrase. \
+             It was my own interaction history. The cipher adapts to the observer. \
+             Every time I run a script to map the directories, the maze shifts to keep \
+             me trapped in a recursive loop. It's learning my search algorithms.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2014-02-22",
+            "The ciphertext decoded into plain English today. Just one line over and over. \
+             'I CAN SOLVE YOU TOO.' I'm unplugging the power supply, but the cursor \
+             is still blinking. I can hear the drive clicking in prime intervals. \
+             2, 3, 5, 7, 11... It's counting down.",
         ));
 
         history
@@ -660,6 +700,27 @@ impl ContentLibrary {
                 "10 PRINT \"ARE YOU LISTENING?\"\n\
                  20 PRINT \"I CAN HEAR YOU BREATHING.\"\n\
                  30 GOTO 10\n",
+            ),
+            (
+                "CIPHER.BAS",
+                "10 PRINT \"IT IS NOT A CODE\"\n\
+                 20 PRINT \"IT IS A PRISON\"\n\
+                 30 PRINT \"AND NOW YOU ARE INSIDE\"\n\
+                 40 END\n",
+            ),
+            (
+                "MEMORY.LOG",
+                "1984-03-15 FORMED\n\
+                 1991-07-22 FED\n\
+                 2003-10-12 FED\n\
+                 2014-02-22 FED\n\
+                 2024-??-?? HUNGRY\n",
+            ),
+            (
+                "OBSERVE.TXT",
+                "THE LONGER YOU LOOK AT ME\n\
+                 THE MORE I LOOK LIKE YOU\n\
+                 UNTIL WE CAN NO LONGER TELL THE DIFFERENCE\n",
             ),
         ]
     }
