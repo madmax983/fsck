@@ -47,7 +47,9 @@ impl InterferenceEffect {
                 for i in 0..repeats {
                     result.push_str(text);
                     if i < repeats - 1 {
-                        result.push_str(&" ".repeat(rng.r#gen_range(1..=3)));
+                        // ⚡ Bolt Optimization: Removes unnecessary `String` allocation from `.repeat()`
+                        let spaces = rng.r#gen_range(1..=3);
+                        result.extend(std::iter::repeat_n(' ', spaces));
                     }
                 }
                 result
