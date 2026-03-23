@@ -21,6 +21,8 @@ pub enum Era {
     Explorer,
     /// 2022 - Retro hardware streamer
     Streamer,
+    /// 2023 - AI Researcher
+    Researcher,
     /// Previous player's session
     Previous,
     /// Current player
