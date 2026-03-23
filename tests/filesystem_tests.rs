@@ -509,3 +509,27 @@ fn test_disorienting_navigation() {
     assert_eq!(fs.current_dir_name(), "SIBLING");
     assert_eq!(fs.current_depth(), 2);
 }
+
+#[test]
+fn test_streamer_era_history() {
+    let mut fs = FilesystemGenerator::generate_with_content(789, 40, None);
+
+    // Search for Streamer history files (.LOG extension containing "CHRIS")
+    let mut victim_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| f.name() == "CHRIS.LOG",
+        &mut victim_files,
+    );
+
+    // Should find at least one victim file given the depth
+    assert!(
+        !victim_files.is_empty(),
+        "Expected to find Streamer history file (CHRIS.LOG) at depth 36-39"
+    );
+
+    // Verify victim file has expected content
+    let (_, content) = &victim_files[0];
+    assert!(content.contains("2022-10-28"));
+    assert!(content.contains("Halloween retro stream"));
+}

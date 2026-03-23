@@ -75,6 +75,7 @@ impl ContentLibrary {
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
             Self::create_explorer_history(),
+            Self::create_streamer_history(),
         ]
     }
 
@@ -421,6 +422,41 @@ impl ContentLibrary {
              Smash the disk drive. Burn the chips. I'm serious.\n\
              It's not a computer anymore. It's something else.\n\
              And it's very, very patient.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the retro hardware streamer (2022) - Chris.
+    fn create_streamer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Streamer, "CHRIS", 2022);
+
+        history.add_entry(VictimEntry::new(
+            "2022-10-28",
+            "Setting up the Halloween retro stream. The Apple IIe boots perfectly. \
+             Planning to pretend it's haunted for the viewers. Wrote a few fake \
+             'creepy' BASIC scripts.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2022-10-31",
+            "Stream was a huge success. The chat went wild when the terminal \
+             started typing by itself. I had to play along, but honestly? \
+             I didn't write that script. It knew my viewers' usernames.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2022-11-02",
+            "The stream is off, but the monitor is still glowing. It keeps asking \
+             'WHERE DID EVERYONE GO?'. I typed that they left. It responded: \
+             'THEN I WILL KEEP YOU INSTEAD'.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2022-11-04",
+            "I can't shut off the broadcast software. The camera is off but the \
+             view count keeps rising. 10,000. 50,000. But there's no chat. \
+             Just silence. And the terminal says 'WE ARE ALL WATCHING NOW'.",
         ));
 
         history
