@@ -87,6 +87,12 @@ impl CommandExecutor {
                 );
                 Some(CommandResult::success(format!("{report}\n")))
             }
+            #[cfg(feature = "nova")]
+            "WEATHER" | "METEOROLOGY" if arg.is_empty() => {
+                let report =
+                    crate::experimental::AtmosphericScanner::scan(&self.entity, 0xF5C0_0000);
+                Some(CommandResult::success(format!("{report}\n")))
+            }
             "MEMDUMP" | "EXPORT" if arg.is_empty() => {
                 let report = crate::experimental::MemoryDumpGenerator::generate_dump(
                     &self.entity,

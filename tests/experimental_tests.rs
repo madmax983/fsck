@@ -2,7 +2,8 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
+    AtmosphericScanner, MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator,
+    SystemDiagnostics,
 };
 
 #[test]
@@ -174,4 +175,47 @@ fn test_process_monitor_deterministic() {
     let report2 = ProcessMonitor::generate_process_list(&entity, seed);
 
     assert_eq!(report1, report2);
+}
+
+#[test]
+fn test_atmospheric_scanner_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = AtmosphericScanner::scan(&entity, seed);
+    assert!(surface_report.contains("TEMPERATURE"));
+    assert!(surface_report.contains("HUMIDITY"));
+    assert!(surface_report.contains("PRESSURE: NOMINAL"));
+    assert!(surface_report.contains("CONDITIONS: CLEAR"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = AtmosphericScanner::scan(&entity, seed);
+    assert!(corruption_report.contains("RISING"));
+    assert!(corruption_report.contains("STATIC DETECTED"));
+    assert!(corruption_report.contains("FLUCTUATING"));
+    assert!(corruption_report.contains("HEAVY ION STORM WARNING"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = AtmosphericScanner::scan(&entity, seed);
+    assert!(presence_report.contains("CRITICAL"));
+    assert!(presence_report.contains("IT IS BREATHING"));
+    assert!(presence_report.contains("CRUSHING"));
+    assert!(presence_report.contains("WARNING: "));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = AtmosphericScanner::scan(&entity, seed);
+    assert!(infection_report.contains("BURNING"));
+    assert!(infection_report.contains("DROWNING"));
+    assert!(infection_report.contains("INFINITE"));
+    assert!(
+        infection_report.contains("IT IS RAINING TEETH")
+            || infection_report.contains("THE SKY IS MEAT")
+            || infection_report.contains("BLOOD IN THE VENTS")
+            || infection_report.contains("THERE IS NO ATMOSPHERE")
+    );
 }
