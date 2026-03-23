@@ -114,7 +114,7 @@ impl Game {
         // Auto-save after each command
         let _ = self.save();
 
-        result.output().to_string()
+        result.into_output()
     }
 
     #[must_use]
