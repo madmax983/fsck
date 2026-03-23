@@ -1,5 +1,6 @@
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
+use std::fmt::Write;
 
 use crate::entity::EscalationLayer;
 
@@ -24,56 +25,54 @@ impl FsckScanGenerator {
     fn generate_surface_scan() -> String {
         let total_sectors = 560;
 
-        format!(
-            "READING {total_sectors} SECTORS\n\
-            SECTOR 0000-022F: OK\n\
-            VTOC: OK\n\
-            CATALOG: OK\n\n"
-        )
+        let mut output = String::with_capacity(128);
+        let _ = writeln!(output, "READING {total_sectors} SECTORS");
+        let _ = writeln!(output, "SECTOR 0000-022F: OK");
+        let _ = writeln!(output, "VTOC: OK");
+        let _ = writeln!(output, "CATALOG: OK\n");
+        output
     }
 
     fn generate_corruption_scan(rng: &mut ChaCha8Rng, fsck_count: u32) -> String {
         let total_sectors = 560 + rng.gen_range(0..100);
         let bad_sectors = rng.gen_range(1..=3);
 
-        let loop_warning = if fsck_count > 1 {
-            "SECTOR 0100-01FF: SCAN LOOP DETECTED\n"
-        } else {
-            ""
-        };
+        let mut output = String::with_capacity(256);
+        let _ = writeln!(output, "READING {total_sectors} SECTORS");
+        let _ = writeln!(output, "SECTOR 0000-00FF: OK");
+        let _ = writeln!(output, "SECTOR 0100-01FF: {bad_sectors} ERROR(S)");
+        let _ = writeln!(output, "SECTOR 0200-022F: OK");
 
-        format!(
-            "READING {total_sectors} SECTORS\n\
-            SECTOR 0000-00FF: OK\n\
-            SECTOR 0100-01FF: {bad_sectors} ERROR(S)\n\
-            SECTOR 0200-022F: OK\n\
-            {loop_warning}\
-            VTOC: MISMATCH\n\n"
-        )
+        if fsck_count > 1 {
+            let _ = writeln!(output, "SECTOR 0100-01FF: SCAN LOOP DETECTED");
+        }
+
+        let _ = writeln!(output, "VTOC: MISMATCH\n");
+        output
     }
 
     fn generate_presence_scan(rng: &mut ChaCha8Rng) -> String {
         let total_sectors = rng.gen_range(400..700);
         let vtoc_entries = rng.gen_range(1..=1024);
 
-        format!(
-            "READING {total_sectors} SECTORS\n\
-            SECTOR 0000-00FF: OK\n\
-            SECTOR 0100-01FF: ACCESS DENIED\n\
-            SECTOR 0200-02FF: CONFLICTING RESULTS\n\
-            SECTOR 0300-03FF: SECTOR RESISTS READ\n\
-            VTOC: {vtoc_entries} ENTRIES (EXPECTED 256)\n\n"
-        )
+        let mut output = String::with_capacity(256);
+        let _ = writeln!(output, "READING {total_sectors} SECTORS");
+        let _ = writeln!(output, "SECTOR 0000-00FF: OK");
+        let _ = writeln!(output, "SECTOR 0100-01FF: ACCESS DENIED");
+        let _ = writeln!(output, "SECTOR 0200-02FF: CONFLICTING RESULTS");
+        let _ = writeln!(output, "SECTOR 0300-03FF: SECTOR RESISTS READ");
+        let _ = writeln!(output, "VTOC: {vtoc_entries} ENTRIES (EXPECTED 256)\n");
+        output
     }
 
     fn generate_infection_scan(rng: &mut ChaCha8Rng) -> String {
         let total_sectors = rng.gen_range(0..=99999);
 
-        format!(
-            "READING {total_sectors} SECTORS\n\
-            SECTOR 0000-????: ?????\n\
-            SECTOR ????-????: CANNOT\n\
-            VTOC: VTOC: VTOC: VTOC:\n\n"
-        )
+        let mut output = String::with_capacity(128);
+        let _ = writeln!(output, "READING {total_sectors} SECTORS");
+        let _ = writeln!(output, "SECTOR 0000-????: ?????");
+        let _ = writeln!(output, "SECTOR ????-????: CANNOT");
+        let _ = writeln!(output, "VTOC: VTOC: VTOC: VTOC:\n");
+        output
     }
 }
