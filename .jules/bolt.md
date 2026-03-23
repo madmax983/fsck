@@ -11,3 +11,7 @@
 **[Avoiding Redundant Allocations with impl Into<String>]**
 **Learning:** Passing `&format!(...)` to a constructor that takes `&str` and calls `.to_string()` allocates two `String`s on the heap (one inside `format!`, and another in `.to_string()`).
 **Action:** To prevent double heap allocations when a struct stores a `String`, have its constructor methods accept `impl Into<String>` instead of `&str`. This allows callers to pass owned `String`s directly using `.into()`, moving the allocated string instead of allocating a duplicate.
+
+**[Avoiding Heap Allocation in String Repeat]**
+**Learning:** Using `String::repeat(n)` inside `.push_str(&" ".repeat(n))` performs an unnecessary heap allocation for the intermediate `String`, which is immediately dropped. Also, in Rust 1.94.0+, `std::iter::repeat(val).take(n)` triggers the `clippy::manual_repeat_n` lint.
+**Action:** Use `.extend(std::iter::repeat_n(char, count))` to append repeated characters directly into the existing `String` buffer without creating a temporary `String` or triggering clippy warnings.
