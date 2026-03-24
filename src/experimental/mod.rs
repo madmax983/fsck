@@ -4,6 +4,8 @@ pub mod emotional_bleed;
 pub mod grep;
 pub mod hexdump;
 #[cfg(feature = "nova")]
+pub mod history;
+#[cfg(feature = "nova")]
 pub mod memdump;
 pub mod network_trace;
 
@@ -22,6 +24,8 @@ pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
 pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
+#[cfg(feature = "nova")]
+pub use history::CommandHistory;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
 pub use network_trace::NetworkTrace;
