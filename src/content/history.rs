@@ -130,7 +130,10 @@ impl VictimHistory {
         }
 
         let mut history = Self::new(Era::Previous, "THE LAST ONE", 2024);
-        let mut entry_content = String::from("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
+        // ⚡ Bolt Optimization: Pre-allocate String capacity to avoid multiple heap reallocations
+        // when generating the previous player's history entry. 512 bytes safely covers the base text plus appending.
+        let mut entry_content = String::with_capacity(512);
+        entry_content.push_str("I WATCHED THEM PLAY. THEY TRIED TO UNDERSTAND.\n\n");
 
         let count = commands.len();
         write!(
