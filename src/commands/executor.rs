@@ -66,94 +66,113 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_speak(&self, arg: &str) -> CommandResult {
+        let voice_output =
+            crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{voice_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_ps(&self) -> CommandResult {
+        let report =
+            crate::experimental::ProcessMonitor::generate_process_list(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{report}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_memdump(&self) -> CommandResult {
+        let report =
+            crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{report}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_diag(&self) -> CommandResult {
+        let report =
+            crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{report}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_search(&self, arg: &str) -> CommandResult {
+        let results =
+            crate::experimental::SearchTool::search(&self.fs, &self.entity, arg, 0xF5C0_0000);
+        CommandResult::success(format!("{results}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_defrag(&self) -> CommandResult {
+        let defrag_output = crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{defrag_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_undelete(&self) -> CommandResult {
+        let undelete_output =
+            crate::experimental::UndeleteTool::run_undelete(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{undelete_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_ping(&self, arg: &str) -> CommandResult {
+        let ping_output = crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{ping_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_dump(&self, arg: &str) -> CommandResult {
+        let filename = arg.to_uppercase();
+        let Some(file) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name() == filename)
+        else {
+            return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
+        };
+        let content = file.content();
+        let dump = crate::experimental::HexDumpGenerator::generate_dump(
+            &content,
+            &self.entity,
+            0xF5C0_0000,
+        );
+        CommandResult::success(format!("{dump}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_trace(&self, arg: &str) -> CommandResult {
+        let trace_output =
+            crate::experimental::NetworkTrace::generate_trace(&self.entity, 0xF5C0_0000, arg);
+        CommandResult::success(format!("{trace_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let cmd_word_upper = cmd_word.to_uppercase();
         let arg = arg.trim();
 
         match cmd_word_upper.as_str() {
-            "SPEAK" | "SAY" if !arg.is_empty() => {
-                let voice_output = crate::experimental::VoiceSynthesizer::synthesize(
-                    arg,
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{voice_output}\n")))
-            }
-            "PS" | "TOP" | "TASKS" if arg.is_empty() => {
-                let report = crate::experimental::ProcessMonitor::generate_process_list(
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{report}\n")))
-            }
-            "MEMDUMP" | "EXPORT" if arg.is_empty() => {
-                let report = crate::experimental::MemoryDumpGenerator::generate_dump(
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{report}\n")))
-            }
-            "DIAG" | "SYS" if arg.is_empty() => {
-                let report = crate::experimental::SystemDiagnostics::generate_report(
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{report}\n")))
-            }
-            "SEARCH" | "FIND" if !arg.is_empty() => {
-                let results = crate::experimental::SearchTool::search(
-                    &self.fs,
-                    &self.entity,
-                    arg,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{results}\n")))
-            }
-            "DEFRAG" if arg.is_empty() => {
-                let defrag_output =
-                    crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
-                Some(CommandResult::success(format!("{defrag_output}\n")))
-            }
             #[cfg(feature = "nova")]
-            "UNDELETE" | "RECOVER" if arg.is_empty() => {
-                let undelete_output =
-                    crate::experimental::UndeleteTool::run_undelete(&self.entity, 0xF5C0_0000);
-                Some(CommandResult::success(format!("{undelete_output}\n")))
-            }
-            "PING" if !arg.is_empty() => {
-                let ping_output =
-                    crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
-                Some(CommandResult::success(format!("{ping_output}\n")))
-            }
-            "DUMP" | "HEXDUMP" if !arg.is_empty() => {
-                let filename = arg.to_uppercase();
-                let Some(file) = self
-                    .fs
-                    .current_node()
-                    .visible_files()
-                    .find(|f| f.name() == filename)
-                else {
-                    return Some(CommandResult::error(format!(
-                        "?FILE NOT FOUND: {filename}\n"
-                    )));
-                };
-                let content = file.content();
-                let dump = crate::experimental::HexDumpGenerator::generate_dump(
-                    &content,
-                    &self.entity,
-                    0xF5C0_0000,
-                );
-                Some(CommandResult::success(format!("{dump}\n")))
-            }
-            "TRACE" | "TRACEROUTE" if !arg.is_empty() => {
-                let trace_output = crate::experimental::NetworkTrace::generate_trace(
-                    &self.entity,
-                    0xF5C0_0000,
-                    arg,
-                );
-                Some(CommandResult::success(format!("{trace_output}\n")))
-            }
+            "SPEAK" | "SAY" if !arg.is_empty() => Some(self.handle_nova_speak(arg)),
+            #[cfg(feature = "nova")]
+            "PS" | "TOP" | "TASKS" if arg.is_empty() => Some(self.handle_nova_ps()),
+            #[cfg(feature = "nova")]
+            "MEMDUMP" | "EXPORT" if arg.is_empty() => Some(self.handle_nova_memdump()),
+            #[cfg(feature = "nova")]
+            "DIAG" | "SYS" if arg.is_empty() => Some(self.handle_nova_diag()),
+            #[cfg(feature = "nova")]
+            "SEARCH" | "FIND" if !arg.is_empty() => Some(self.handle_nova_search(arg)),
+            #[cfg(feature = "nova")]
+            "DEFRAG" if arg.is_empty() => Some(self.handle_nova_defrag()),
+            #[cfg(feature = "nova")]
+            "UNDELETE" | "RECOVER" if arg.is_empty() => Some(self.handle_nova_undelete()),
+            #[cfg(feature = "nova")]
+            "PING" if !arg.is_empty() => Some(self.handle_nova_ping(arg)),
+            #[cfg(feature = "nova")]
+            "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
+            #[cfg(feature = "nova")]
+            "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             _ => None,
         }
     }
