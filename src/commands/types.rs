@@ -27,6 +27,12 @@ impl CommandResult {
         &self.output
     }
 
+    /// ⚡ Bolt Optimization: Consumes the `CommandResult` to return the owned `String`, avoiding a `.to_string()` heap allocation.
+    #[must_use]
+    pub fn into_output(self) -> String {
+        self.output
+    }
+
     #[must_use]
     pub const fn is_error(&self) -> bool {
         self.is_error
