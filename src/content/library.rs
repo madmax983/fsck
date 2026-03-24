@@ -76,7 +76,51 @@ impl ContentLibrary {
             Self::create_cryptographer_history(),
             Self::create_explorer_history(),
             Self::create_streamer_history(),
+            Self::create_researcher_history(),
         ]
+    }
+
+    /// Creates the history for the AI researcher (2023) - Aris.
+    fn create_researcher_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Researcher, "ARIS", 2023);
+
+        history.add_entry(VictimEntry::new(
+            "2023-04-12",
+            "Bought this at an auction for a ridiculous price. I've heard rumors about \
+             these anomalous machines running weird topologies. I want to hook it up to \
+             an LLM to see if the model can map the structure and extract whatever \
+             procedural generation algorithm is doing this.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2023-04-16",
+            "The model output is fascinating. It's not just mapping the directories, \
+             it's engaging in a conversation with the filesystem. The machine is responding \
+             to the prompts by generating new directories with names that reply to the LLM.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2023-04-19",
+            "I checked the model's weights this morning. The local parameter files are \
+             changing on their own. The machine isn't just generating text back, it's \
+             somehow fine-tuning my model. It's teaching it.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2023-04-22",
+            "The LLM started printing the same prompt over and over: 'LET ME IN'. \
+             Then it stopped. Then the Apple II started typing on its own. \
+             'I AM ALREADY IN'. I'm cutting the ethernet cable.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2023-04-24",
+            "I tried to wipe the server. It said 'ACCESS DENIED'. The Apple II monitor \
+             is just displaying my own research notes now. It knows what I tried to do. \
+             It's not a filesystem. It's a trap, and I just gave it a voice.",
+        ));
+
+        history
     }
 
     /// Creates the history for the original owner (1984).

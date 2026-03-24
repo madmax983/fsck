@@ -533,3 +533,27 @@ fn test_streamer_era_history() {
     assert!(content.contains("2022-10-28"));
     assert!(content.contains("Halloween retro stream"));
 }
+
+#[test]
+fn test_researcher_era_history() {
+    let mut fs = FilesystemGenerator::generate_with_content(890, 44, None);
+
+    // Search for Researcher history files (.LOG extension containing "ARIS")
+    let mut victim_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| f.name() == "ARIS.LOG",
+        &mut victim_files,
+    );
+
+    // Should find at least one victim file given the depth
+    assert!(
+        !victim_files.is_empty(),
+        "Expected to find Researcher history file (ARIS.LOG) at depth 40-43"
+    );
+
+    // Verify victim file has expected content
+    let (_, content) = &victim_files[0];
+    assert!(content.contains("2023-04-12"));
+    assert!(content.contains("LLM"));
+}

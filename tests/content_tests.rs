@@ -327,6 +327,7 @@ fn test_all_seven_eras_have_unique_histories() {
     let hacker = lib.history_for_era(Era::Hacker);
     let cryptographer = lib.history_for_era(Era::Cryptographer);
     let explorer = lib.history_for_era(Era::Explorer);
+    let researcher = lib.history_for_era(Era::Researcher);
 
     assert!(original.is_some());
     assert!(technician.is_some());
@@ -336,6 +337,7 @@ fn test_all_seven_eras_have_unique_histories() {
     assert!(hacker.is_some());
     assert!(cryptographer.is_some());
     assert!(explorer.is_some());
+    assert!(researcher.is_some());
 
     // Each should have different names
     assert_eq!(original.unwrap().name(), "JAMIE");
@@ -346,4 +348,16 @@ fn test_all_seven_eras_have_unique_histories() {
     assert_eq!(hacker.unwrap().name(), "SAM");
     assert_eq!(cryptographer.unwrap().name(), "SARAH");
     assert_eq!(explorer.unwrap().name(), "ALEX");
+    assert_eq!(researcher.unwrap().name(), "ARIS");
+}
+
+#[test]
+fn test_researcher_era_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Researcher);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ARIS");
+    assert_eq!(history.year(), 2023);
+    assert!(history.entries().len() >= 4);
 }
