@@ -61,6 +61,8 @@ impl DynamicContent {
     }
 
     /// Generates content for this dynamic source.
+    /// ⚡ Bolt Optimization: Uses `.with_capacity(text.len() + 1)` in `Corrupted` to prevent
+    /// repeated allocations during generation.
     ///
     /// This method mutates internal state (counters, seeds) to produce
     /// different output on each call.
@@ -88,7 +90,7 @@ impl DynamicContent {
             } => {
                 *seed += 1;
                 let mut rng = ChaCha8Rng::seed_from_u64(*seed);
-                let mut result = String::new();
+                let mut result = String::with_capacity(text.len() + 1);
 
                 for ch in text.chars() {
                     if rng.r#gen::<f32>() < *intensity {
