@@ -80,6 +80,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_history(&self) -> CommandResult {
+        let history_output =
+            crate::experimental::HistoryCommand::generate_history(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{history_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
         let report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
@@ -173,6 +180,8 @@ impl CommandExecutor {
             "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
             #[cfg(feature = "nova")]
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
+            #[cfg(feature = "nova")]
+            "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
             _ => None,
         }
     }

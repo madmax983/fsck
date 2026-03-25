@@ -2,8 +2,34 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
+    HistoryCommand, MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
 };
+
+#[test]
+fn test_history_cmd_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    entity.record_command("CATALOG");
+    entity.record_command("CD SYSTEM");
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_history = HistoryCommand::generate_history(&entity, seed);
+    assert!(surface_history.contains("1: CATALOG"));
+    assert!(surface_history.contains("2: CD SYSTEM"));
+
+    // Infection layer
+    entity.update_depth(30);
+    // Force mood update
+    for _ in 0..50 {
+        entity.record_command("BAD_CMD");
+    }
+
+    let infection_history = HistoryCommand::generate_history(&entity, seed);
+    // At infection layer, the actual commands are fully replaced by thoughts
+    assert!(!infection_history.contains("1: CATALOG"));
+}
 
 #[test]
 fn test_memdump_escalation() {
