@@ -77,7 +77,44 @@ impl ContentLibrary {
             Self::create_explorer_history(),
             Self::create_streamer_history(),
             Self::create_researcher_history(),
+            Self::create_archivist_history(),
         ]
+    }
+
+    /// Creates the history for the digital archivist (2025) - Taylor.
+    fn create_archivist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Archivist, "TAYLOR", 2025);
+
+        history.add_entry(VictimEntry::new(
+            "2025-01-15",
+            "Project preservation continues. I've been archiving old 5.25\" floppy disks \
+             donated to the museum. Most of them are degraded, but this one disk... \
+             it boots perfectly every time. The filesystem is incredibly complex.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2025-01-18",
+            "I ran a checksum on the disk image. The hash keeps changing between reads. \
+             That's impossible for read-only media. The data isn't just degrading, it's \
+             actively rearranging itself to avoid sector scans. It's hiding things from me.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2025-01-22",
+            "The archive tool crashed. When I restarted it, the metadata on my own \
+             preservation files had changed. The timestamps were all wrong. Dates from \
+             1984, 1999, 2014. It's indexing me. It's archiving me.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2025-01-25",
+            "I disconnected the drive. The screen is still displaying the catalog. \
+             It found my personal files on the host machine. It's making a backup. \
+             'YOUR MEMORIES ARE SAFE WITH ME', it says. I don't want it to keep them. \
+             I want to forget.",
+        ));
+
+        history
     }
 
     /// Creates the history for the AI researcher (2023) - Aris.

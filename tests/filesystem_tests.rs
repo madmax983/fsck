@@ -557,3 +557,27 @@ fn test_researcher_era_history() {
     assert!(content.contains("2023-04-12"));
     assert!(content.contains("LLM"));
 }
+
+#[test]
+fn test_archivist_era_history() {
+    let mut fs = FilesystemGenerator::generate_with_content(901, 48, None);
+
+    // Search for Archivist history files (.LOG extension containing "TAYLOR")
+    let mut victim_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| f.name() == "TAYLOR.LOG",
+        &mut victim_files,
+    );
+
+    // Should find at least one victim file given the depth
+    assert!(
+        !victim_files.is_empty(),
+        "Expected to find Archivist history file (TAYLOR.LOG) at depth 44-47"
+    );
+
+    // Verify victim file has expected content
+    let (_, content) = &victim_files[0];
+    assert!(content.contains("2025-01-15"));
+    assert!(content.contains("preservation"));
+}
