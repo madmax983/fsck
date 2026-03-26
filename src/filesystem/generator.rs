@@ -277,15 +277,17 @@ impl FilesystemGenerator {
         if current_depth >= 1 && rng.gen_bool(0.4) {
             let era = match current_depth {
                 1..=2 => Era::Previous,
-                3..=7 => Era::Original,
-                8..=13 => Era::Technician,
-                14..=17 => Era::Sysop,
+                3..=5 => Era::Original,
+                6..=9 => Era::Technician,
+                10..=13 => Era::Sysop,
+                14..=17 => Era::Y2K,
                 18..=21 => Era::EstateSale,
-                22..=25 => Era::Hacker,
-                26..=29 => Era::Cryptographer,
-                30..=35 => Era::Explorer,
-                36..=39 => Era::Streamer,
-                40..=43 => Era::Researcher,
+                22..=25 => Era::Archivist,
+                26..=29 => Era::Hacker,
+                30..=33 => Era::Cryptographer,
+                34..=37 => Era::Explorer,
+                38..=41 => Era::Streamer,
+                42..=45 => Era::Researcher,
                 _ => Era::Current,
             };
 

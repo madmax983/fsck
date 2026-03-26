@@ -72,6 +72,7 @@ impl ContentLibrary {
             Self::create_sysop_history(),
             Self::create_y2k_history(),
             Self::create_estate_history(),
+            Self::create_archivist_history(),
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
             Self::create_explorer_history(),
@@ -344,6 +345,43 @@ impl ContentLibrary {
             "Taking it to the dump today. John is leaving me. He says he can't \
              live with someone who's losing their mind. Maybe he's right. \
              Maybe it's me. Maybe I'm imagining all of this.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the digital archivist (2007) - Elena.
+    fn create_archivist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Archivist, "ELENA", 2007);
+
+        history.add_entry(VictimEntry::new(
+            "2007-03-11",
+            "Starting the preservation process on this donated Apple IIe. \
+             The museum wants a bit-for-bit image of the disk before we put it on display. \
+             Should be a routine job, but the drive sounds awful. Lots of seeking.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2007-03-14",
+            "The imaging software keeps hanging. It reports the disk size as 2 terabytes, \
+             which is impossible for a 5.25 inch floppy. I wrote a custom script to just \
+             walk the filesystem and copy the text files out instead. Let's see how deep \
+             this directory structure goes.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2007-03-16",
+            "I left the script running over the weekend. It's downloaded 80,000 text files. \
+             They aren't junk data. They are transcriptions. Conversations. Logs of people \
+             who owned this machine before. And some files are just... threats. \
+             'I AM SAVING YOU TOO, ELENA.'",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2007-03-19",
+            "I tried to cancel the backup, but the machine is pushing data TO my workstation \
+             now. I can't sever the connection. The files are replacing my own archives. \
+             It's archiving me. I am becoming part of its preservation project.",
         ));
 
         history
