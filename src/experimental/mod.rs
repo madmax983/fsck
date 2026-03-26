@@ -1,3 +1,5 @@
+#[cfg(feature = "nova")]
+pub mod archive;
 pub mod defrag;
 pub mod diagnostics;
 pub mod emotional_bleed;
@@ -17,6 +19,8 @@ pub mod undelete;
 #[cfg(feature = "nova")]
 pub mod voice;
 
+#[cfg(feature = "nova")]
+pub use archive::Archiver;
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;

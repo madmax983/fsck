@@ -147,6 +147,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_archive(&self) -> CommandResult {
+        let files = self.fs.current_node().visible_files();
+        let archive_output =
+            crate::experimental::Archiver::compress(files, &self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{archive_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let cmd_word_upper = cmd_word.to_uppercase();
@@ -173,6 +181,10 @@ impl CommandExecutor {
             "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
             #[cfg(feature = "nova")]
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
+            #[cfg(feature = "nova")]
+            "ARCHIVE" | "ZIP" | "TAR" | "COMPRESS" if arg.is_empty() => {
+                Some(self.handle_nova_archive())
+            }
             _ => None,
         }
     }
