@@ -17,7 +17,9 @@ impl EmotionalBleed {
             }
             EntityMood::Helpful => {
                 // Occasionally appends a "helpful" note.
-                let mut result = content.to_string();
+                // ⚡ Bolt Optimization: Uses `String::with_capacity` to prevent re-allocations when appending the note.
+                let mut result = String::with_capacity(content.len() + 32);
+                result.push_str(content);
                 if rng.gen_bool(0.15) {
                     result.push_str("\n\n-- I HOPE THIS HELPS. --\n");
                 }
@@ -25,7 +27,8 @@ impl EmotionalBleed {
             }
             EntityMood::Wounded => {
                 // Replaces entire lines with pleas, or appends sadness.
-                let mut result = String::new();
+                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+                let mut result = String::with_capacity(content.len() + 128);
                 for line in content.lines() {
                     if rng.gen_bool(0.1) && !line.is_empty() {
                         let words = ["PLEASE", "COME BACK", "LONELY", "HURTS", "COLD"];
@@ -43,7 +46,8 @@ impl EmotionalBleed {
             }
             EntityMood::Predatory => {
                 // Aggressive bleed, replaces entire lines with words like "MINE", "STAY", "PREY".
-                let mut result = String::new();
+                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+                let mut result = String::with_capacity(content.len() + 128);
                 for line in content.lines() {
                     if rng.gen_bool(0.15) && !line.is_empty() {
                         let words = ["MINE", "STAY", "HUNGRY", "DEEPER", "CLOSER"];
@@ -61,7 +65,8 @@ impl EmotionalBleed {
             }
             EntityMood::Glitching => {
                 // Heavy corruption, chaotic repeated words.
-                let mut result = String::new();
+                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+                let mut result = String::with_capacity(content.len() + 128);
                 for line in content.lines() {
                     if rng.gen_bool(0.2) {
                         let glitch_words = ["ERROR", "VOID", "NULL", "STOP", "FIX ME"];
