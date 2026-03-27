@@ -16,7 +16,9 @@ impl CommandHistory {
         let layer = entity.layer();
         let mut output = String::new();
 
-        let mut history_items = entity.commands_seen.clone();
+        // ⚡ Bolt Optimization: Uses references (`&str`) instead of cloning the entire vector of commands (`String`s), eliminating multiple heap allocations.
+        let mut history_items: Vec<&str> =
+            entity.commands_seen.iter().map(String::as_str).collect();
 
         if matches!(
             layer,
@@ -43,11 +45,11 @@ impl CommandHistory {
             for _ in 0..inject_count {
                 if history_items.is_empty() {
                     let cmd = fake_commands[rng.gen_range(0..fake_commands.len())];
-                    history_items.push(cmd.to_string());
+                    history_items.push(cmd);
                 } else {
                     let insert_idx = rng.gen_range(0..history_items.len());
                     let cmd = fake_commands[rng.gen_range(0..fake_commands.len())];
-                    history_items.insert(insert_idx, cmd.to_string());
+                    history_items.insert(insert_idx, cmd);
                 }
             }
         }
