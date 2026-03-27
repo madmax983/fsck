@@ -180,18 +180,17 @@ impl FilesystemGraph {
         }
 
         // Find child with matching name
-        for neighbor in self
+        let Some(neighbor) = self
             .graph
             .neighbors_directed(self.current, Direction::Outgoing)
-        {
-            if self.graph[neighbor].name() == name_upper {
-                self.current = neighbor;
-                self.path_stack.push(neighbor);
-                return Ok(());
-            }
-        }
+            .find(|&neighbor| self.graph[neighbor].name() == name_upper)
+        else {
+            return Err(FilesystemError::NotFound(name_upper));
+        };
 
-        Err(FilesystemError::NotFound(name_upper))
+        self.current = neighbor;
+        self.path_stack.push(neighbor);
+        Ok(())
     }
 
     /// Create a paradox where current directory contains itself
