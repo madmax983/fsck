@@ -9,6 +9,8 @@ pub enum Era {
     Technician,
     /// 1995 - BBS Sysop
     Sysop,
+    /// 1998 - BBS User
+    BBSUser,
     /// 1999 - Y2K panic researcher
     Y2K,
     /// 2003 - Estate sale buyer

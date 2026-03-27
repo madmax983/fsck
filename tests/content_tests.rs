@@ -316,12 +316,13 @@ fn test_cryptographer_era_content() {
 }
 
 #[test]
-fn test_all_seven_eras_have_unique_histories() {
+fn test_all_eras_have_unique_histories() {
     let lib = ContentLibrary::new();
 
     let original = lib.history_for_era(Era::Original);
     let technician = lib.history_for_era(Era::Technician);
     let sysop = lib.history_for_era(Era::Sysop);
+    let bbs_user = lib.history_for_era(Era::BBSUser);
     let y2k = lib.history_for_era(Era::Y2K);
     let estate = lib.history_for_era(Era::EstateSale);
     let hacker = lib.history_for_era(Era::Hacker);
@@ -332,6 +333,7 @@ fn test_all_seven_eras_have_unique_histories() {
     assert!(original.is_some());
     assert!(technician.is_some());
     assert!(sysop.is_some());
+    assert!(bbs_user.is_some());
     assert!(y2k.is_some());
     assert!(estate.is_some());
     assert!(hacker.is_some());
@@ -343,6 +345,7 @@ fn test_all_seven_eras_have_unique_histories() {
     assert_eq!(original.unwrap().name(), "JAMIE");
     assert_eq!(technician.unwrap().name(), "MIKE");
     assert_eq!(sysop.unwrap().name(), "KEVIN");
+    assert_eq!(bbs_user.unwrap().name(), "MARCUS");
     assert_eq!(y2k.unwrap().name(), "DAVID");
     assert_eq!(estate.unwrap().name(), "PATRICIA");
     assert_eq!(hacker.unwrap().name(), "SAM");

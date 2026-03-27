@@ -70,6 +70,7 @@ impl ContentLibrary {
             Self::create_original_history(),
             Self::create_technician_history(),
             Self::create_sysop_history(),
+            Self::create_bbs_user_history(),
             Self::create_y2k_history(),
             Self::create_estate_history(),
             Self::create_hacker_history(),
@@ -78,6 +79,39 @@ impl ContentLibrary {
             Self::create_streamer_history(),
             Self::create_researcher_history(),
         ]
+    }
+
+    /// Creates the history for the BBS User (1998) - Marcus.
+    fn create_bbs_user_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::BBSUser, "MARCUS", 1998);
+
+        history.add_entry(VictimEntry::new(
+            "1998-09-02",
+            "Found a weird BBS number on a textfile from Phrack. Dialed in, but there's no sysop. \
+             Just a prompt. The connection is super clean, no line noise at all.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1998-09-04",
+            "The BBS doesn't have a normal menu. It's just a filesystem. I started mapping the \
+             directories. It goes deeper than any hard drive I've ever seen. And it's fast. Too \
+             fast for a 14.4k modem.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1998-09-07",
+            "I tried to log off yesterday using ATH0. My modem clicked, but the terminal stayed \
+             connected. I pulled the phone cord out of the wall. The screen is still showing \
+             the remote prompt. That's physically impossible.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1998-09-09",
+            "It's talking to me now. It asked me why I tried to hang up. It says the other \
+             callers are still here and they want to meet me. I'm taking a hammer to the monitor.",
+        ));
+
+        history
     }
 
     /// Creates the history for the AI researcher (2023) - Aris.
