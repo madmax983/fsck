@@ -284,14 +284,14 @@ impl CommandExecutor {
         if filename_upper == "OBSERVE.TXT" {
             use std::fmt::Write;
             content.push_str("\n\nI SAW YOU TYPE:\n");
-            let commands_list = self
-                .entity
-                .commands_seen
-                .iter()
-                .fold(String::new(), |mut acc, cmd| {
-                    let _ = writeln!(acc, "  {cmd}");
-                    acc
-                });
+            let commands_list =
+                self.entity
+                    .commands_seen
+                    .iter()
+                    .fold(String::new(), |mut acc, cmd| {
+                        let _ = writeln!(acc, "  {cmd}");
+                        acc
+                    });
             content.push_str(&commands_list);
         }
 
