@@ -173,8 +173,16 @@ impl CommandExecutor {
             "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
             #[cfg(feature = "nova")]
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
+            #[cfg(feature = "nova")]
+            "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_history(&self) -> CommandResult {
+        let output = crate::experimental::CommandHistory::generate(&self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
     }
 
     #[must_use]
