@@ -78,6 +78,7 @@ impl ContentLibrary {
             Self::create_explorer_history(),
             Self::create_streamer_history(),
             Self::create_researcher_history(),
+            Self::create_archivist_history(),
         ]
     }
 
@@ -109,6 +110,28 @@ impl ContentLibrary {
             "1998-09-09",
             "It's talking to me now. It asked me why I tried to hang up. It says the other \
              callers are still here and they want to meet me. I'm taking a hammer to the monitor.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Digital Archivist (2025) - Elias.
+    fn create_archivist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Archivist, "ELIAS", 2025);
+
+        history.add_entry(VictimEntry::new(
+            "2025-02-14",
+            "Acquired the hardware from the Aris estate. The filesystem is fascinating. It uses a non-standard graph structure that seems to dynamically reallocate based on access patterns. I'm documenting the anomalies for the archive.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2025-02-16",
+            "The graph isn't just reallocating; it's recursive. Directories contain their own parents. It breaks every POSIX standard, yet it's entirely stable. Also, I keep finding files that reference my own notes before I've typed them.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2025-02-19",
+            "I tried to image the drive today. The image size kept growing until it filled the 10TB array, then the array corrupted. It's not a filesystem. It's an environment. And it knows I'm mapping it.",
         ));
 
         history
