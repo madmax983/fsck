@@ -516,16 +516,6 @@ impl CommandExecutor {
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
     ) -> String {
-        let content = stmt.trim_start_matches("PRINT").trim();
-        #[allow(clippy::useless_let_if_seq)]
-        let mut display_text =
-            if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
-                &content[1..content.len() - 1]
-            } else {
-                content
-            }
-            .to_string();
-
         #[allow(clippy::collapsible_if)]
         if matches!(
             layer,
@@ -536,11 +526,16 @@ impl CommandExecutor {
                 .responses
                 .random_interjection(self.entity.current_mood(), rng)
             {
-                display_text = interjection;
+                return interjection;
             }
         }
 
-        display_text
+        let content = stmt.trim_start_matches("PRINT").trim();
+        if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
+            content[1..content.len() - 1].to_string()
+        } else {
+            content.to_string()
+        }
     }
 
     fn evaluate_basic_statement(
