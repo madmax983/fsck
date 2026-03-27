@@ -416,7 +416,10 @@ impl CommandExecutor {
         }
 
         // Surface/Corruption layers get command list, possibly with oddities
-        let mut help_text = String::from("\nAVAILABLE COMMANDS:\n");
+        // ⚡ Bolt Optimization: Pre-allocate String capacity based on the max possible length
+        // to prevent heap reallocations when building the help output.
+        let mut help_text = String::with_capacity(256);
+        help_text.push_str("\nAVAILABLE COMMANDS:\n");
         help_text.push_str("  CATALOG  - LIST FILES\n");
         help_text.push_str("  CD       - CHANGE DIRECTORY\n");
         help_text.push_str("  TYPE     - DISPLAY FILE\n");
