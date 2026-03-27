@@ -8,6 +8,8 @@ pub mod history;
 #[cfg(feature = "nova")]
 pub mod memdump;
 pub mod network_trace;
+#[cfg(feature = "nova")]
+pub mod oracle;
 
 pub mod ping;
 pub mod process_monitor;
@@ -29,6 +31,8 @@ pub use history::CommandHistory;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
 pub use network_trace::NetworkTrace;
+#[cfg(feature = "nova")]
+pub use oracle::SystemOracle;
 pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]

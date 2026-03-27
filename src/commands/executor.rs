@@ -175,6 +175,8 @@ impl CommandExecutor {
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "ORACLE" | "PREDICT" if arg.is_empty() => Some(self.handle_nova_oracle()),
             _ => None,
         }
     }
@@ -182,6 +184,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_history(&self) -> CommandResult {
         let output = crate::experimental::CommandHistory::generate(&self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_oracle(&self) -> CommandResult {
+        let output = crate::experimental::SystemOracle::predict(&self.entity, 0xF5C0_0000u64);
         CommandResult::success(output)
     }
 
