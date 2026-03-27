@@ -9,3 +9,6 @@
 **[Refactor handle_nova_commands]**
 **Learning:** A giant match statement where each arm executes significant logic acts as a "God Object" and "Pyramid of Doom", drastically reducing readability and violating DRY/single-responsibility principles. Also, helper functions unconditionally returning `Some(CommandResult)` caused `clippy::unnecessary_wraps` lints.
 **Action:** Extract match arms into separate, strongly typed helper functions. Ensure those helper functions directly return the inner type (e.g., `CommandResult`) instead of an unnecessary `Option`, and wrap it in `Some(...)` only at the call site within the match statement.
+**[Iterator Chains vs Manual Loops]**
+**Learning:** Deeply nested `for` loops used for linear searches (e.g., iterating to find a file by name inside a collection) act as a "Pyramid of Doom" and obscure the main logic of the function.
+**Action:** Replace manual `for` loops used for searching with idiomatic `Iterator::find(...)` pipelines, coupled with Guard Clauses (early returns using `let Some(...) = ... else { return; }`) to flatten functions and dramatically improve readability.

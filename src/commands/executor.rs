@@ -269,50 +269,57 @@ impl CommandExecutor {
         }
 
         let filename_upper = filename.to_uppercase();
-        for file in self.fs.current_node().visible_files() {
-            if file.name() == filename_upper {
-                let mut content = file.content();
+        let Some(file) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name() == filename_upper)
+        else {
+            return CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"));
+        };
 
-                // Dynamic injection of player's commands for specific generic files
-                if filename_upper == "OBSERVE.TXT" {
-                    let mut appended_commands = String::from("\n\nI SAW YOU TYPE:\n");
-                    for cmd in &self.entity.commands_seen {
-                        appended_commands.push_str("  ");
-                        appended_commands.push_str(cmd);
-                        appended_commands.push('\n');
-                    }
-                    content.push_str(&appended_commands);
-                }
+        let mut content = file.content();
 
-                #[cfg(feature = "nova")]
-                let content = {
-                    use crate::experimental::EmotionalBleed;
-                    use rand::SeedableRng;
-                    use rand_chacha::ChaCha8Rng;
-
-                    let interaction_seed =
-                        0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
-                    let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
-                    EmotionalBleed::inject_emotion(&content, self.entity.current_mood(), &mut rng)
-                };
-
-                // Trapdoor files pull you deeper
-                let depth_increase = match filename_upper.as_str() {
-                    "FALL.TXT" | "DEEPER.TXT" => 3,
-                    "SINK.TXT" | "DOWN.TXT" => 2,
-                    "DESCENT.TXT" => 5,
-                    _ => 0,
-                };
-
-                if depth_increase > 0 {
-                    self.entity.add_depth(depth_increase);
-                }
-
-                return CommandResult::success(format!("{content}\n"));
-            }
+        // Dynamic injection of player's commands for specific generic files
+        if filename_upper == "OBSERVE.TXT" {
+            use std::fmt::Write;
+            content.push_str("\n\nI SAW YOU TYPE:\n");
+            let commands_list = self
+                .entity
+                .commands_seen
+                .iter()
+                .fold(String::new(), |mut acc, cmd| {
+                    let _ = writeln!(acc, "  {cmd}");
+                    acc
+                });
+            content.push_str(&commands_list);
         }
 
-        CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"))
+        #[cfg(feature = "nova")]
+        let content = {
+            use crate::experimental::EmotionalBleed;
+            use rand::SeedableRng;
+            use rand_chacha::ChaCha8Rng;
+
+            let interaction_seed =
+                0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
+            let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
+            EmotionalBleed::inject_emotion(&content, self.entity.current_mood(), &mut rng)
+        };
+
+        // Trapdoor files pull you deeper
+        let depth_increase = match filename_upper.as_str() {
+            "FALL.TXT" | "DEEPER.TXT" => 3,
+            "SINK.TXT" | "DOWN.TXT" => 2,
+            "DESCENT.TXT" => 5,
+            _ => 0,
+        };
+
+        if depth_increase > 0 {
+            self.entity.add_depth(depth_increase);
+        }
+
+        CommandResult::success(format!("{content}\n"))
     }
 
     fn home() -> CommandResult {
@@ -484,13 +491,14 @@ impl CommandExecutor {
     fn find_program_content(&self, prog_upper: &str) -> Option<String> {
         let bas_name = format!("{prog_upper}.BAS");
 
-        for file in self.fs.current_node().visible_files() {
-            let name = file.name();
-            if name == prog_upper || name == bas_name {
-                return Some(file.read().into_owned());
-            }
-        }
-        None
+        self.fs
+            .current_node()
+            .visible_files()
+            .find(|file| {
+                let name = file.name();
+                name == prog_upper || name == bas_name
+            })
+            .map(|file| file.read().into_owned())
     }
 
     fn parse_basic_program(
