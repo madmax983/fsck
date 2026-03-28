@@ -364,3 +364,14 @@ fn test_researcher_era_exists() {
     assert_eq!(history.year(), 2023);
     assert!(history.entries().len() >= 4);
 }
+
+#[test]
+fn test_archivist_era_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Archivist);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ELIAS");
+    assert_eq!(history.year(), 2025);
+    assert!(history.entries().len() >= 3);
+}

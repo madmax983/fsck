@@ -25,6 +25,8 @@ pub enum Era {
     Streamer,
     /// 2023 - AI Researcher
     Researcher,
+    /// 2025 - Digital Archivist
+    Archivist,
     /// Previous player's session
     Previous,
     /// Current player
