@@ -15,3 +15,7 @@
 **[Avoiding Heap Allocation in String Repeat]**
 **Learning:** Using `String::repeat(n)` inside `.push_str(&" ".repeat(n))` performs an unnecessary heap allocation for the intermediate `String`, which is immediately dropped. Also, in Rust 1.94.0+, `std::iter::repeat(val).take(n)` triggers the `clippy::manual_repeat_n` lint.
 **Action:** Use `.extend(std::iter::repeat_n(char, count))` to append repeated characters directly into the existing `String` buffer without creating a temporary `String` or triggering clippy warnings.
+
+**[Avoiding Vec Allocation in Directory Listing]**
+**Learning:** Returning `Vec<String>` from a function that iterates over graph neighbors (like `list_directories`) causes unnecessary heap allocations for both the `Vec` and the copied `String`s when callers only need read access or iteration over string slices.
+**Action:** Return an `impl Iterator<Item = &str>` from the method instead. Callers that strictly need an owned vector can use `.map(String::from).collect::<Vec<_>>()`, while callers that only need to iterate avoid allocation entirely.
