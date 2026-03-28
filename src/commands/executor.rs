@@ -175,8 +175,19 @@ impl CommandExecutor {
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "WEATHER" | "METEOROLOGY" | "FORECAST" if arg.is_empty() => {
+                Some(self.handle_nova_weather())
+            }
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_weather(&self) -> CommandResult {
+        let output =
+            crate::experimental::WeatherTool::generate_forecast(&self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]

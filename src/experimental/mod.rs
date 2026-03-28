@@ -18,6 +18,8 @@ pub mod spatial_audio;
 pub mod undelete;
 #[cfg(feature = "nova")]
 pub mod voice;
+#[cfg(feature = "nova")]
+pub mod weather;
 
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
@@ -38,3 +40,5 @@ pub use spatial_audio::SpatialAudioGenerator;
 pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;
+#[cfg(feature = "nova")]
+pub use weather::WeatherTool;
