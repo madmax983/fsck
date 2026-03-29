@@ -86,13 +86,13 @@ impl FilesystemGraph {
         child
     }
 
-    #[must_use]
-    pub fn list_directories(&self) -> Vec<String> {
+    /// ⚡ Bolt Optimization: Returns `impl Iterator<Item = &str>` instead of `Vec<String>` to avoid
+    /// allocating an intermediate vector and owning copies of strings on the heap when reading directories.
+    pub fn list_directories(&self) -> impl Iterator<Item = &str> {
         self.graph
             .neighbors_directed(self.current, Direction::Outgoing)
             .filter(|&idx| !self.graph[idx].is_hidden())
-            .map(|idx| self.graph[idx].name().to_string())
-            .collect()
+            .map(|idx| self.graph[idx].name())
     }
 
     /// Add a hidden child directory (invisible until fsck reveals it)

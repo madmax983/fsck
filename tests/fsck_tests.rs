@@ -272,10 +272,10 @@ fn test_generated_filesystem_has_hidden_content() {
 
     // Run fsck at root — may or may not find hidden content (depth 0 = no hidden)
     // Navigate deeper where hidden content lives
-    let dirs = fs.list_directories();
+    let dirs: Vec<String> = fs.list_directories().map(String::from).collect();
     if let Some(d1) = dirs.first() {
         if fs.change_dir(d1, 0, 0.0).is_ok() {
-            let dirs = fs.list_directories();
+            let dirs: Vec<String> = fs.list_directories().map(String::from).collect();
             if let Some(d2) = dirs.first() {
                 if fs.change_dir(d2, 0, 0.0).is_ok() {
                     // At depth 2+, try revealing hidden content

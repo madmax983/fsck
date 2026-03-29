@@ -41,8 +41,7 @@ fn test_create_filesystem_with_root() {
 fn test_add_child_directory() {
     let mut fs = FilesystemGraph::new();
     fs.add_child("GAMES");
-    let children = fs.list_directories();
-    assert!(children.contains(&"GAMES".to_string()));
+    assert!(fs.list_directories().any(|d| d == "GAMES"));
 }
 
 #[test]
@@ -86,8 +85,7 @@ fn test_directory_can_contain_itself() {
     // Create paradox: VOID contains VOID
     fs.add_paradox_to_self();
 
-    let children = fs.list_directories();
-    assert!(children.contains(&"VOID".to_string()));
+    assert!(fs.list_directories().any(|d| d == "VOID"));
 }
 
 #[test]
@@ -122,7 +120,10 @@ fn test_same_seed_produces_same_structure() {
     let fs1 = FilesystemGenerator::generate(12345, 5, None);
     let fs2 = FilesystemGenerator::generate(12345, 5, None);
 
-    assert_eq!(fs1.list_directories(), fs2.list_directories());
+    assert_eq!(
+        fs1.list_directories().map(String::from).collect::<Vec<_>>(),
+        fs2.list_directories().map(String::from).collect::<Vec<_>>()
+    );
 }
 
 #[test]
@@ -131,14 +132,17 @@ fn test_different_seeds_produce_different_structures() {
     let fs2 = FilesystemGenerator::generate(54321, 5, None);
 
     // Very unlikely to be identical
-    assert_ne!(fs1.list_directories(), fs2.list_directories());
+    assert_ne!(
+        fs1.list_directories().map(String::from).collect::<Vec<_>>(),
+        fs2.list_directories().map(String::from).collect::<Vec<_>>()
+    );
 }
 
 #[test]
 fn test_generation_respects_depth_limit() {
     let fs = FilesystemGenerator::generate(99999, 3, None);
     // Root should have some children
-    assert!(!fs.list_directories().is_empty());
+    assert!(fs.list_directories().next().is_some());
 }
 
 /// Helper function to recursively search for files matching a predicate
@@ -177,7 +181,7 @@ fn find_files_recursive_impl<F>(
     }
 
     // Recursively check subdirectories
-    let dirs = fs.list_directories();
+    let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
     for dir in dirs {
         if fs.change_dir(&dir, 0, 0.0).is_ok() {
             find_files_recursive_impl(fs, predicate, found, depth + 1);
@@ -218,13 +222,13 @@ fn test_victim_files_appear_at_depth() {
     let mut fs = FilesystemGenerator::generate_with_content(12345, 8, None);
 
     // Navigate to depth 3+ where victim files should appear
-    let dirs = fs.list_directories();
+    let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
     if let Some(dir1) = dirs.first() {
         fs.change_dir(dir1, 0, 0.0).unwrap();
-        let dirs = fs.list_directories();
+        let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
         if let Some(dir2) = dirs.first() {
             fs.change_dir(dir2, 0, 0.0).unwrap();
-            let dirs = fs.list_directories();
+            let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
             if let Some(dir3) = dirs.first() {
                 fs.change_dir(dir3, 0, 0.0).unwrap();
 
@@ -379,13 +383,12 @@ fn test_generator_creates_paradox_directories() {
     let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];
 
     fn search_for_paradox(fs: &mut FilesystemGraph, names: &[&str]) -> bool {
-        let dirs = fs.list_directories();
+        let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
         for dir in &dirs {
             if names.contains(&dir.as_str()) {
                 // Check if this directory contains itself (paradox)
                 if fs.change_dir(dir, 0, 0.0).is_ok() {
-                    let children = fs.list_directories();
-                    if children.contains(dir) {
+                    if fs.list_directories().any(|d| d == *dir) {
                         let _ = fs.change_dir("..", 0, 0.0);
                         return true;
                     }
@@ -421,11 +424,10 @@ fn test_paradox_enables_infinite_descent() {
     let paradox_names = ["VOID", "LOOP", "STRANGE", "DARK", "ERROR"];
 
     fn find_paradox_path(fs: &mut FilesystemGraph, names: &[&str]) -> Option<Vec<String>> {
-        let dirs = fs.list_directories();
+        let dirs = fs.list_directories().map(String::from).collect::<Vec<_>>();
         for dir in &dirs {
             if names.contains(&dir.as_str()) && fs.change_dir(dir, 0, 0.0).is_ok() {
-                let children = fs.list_directories();
-                if children.contains(dir) {
+                if fs.list_directories().any(|d| d == *dir) {
                     let _ = fs.change_dir("..", 0, 0.0);
                     return Some(vec![dir.clone()]);
                 }
