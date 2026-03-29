@@ -14,6 +14,11 @@ pub enum DynamicContent {
         intensity: f32,
         seed: u64,
     },
+    /// Text that cycles through different messages on each read
+    RepeatingText {
+        messages: Vec<String>,
+        current_index: usize,
+    },
 }
 
 impl DynamicContent {
@@ -60,6 +65,21 @@ impl DynamicContent {
         }
     }
 
+    /// Creates a repeating text generator.
+    ///
+    /// # Arguments
+    /// * `messages` - A list of strings to cycle through on each read
+    ///
+    /// # Returns
+    /// A generator that returns the next message in the list, wrapping around.
+    #[must_use]
+    pub fn repeating(messages: &[&str]) -> Self {
+        Self::RepeatingText {
+            messages: messages.iter().map(ToString::to_string).collect(),
+            current_index: 0,
+        }
+    }
+
     /// Generates content for this dynamic source.
     /// ⚡ Bolt Optimization: Uses `.with_capacity(text.len() + 1)` in `Corrupted` to prevent
     /// repeated allocations during generation.
@@ -71,6 +91,7 @@ impl DynamicContent {
     /// - `Counter`: Base text repeated count times, followed by the count number
     /// - `Timestamp`: Current timestamp (placeholder format in this version)
     /// - `Corrupted`: Text with randomly corrupted characters based on intensity
+    /// - `RepeatingText`: The next message in the cycle
     pub fn generate(&mut self) -> String {
         match self {
             Self::Counter { base, count } => {
@@ -104,6 +125,17 @@ impl DynamicContent {
 
                 result.push('\n');
                 result
+            }
+            Self::RepeatingText {
+                messages,
+                current_index,
+            } => {
+                if messages.is_empty() {
+                    return String::new();
+                }
+                let msg = messages[*current_index].clone();
+                *current_index = (*current_index + 1) % messages.len();
+                msg
             }
         }
     }
