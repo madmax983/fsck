@@ -43,6 +43,69 @@ impl SearchTool {
         content[start_byte..end_byte].to_string()
     }
 
+    /// Formats a matched result based on the entity's escalation layer.
+    fn format_match(
+        layer: EscalationLayer,
+        query_upper: &str,
+        content: &str,
+        rng: &mut ChaCha8Rng,
+        results: &mut String,
+    ) {
+        match layer {
+            EscalationLayer::Surface => {
+                // Show actual snippet if possible, or a generic match string
+                if let Some(idx) = content.find(query_upper) {
+                    let snippet = Self::extract_snippet(content, idx, query_upper.len());
+                    // Replace newlines with spaces for single-line output
+                    let clean_snippet = snippet.replace('\n', " ");
+                    let clean_snippet_trimmed = clean_snippet.trim();
+                    let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+                } else {
+                    // Shouldn't happen at Surface, but just in case
+                    results.push_str("  [MATCH FOUND]\n");
+                }
+            }
+            EscalationLayer::Corruption => {
+                if rng.gen_bool(0.3) {
+                    results.push_str("  ...[DATA CORRUPTED]...\n");
+                } else if let Some(idx) = content.find(query_upper) {
+                    let snippet = Self::extract_snippet(content, idx, query_upper.len());
+                    let clean_snippet = snippet.replace('\n', " ");
+                    let clean_snippet_trimmed = clean_snippet.trim();
+                    let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+                } else {
+                    results.push_str("  [FALSE POSITIVE DETECTED]\n");
+                }
+            }
+            EscalationLayer::Presence => {
+                let creepy_snippets = [
+                    "I SEE IT TOO",
+                    "WHY ARE YOU LOOKING FOR THIS",
+                    "IT'S NOT HERE ANYMORE",
+                    "DON'T LOOK",
+                    "I HID IT",
+                ];
+                if rng.gen_bool(0.5) {
+                    let snippet = creepy_snippets[rng.gen_range(0..creepy_snippets.len())];
+                    let _ = writeln!(results, "  ...{snippet}...");
+                } else {
+                    results.push_str("  [MATCH FOUND BUT UNREADABLE]\n");
+                }
+            }
+            EscalationLayer::Infection => {
+                let screams = [
+                    "STOP SEARCHING",
+                    "NOTHING IS REAL",
+                    "YOU CANNOT FIND IT",
+                    "IT FOUND YOU INSTEAD",
+                    "ALL FILES ARE MINE",
+                ];
+                let scream = screams[rng.gen_range(0..screams.len())];
+                let _ = writeln!(results, "  ...{scream}...");
+            }
+        }
+    }
+
     /// Searches for a query string within the current directory.
     /// The output degrades based on the entity's current layer and mood.
     #[must_use]
@@ -83,59 +146,7 @@ impl SearchTool {
                 let _ = writeln!(results, "FOUND IN: {filename}");
 
                 // Show a snippet or a corrupted message based on layer
-                match layer {
-                    EscalationLayer::Surface => {
-                        // Show actual snippet if possible, or a generic match string
-                        if let Some(idx) = content.find(&query_upper) {
-                            let snippet = Self::extract_snippet(&content, idx, query_upper.len());
-                            // Replace newlines with spaces for single-line output
-                            let clean_snippet = snippet.replace('\n', " ");
-                            let clean_snippet_trimmed = clean_snippet.trim();
-                            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
-                        } else {
-                            // Shouldn't happen at Surface, but just in case
-                            results.push_str("  [MATCH FOUND]\n");
-                        }
-                    }
-                    EscalationLayer::Corruption => {
-                        if rng.gen_bool(0.3) {
-                            results.push_str("  ...[DATA CORRUPTED]...\n");
-                        } else if let Some(idx) = content.find(&query_upper) {
-                            let snippet = Self::extract_snippet(&content, idx, query_upper.len());
-                            let clean_snippet = snippet.replace('\n', " ");
-                            let clean_snippet_trimmed = clean_snippet.trim();
-                            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
-                        } else {
-                            results.push_str("  [FALSE POSITIVE DETECTED]\n");
-                        }
-                    }
-                    EscalationLayer::Presence => {
-                        let creepy_snippets = [
-                            "I SEE IT TOO",
-                            "WHY ARE YOU LOOKING FOR THIS",
-                            "IT'S NOT HERE ANYMORE",
-                            "DON'T LOOK",
-                            "I HID IT",
-                        ];
-                        if rng.gen_bool(0.5) {
-                            let snippet = creepy_snippets[rng.gen_range(0..creepy_snippets.len())];
-                            let _ = writeln!(results, "  ...{snippet}...");
-                        } else {
-                            results.push_str("  [MATCH FOUND BUT UNREADABLE]\n");
-                        }
-                    }
-                    EscalationLayer::Infection => {
-                        let screams = [
-                            "STOP SEARCHING",
-                            "NOTHING IS REAL",
-                            "YOU CANNOT FIND IT",
-                            "IT FOUND YOU INSTEAD",
-                            "ALL FILES ARE MINE",
-                        ];
-                        let scream = screams[rng.gen_range(0..screams.len())];
-                        let _ = writeln!(results, "  ...{scream}...");
-                    }
-                }
+                Self::format_match(layer, &query_upper, &content, &mut rng, &mut results);
             }
         }
 
