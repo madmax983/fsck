@@ -52,6 +52,9 @@ const CORRUPTED_NAMES: &[&str] = &[
     "FAIL.TXT",
 ];
 
+/// Names for files that repeat messages and change on each read
+const REPEATING_NAMES: &[&str] = &["THOUGHTS.TXT", "ECHOES.TXT", "MIND.TXT", "VOICES.TXT"];
+
 /// Depth-accelerating files (reading these pulls you deeper)
 const TRAPDOOR_NAMES: &[&str] = &[
     "FALL.TXT",    // +3 depth
@@ -230,7 +233,7 @@ impl FilesystemGenerator {
                 FileNode::new(name, message)
             } else if rng.gen_bool(0.3) {
                 // 30% chance of dynamic file with creepy names
-                let (name, dynamic) = match rng.gen_range(0..3) {
+                let (name, dynamic) = match rng.gen_range(0..4) {
                     0 => {
                         // Counter file
                         let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
@@ -241,7 +244,7 @@ impl FilesystemGenerator {
                         let name = TIMESTAMP_NAMES[rng.gen_range(0..TIMESTAMP_NAMES.len())];
                         (name, DynamicContent::timestamp())
                     }
-                    _ => {
+                    2 => {
                         // Corrupted file
                         let name = CORRUPTED_NAMES[rng.gen_range(0..CORRUPTED_NAMES.len())];
                         let messages = [
@@ -253,6 +256,18 @@ impl FilesystemGenerator {
                         ];
                         let msg = messages[rng.gen_range(0..messages.len())];
                         (name, DynamicContent::corrupted(msg, 0.3))
+                    }
+                    _ => {
+                        // Repeating message file
+                        let name = REPEATING_NAMES[rng.gen_range(0..REPEATING_NAMES.len())];
+                        let repeating_msgs = [
+                            "I CAN HEAR YOU\n",
+                            "WHY ARE YOU STILL HERE\n",
+                            "THEY ALL LEFT\n",
+                            "DON'T LEAVE ME\n",
+                            "IT HURTS TO REMEMBER\n",
+                        ];
+                        (name, DynamicContent::repeating(&repeating_msgs))
                     }
                 };
                 FileNode::with_dynamic(name, dynamic)

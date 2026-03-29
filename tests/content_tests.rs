@@ -176,6 +176,31 @@ fn test_timestamp_changes() {
 }
 
 #[test]
+fn test_repeating_text_cycles() {
+    let mut dynamic = DynamicContent::repeating(&["FIRST", "SECOND", "THIRD"]);
+
+    let msg1 = dynamic.generate();
+    assert_eq!(msg1, "FIRST");
+
+    let msg2 = dynamic.generate();
+    assert_eq!(msg2, "SECOND");
+
+    let msg3 = dynamic.generate();
+    assert_eq!(msg3, "THIRD");
+
+    // Wraps around
+    let msg4 = dynamic.generate();
+    assert_eq!(msg4, "FIRST");
+}
+
+#[test]
+fn test_repeating_text_empty() {
+    let mut dynamic = DynamicContent::repeating(&[]);
+    let msg = dynamic.generate();
+    assert_eq!(msg, "");
+}
+
+#[test]
 fn test_corrupted_content() {
     let mut dynamic = DynamicContent::corrupted("HELLO", 0.3);
     let output = dynamic.generate();
