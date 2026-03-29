@@ -175,8 +175,17 @@ impl CommandExecutor {
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "TREE" | "MAP" if arg.is_empty() => Some(self.handle_nova_tree()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_tree(&self) -> CommandResult {
+        let output =
+            crate::experimental::TreeMapper::generate_tree(&self.fs, &self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
