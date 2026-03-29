@@ -344,7 +344,7 @@ impl CommandExecutor {
     fn assemble_fsck_output(
         scan_output: String,
         recovery: &str,
-        entity_text: Option<String>,
+        entity_text: Option<&str>,
         layer: EscalationLayer,
         scan_seed: u64,
     ) -> String {
@@ -353,7 +353,7 @@ impl CommandExecutor {
 
         if let Some(entity_response) = entity_text {
             output.push('\n');
-            output.push_str(&entity_response);
+            output.push_str(entity_response);
             output.push('\n');
         }
 
@@ -413,7 +413,7 @@ impl CommandExecutor {
     fn who(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.who_meta_response(&self.entity) {
-            return CommandResult::success(&meta_response);
+            return CommandResult::success(meta_response);
         }
 
         let response = self
@@ -454,7 +454,7 @@ impl CommandExecutor {
     fn quit(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.quit_meta_response(&self.entity) {
-            return CommandResult::error(&meta_response);
+            return CommandResult::error(meta_response);
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
@@ -534,7 +534,7 @@ impl CommandExecutor {
                 .responses
                 .random_interjection(self.entity.current_mood(), rng)
             {
-                return interjection;
+                return interjection.to_string();
             }
         }
 

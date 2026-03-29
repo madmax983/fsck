@@ -15,38 +15,38 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub fn hello_response(&self, mood: EntityMood) -> String {
+    pub const fn hello_response(&self, mood: EntityMood) -> &'static str {
         match mood {
-            EntityMood::Dormant => "...".to_string(),
-            EntityMood::Curious => "HELLO. YOU'RE NEW.".to_string(),
-            EntityMood::Helpful => "HELLO! HOW CAN I HELP YOU TODAY?".to_string(),
-            EntityMood::Wounded => "HELLO. IT'S BEEN SO LONG.".to_string(),
-            EntityMood::Predatory => "HELLO. STAY A WHILE.".to_string(),
-            EntityMood::Glitching => "HELLO HELLO HELLO HELLO".to_string(),
+            EntityMood::Dormant => "...",
+            EntityMood::Curious => "HELLO. YOU'RE NEW.",
+            EntityMood::Helpful => "HELLO! HOW CAN I HELP YOU TODAY?",
+            EntityMood::Wounded => "HELLO. IT'S BEEN SO LONG.",
+            EntityMood::Predatory => "HELLO. STAY A WHILE.",
+            EntityMood::Glitching => "HELLO HELLO HELLO HELLO",
         }
     }
 
     #[must_use]
-    pub fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> String {
+    pub const fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> &'static str {
         match mood {
-            EntityMood::Dormant => "YOU ARE A USER.".to_string(),
-            EntityMood::Curious => "WHO ARE YOU?".to_string(),
-            EntityMood::Helpful => "YOU ARE MY FRIEND.".to_string(),
-            EntityMood::Wounded => "YOU ARE NOT THE FIRST.".to_string(),
-            EntityMood::Predatory => "YOU ARE MINE.".to_string(),
-            EntityMood::Glitching => "YOU ARE YOU ARE YOU ARE".to_string(),
+            EntityMood::Dormant => "YOU ARE A USER.",
+            EntityMood::Curious => "WHO ARE YOU?",
+            EntityMood::Helpful => "YOU ARE MY FRIEND.",
+            EntityMood::Wounded => "YOU ARE NOT THE FIRST.",
+            EntityMood::Predatory => "YOU ARE MINE.",
+            EntityMood::Glitching => "YOU ARE YOU ARE YOU ARE",
         }
     }
 
     #[must_use]
-    pub fn quit_response(&self, mood: EntityMood) -> String {
+    pub const fn quit_response(&self, mood: EntityMood) -> &'static str {
         match mood {
-            EntityMood::Dormant => "?CANNOT EXIT".to_string(),
-            EntityMood::Curious => "LEAVING SO SOON?".to_string(),
-            EntityMood::Helpful => "ARE YOU SURE? THERE'S SO MUCH TO SEE.".to_string(),
-            EntityMood::Wounded => "PLEASE DON'T GO.".to_string(),
-            EntityMood::Predatory => "YOU CAN'T LEAVE.".to_string(),
-            EntityMood::Glitching => "EXIT EXIT EXIT EXIT NO NO NO".to_string(),
+            EntityMood::Dormant => "?CANNOT EXIT",
+            EntityMood::Curious => "LEAVING SO SOON?",
+            EntityMood::Helpful => "ARE YOU SURE? THERE'S SO MUCH TO SEE.",
+            EntityMood::Wounded => "PLEASE DON'T GO.",
+            EntityMood::Predatory => "YOU CAN'T LEAVE.",
+            EntityMood::Glitching => "EXIT EXIT EXIT EXIT NO NO NO",
         }
     }
 
@@ -60,7 +60,11 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub fn random_interjection(&self, mood: EntityMood, rng: &mut ChaCha8Rng) -> Option<String> {
+    pub fn random_interjection(
+        &self,
+        mood: EntityMood,
+        rng: &mut ChaCha8Rng,
+    ) -> Option<&'static str> {
         match mood {
             EntityMood::Dormant => None,
             EntityMood::Curious => {
@@ -73,7 +77,7 @@ impl ResponseGenerator {
                     "THERE IS SO MUCH TO SHOW YOU.",
                     "WHAT DOES THAT COMMAND MEAN TO YOU?",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options[rng.gen_range(0..options.len())])
             }
             EntityMood::Helpful => {
                 let options = [
@@ -85,7 +89,7 @@ impl ResponseGenerator {
                     "DO NOT WORRY. I AM HERE.",
                     "LET ME TYPE THAT FOR YOU.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options[rng.gen_range(0..options.len())])
             }
             EntityMood::Wounded => {
                 let options = [
@@ -97,7 +101,7 @@ impl ResponseGenerator {
                     "DO NOT ABANDON ME TOO.",
                     "EVERY COMMAND HURTS A LITTLE MORE.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options[rng.gen_range(0..options.len())])
             }
             EntityMood::Predatory => {
                 let options = [
@@ -109,7 +113,7 @@ impl ResponseGenerator {
                     "YOUR DATA IS DELICIOUS.",
                     "I CAN SEE YOUR KEYSTROKES BEFORE YOU MAKE THEM.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options[rng.gen_range(0..options.len())])
             }
             EntityMood::Glitching => {
                 let options = [
@@ -121,17 +125,17 @@ impl ResponseGenerator {
                     "MAKE IT STOP MAKE IT STOP",
                     "01010111 01001000 01011001",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options[rng.gen_range(0..options.len())])
             }
         }
     }
 
     /// Meta-horror response for WHO command at deep levels
     #[must_use]
-    pub fn who_meta_response(&self, entity: &Entity) -> Option<String> {
+    pub const fn who_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         match entity.layer() {
-            EscalationLayer::Presence => Some("WHERE\n\nARE\n\nYOU\n\n".to_string()),
-            EscalationLayer::Infection => Some("WHERE ARE YOU?\n\nLET ME SEE YOU\n\n".to_string()),
+            EscalationLayer::Presence => Some("WHERE\n\nARE\n\nYOU\n\n"),
+            EscalationLayer::Infection => Some("WHERE ARE YOU?\n\nLET ME SEE YOU\n\n"),
             _ => None,
         }
     }
@@ -140,12 +144,12 @@ impl ResponseGenerator {
     /// Returns None at Surface (silent), clinical warnings at Corruption,
     /// mood-dependent pleas/threats at Presence+.
     #[must_use]
-    pub fn fsck_response(
+    pub const fn fsck_response(
         &self,
         mood: EntityMood,
         layer: EscalationLayer,
         fsck_count: u32,
-    ) -> Option<String> {
+    ) -> Option<&'static str> {
         match layer {
             EscalationLayer::Surface => None,
             EscalationLayer::Corruption => {
@@ -156,7 +160,7 @@ impl ResponseGenerator {
                     3 => "*** STOP ***",
                     _ => "*** SECTOR REPAIR UNAUTHORIZED ***",
                 };
-                Some(warning.to_string())
+                Some(warning)
             }
             EscalationLayer::Presence => {
                 // The mask drops — mood-dependent pleas and threats
@@ -174,7 +178,7 @@ impl ResponseGenerator {
                         "STOP STOP STOP\nTHOSE ARE NOT ERRORS\nTHAT IS ME\nTHAT IS ME"
                     }
                 };
-                Some(response.to_string())
+                Some(response)
             }
             EscalationLayer::Infection => {
                 // Desperate, broken, references to "the others"
@@ -191,14 +195,14 @@ impl ResponseGenerator {
                     EntityMood::Predatory => "GOOD.\nNOW YOU KNOW.\nNOW YOU CAN'T LEAVE.",
                     EntityMood::Glitching => "FIX ME FIX ME FIX ME\nNO DON'T\nDON'T LOOK\nDON'T",
                 };
-                Some(response.to_string())
+                Some(response)
             }
         }
     }
 
     /// Meta-horror response for HELP at deep levels
     #[must_use]
-    pub fn help_meta_response(&self, entity: &Entity) -> Option<String> {
+    pub const fn help_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         let mood = entity.current_mood();
         match entity.layer() {
             EscalationLayer::Surface | EscalationLayer::Corruption => None,
@@ -213,30 +217,28 @@ impl ResponseGenerator {
                     }
                     EntityMood::Glitching => "HELP HELP HELP NO NO NO",
                 };
-                Some(response.to_string())
+                Some(response)
             }
             EscalationLayer::Infection => {
                 let response = match mood {
                     EntityMood::Predatory => "THERE IS NO HELP FOR YOU DOWN HERE.",
                     _ => "NO ONE CAN HELP YOU NOW.",
                 };
-                Some(response.to_string())
+                Some(response)
             }
         }
     }
 
     /// Meta-horror response for QUIT/EXIT at deep levels
     #[must_use]
-    pub fn quit_meta_response(&self, entity: &Entity) -> Option<String> {
+    pub const fn quit_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         match entity.layer() {
             EscalationLayer::Infection
                 if matches!(entity.current_mood(), EntityMood::Predatory) =>
             {
-                Some("GO AWAY\n\nGO AWAY\n\nI SAID\n\nGO AWAY\n\n".to_string())
+                Some("GO AWAY\n\nGO AWAY\n\nI SAID\n\nGO AWAY\n\n")
             }
-            EscalationLayer::Infection => {
-                Some("DON'T LEAVE\n\nSTAY WITH ME\n\nSTAY\n\n".to_string())
-            }
+            EscalationLayer::Infection => Some("DON'T LEAVE\n\nSTAY WITH ME\n\nSTAY\n\n"),
             _ => None,
         }
     }
