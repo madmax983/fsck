@@ -295,6 +295,16 @@ impl CommandExecutor {
             content.push_str(&commands_list);
         }
 
+        if filename_upper == "MACHINE.LOG" {
+            use std::fmt::Write;
+            let interactions = self.entity.interaction_count();
+            let max_depth = self.entity.max_depth_reached();
+            let _ = write!(
+                content,
+                "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
+            );
+        }
+
         #[cfg(feature = "nova")]
         let content = {
             use crate::experimental::EmotionalBleed;
