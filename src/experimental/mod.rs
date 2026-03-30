@@ -1,6 +1,8 @@
 pub mod defrag;
 pub mod diagnostics;
 pub mod emotional_bleed;
+#[cfg(feature = "nova")]
+pub mod env_vars;
 pub mod grep;
 pub mod hexdump;
 #[cfg(feature = "nova")]
@@ -22,6 +24,8 @@ pub mod voice;
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
+#[cfg(feature = "nova")]
+pub use env_vars::EnvVars;
 pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
