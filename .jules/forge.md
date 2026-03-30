@@ -8,4 +8,8 @@
 
 **[Refactor handle_nova_commands]**
 **Learning:** A giant match statement where each arm executes significant logic acts as a "God Object" and "Pyramid of Doom", drastically reducing readability and violating DRY/single-responsibility principles. Also, helper functions unconditionally returning `Some(CommandResult)` caused `clippy::unnecessary_wraps` lints.
-**Action:** Extract match arms into separate, strongly typed helper functions. Ensure those helper functions directly return the inner type (e.g., `CommandResult`) instead of an unnecessary `Option`, and wrap it in `Some(...)` only at the call site within the match statement.
+**Action:** Extract match arms into separate, strongly typed helper functions. Ensure those helper functions directly return the inner type (e.g., `CommandResult`) instead of an unnecessary `Option`, and wrap it in `Some(...)` only at the call site within the match statement.**[Refactor BASIC Execution]**\n**Learning:** Large command executor structs often become "God Objects" by absorbing secondary responsibilities like parsing and interpreting embedded scripting languages.\n**Action:** Extract embedded language interpreters into isolated modules (e.g., ) to flatten structure, reduce cognitive load, and enforce single responsibility.
+
+**[Refactor BASIC Execution]**
+**Learning:** Large command executor structs often become "God Objects" by absorbing secondary responsibilities like parsing and interpreting embedded scripting languages.
+**Action:** Extract embedded language interpreters into isolated modules to flatten structure, reduce cognitive load, and enforce single responsibility.
