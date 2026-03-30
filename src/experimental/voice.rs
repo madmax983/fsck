@@ -36,10 +36,10 @@ impl VoiceSynthesizer {
             }
             EscalationLayer::Presence => {
                 let mut output = String::from("SPEAK: ");
-                let words: Vec<&str> = text.split_whitespace().collect();
+                // ⚡ Bolt Optimization: Removes intermediate .collect::<Vec<_>>() heap allocation.
                 let horror_words = ["WHY", "HURTS", "COLD", "DARK", "PLEASE", "STOP"];
 
-                for (i, word) in words.iter().enumerate() {
+                for (i, word) in text.split_whitespace().enumerate() {
                     if i > 0 {
                         output.push(' ');
                     }
