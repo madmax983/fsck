@@ -15,6 +15,8 @@ pub enum Era {
     Y2K,
     /// 2003 - Estate sale buyer
     EstateSale,
+    /// 2008 - Investigative journalist
+    Journalist,
     /// 2010 - Amateur hacker
     Hacker,
     /// 2014 - Cryptographer

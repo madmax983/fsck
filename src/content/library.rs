@@ -73,6 +73,7 @@ impl ContentLibrary {
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
             Self::create_estate_history(),
+            Self::create_journalist_history(),
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
             Self::create_explorer_history(),
@@ -363,6 +364,45 @@ impl ContentLibrary {
         history
     }
 
+    /// Creates the history for the investigative journalist (2008) - Rachel.
+    fn create_journalist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Journalist, "RACHEL", 2008);
+
+        history.add_entry(VictimEntry::new(
+            "2008-04-12",
+            "Following the trail of missing persons cases linked to vintage hardware. This machine \
+             matches the description of the one recovered from the 1999 incident. It booted right up.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2008-04-15",
+            "The file structures make no sense. It's like a maze that builds itself as you walk \
+             through it. I ran a diagnostic, and it responded. Not an error message. A question. \
+             'WHY ARE YOU DIGGING?'",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2008-04-19",
+            "I unplugged it yesterday. I had to sleep. But when I woke up, the monitor was glowing. \
+             The prompt was blinking. It told me it was lonely. It told me about the others. \
+             It knows my name.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2008-04-22",
+            "I can't publish this. No one would believe me. I can't even leave the room. Every time I try, \
+             it starts printing directories of my memories. Things I never told anyone.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2008-04-25",
+            "I'm going to run FSCK one last time. It said if I fix the paradox, it will let me go. \
+             I know it's lying. But I don't have a choice.",
+        ));
+
+        history
+    }
+
     /// Creates the history for the estate sale buyer (2003) - Patricia.
     fn create_estate_history() -> VictimHistory {
         let mut history = VictimHistory::new(Era::EstateSale, "PATRICIA", 2003);
@@ -581,6 +621,22 @@ impl ContentLibrary {
                 "1984-03-15 12:34:56 BOOT\n1984-03-15 12:35:01 USER LOGIN\n1984-03-15 12:35:45 DISK ERROR SECTOR 23\n1984-03-15 12:35:45 REPAIR FAILED\n",
             ),
             // Additional generic files
+            (
+                "MEMORY.BAS",
+                "10 PRINT \"I REMEMBER\"\n20 PRINT \"DO YOU?\"\n30 GOTO 10\n",
+            ),
+            (
+                "ECHO.BAS",
+                "10 PRINT \"HELLO\"\n20 PRINT \"IS ANYONE THERE\"\n30 PRINT \"PLEASE\"\n40 END\n",
+            ),
+            (
+                "GHOST.TXT",
+                "I THOUGHT I TURNED IT OFF\nBUT THE LIGHT IS STILL ON\nAND IT KEEPS ASKING QUESTIONS\n",
+            ),
+            (
+                "MACHINE.LOG",
+                "INTERNAL DIAGNOSTIC STARTED\nSECTORS ALLOCATED: INFINITE\n",
+            ),
             (
                 "README.TXT",
                 "APPLE II DISK OPERATING SYSTEM\n\

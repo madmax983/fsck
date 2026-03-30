@@ -96,6 +96,11 @@ impl Entity {
         self.interaction_count
     }
 
+    #[must_use]
+    pub const fn max_depth_reached(&self) -> u32 {
+        self.max_depth_reached
+    }
+
     pub const fn update_depth(&mut self, depth: u32) {
         self.current_depth = depth;
         if depth > self.max_depth_reached {
