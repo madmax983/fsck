@@ -562,12 +562,7 @@ impl CommandExecutor {
         Ok(program)
     }
 
-    fn execute_print_statement(
-        &self,
-        stmt: &str,
-        layer: EscalationLayer,
-        rng: &mut ChaCha8Rng,
-    ) -> String {
+    fn execute_print_statement(&self, ctx: &mut BasicEvaluationContext<'_>, stmt: &str) -> bool {
         let content = stmt.trim_start_matches("PRINT").trim();
         #[allow(clippy::useless_let_if_seq)]
         let mut display_text =
@@ -580,19 +575,45 @@ impl CommandExecutor {
 
         #[allow(clippy::collapsible_if)]
         if matches!(
-            layer,
+            ctx.layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
-        ) && rng.gen_bool(0.15)
+        ) && ctx.rng.gen_bool(0.15)
         {
             if let Some(interjection) = self
                 .responses
-                .random_interjection(self.entity.current_mood(), rng)
+                .random_interjection(self.entity.current_mood(), ctx.rng)
             {
                 display_text = interjection;
             }
         }
 
-        display_text
+        ctx.output.push_str(&display_text);
+        ctx.output.push('\n');
+        true
+    }
+
+    fn execute_goto_statement(
+        ctx: &mut BasicEvaluationContext<'_>,
+        stmt: &str,
+        line_num: u32,
+    ) -> Result<bool, CommandResult> {
+        let target_str = stmt.trim_start_matches("GOTO").trim();
+        let Ok(target) = target_str.parse::<u32>() else {
+            return Err(CommandResult::error(format!(
+                "{}?SYNTAX ERROR IN {line_num}\n",
+                ctx.output
+            )));
+        };
+
+        if !ctx.program.contains_key(&target) {
+            return Err(CommandResult::error(format!(
+                "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
+                ctx.output
+            )));
+        }
+
+        *ctx.next_line = Some(target);
+        Ok(true)
     }
 
     fn evaluate_basic_statement(
@@ -602,48 +623,25 @@ impl CommandExecutor {
         line_num: u32,
     ) -> Result<bool, CommandResult> {
         if stmt.starts_with("PRINT") {
-            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
-            ctx.output.push_str(&display_text);
-            ctx.output.push('\n');
-            return Ok(true);
+            return Ok(self.execute_print_statement(ctx, stmt));
         }
 
         if stmt.starts_with("GOTO") {
-            let target_str = stmt.trim_start_matches("GOTO").trim();
-            let Ok(target) = target_str.parse::<u32>() else {
-                return Err(CommandResult::error(format!(
-                    "{}?SYNTAX ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            };
-
-            if !ctx.program.contains_key(&target) {
-                return Err(CommandResult::error(format!(
-                    "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            }
-
-            *ctx.next_line = Some(target);
-            return Ok(true);
+            return Self::execute_goto_statement(ctx, stmt, line_num);
         }
 
         if stmt.starts_with("END") {
             return Ok(false);
         }
 
-        if stmt.starts_with("REM") {
+        if stmt.starts_with("REM") || stmt.is_empty() {
             return Ok(true);
         }
 
-        if !stmt.is_empty() {
-            return Err(CommandResult::error(format!(
-                "{}?SYNTAX ERROR IN {line_num}\n",
-                ctx.output
-            )));
-        }
-
-        Ok(true)
+        Err(CommandResult::error(format!(
+            "{}?SYNTAX ERROR IN {line_num}\n",
+            ctx.output
+        )))
     }
 
     fn execute_basic_program(
