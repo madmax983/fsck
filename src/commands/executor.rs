@@ -80,6 +80,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_time(&self) -> CommandResult {
+        let time_output =
+            crate::experimental::TemporalDistortion::generate_time(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{time_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
         let report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
@@ -157,6 +164,8 @@ impl CommandExecutor {
             "SPEAK" | "SAY" if !arg.is_empty() => Some(self.handle_nova_speak(arg)),
             #[cfg(feature = "nova")]
             "PS" | "TOP" | "TASKS" if arg.is_empty() => Some(self.handle_nova_ps()),
+            #[cfg(feature = "nova")]
+            "DATE" | "TIME" if arg.is_empty() => Some(self.handle_nova_time()),
             #[cfg(feature = "nova")]
             "MEMDUMP" | "EXPORT" if arg.is_empty() => Some(self.handle_nova_memdump()),
             #[cfg(feature = "nova")]
