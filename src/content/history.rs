@@ -13,6 +13,8 @@ pub enum Era {
     BBSUser,
     /// 1999 - Y2K panic researcher
     Y2K,
+    /// 2001 - Data recovery specialist
+    Recovery,
     /// 2003 - Estate sale buyer
     EstateSale,
     /// 2008 - Investigative journalist

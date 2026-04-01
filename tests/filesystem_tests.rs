@@ -517,8 +517,32 @@ fn test_disorienting_navigation() {
 }
 
 #[test]
+fn test_recovery_era_history() {
+    let mut fs = FilesystemGenerator::generate_with_content(567, 21, None);
+
+    // Search for Recovery history files (.LOG extension containing "BEN")
+    let mut victim_files = Vec::new();
+    find_files_recursive(
+        &mut fs,
+        &|f: &FileNode| f.name() == "BEN.LOG",
+        &mut victim_files,
+    );
+
+    // Should find at least one victim file given the depth
+    assert!(
+        !victim_files.is_empty(),
+        "Expected to find Recovery history file (BEN.LOG) at depth 19-21"
+    );
+
+    // Verify victim file has expected content
+    let (_, content) = &victim_files[0];
+    assert!(content.contains("2001-08-14"));
+    assert!(content.contains("Intake log: Client brought in a vintage Apple IIe drive."));
+}
+
+#[test]
 fn test_streamer_era_history() {
-    let mut fs = FilesystemGenerator::generate_with_content(789, 40, None);
+    let mut fs = FilesystemGenerator::generate_with_content(789, 43, None);
 
     // Search for Streamer history files (.LOG extension containing "CHRIS")
     let mut victim_files = Vec::new();
@@ -531,7 +555,7 @@ fn test_streamer_era_history() {
     // Should find at least one victim file given the depth
     assert!(
         !victim_files.is_empty(),
-        "Expected to find Streamer history file (CHRIS.LOG) at depth 36-39"
+        "Expected to find Streamer history file (CHRIS.LOG) at depth 40-43"
     );
 
     // Verify victim file has expected content
@@ -542,7 +566,7 @@ fn test_streamer_era_history() {
 
 #[test]
 fn test_researcher_era_history() {
-    let mut fs = FilesystemGenerator::generate_with_content(890, 44, None);
+    let mut fs = FilesystemGenerator::generate_with_content(890, 47, None);
 
     // Search for Researcher history files (.LOG extension containing "ARIS")
     let mut victim_files = Vec::new();
@@ -555,7 +579,7 @@ fn test_researcher_era_history() {
     // Should find at least one victim file given the depth
     assert!(
         !victim_files.is_empty(),
-        "Expected to find Researcher history file (ARIS.LOG) at depth 40-43"
+        "Expected to find Researcher history file (ARIS.LOG) at depth 44-47"
     );
 
     // Verify victim file has expected content
