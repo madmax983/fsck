@@ -19,3 +19,7 @@
 **[Avoiding Vec Allocation in Directory Listing]**
 **Learning:** Returning `Vec<String>` from a function that iterates over graph neighbors (like `list_directories`) causes unnecessary heap allocations for both the `Vec` and the copied `String`s when callers only need read access or iteration over string slices.
 **Action:** Return an `impl Iterator<Item = &str>` from the method instead. Callers that strictly need an owned vector can use `.map(String::from).collect::<Vec<_>>()`, while callers that only need to iterate avoid allocation entirely.
+
+**[Avoiding Heap Allocation in Random Iterator Elements]**
+**Learning:** Using `.collect::<Vec<_>>()` on an iterator just to select a random element via manual index logic (like `slice[rng.gen_range(0..slice.len())]`) creates an unnecessary heap allocation for the intermediate vector.
+**Action:** Replace `.collect::<Vec<_>>()` and subsequent index logic with `Iterator::choose(&mut rng)` (from `rand::prelude::*`) to lazily select a random item without allocating memory.

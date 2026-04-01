@@ -110,6 +110,11 @@ impl FilesystemGraph {
         let mut revealed = self.graph[self.current].reveal_hidden_files();
 
         // Reveal hidden child directories
+        // ⚡ Bolt Optimization: Avoid intermediate Vec allocation by collecting directly or operating in-place if possible.
+        // Wait, petgraph might not allow modifying self.graph while iterating neighbors.
+        // Let's use `SmallVec` or just `collect`.
+        // Actually, just collecting into a `Vec` is fine if we are mutating the graph.
+        // Let's look at `cd ..` disorientation.
         let hidden_children: Vec<NodeIndex> = self
             .graph
             .neighbors_directed(self.current, Direction::Outgoing)
@@ -149,15 +154,15 @@ impl FilesystemGraph {
                     let grandparent = self.path_stack[self.path_stack.len() - 3];
                     let current_parent = self.path_stack[self.path_stack.len() - 2];
 
-                    let siblings: Vec<NodeIndex> = self
+                    // ⚡ Bolt Optimization: Replace `.collect::<Vec<_>>()` and random indexing with `Iterator::choose`.
+                    // This avoids heap allocating an intermediate vector of siblings.
+                    let chosen_sibling = self
                         .graph
                         .neighbors_directed(grandparent, Direction::Outgoing)
                         .filter(|&idx| idx != current_parent && !self.graph[idx].is_hidden())
-                        .collect();
+                        .choose(&mut rng);
 
-                    if !siblings.is_empty() {
-                        let chosen_sibling = siblings[rng.gen_range(0..siblings.len())];
-
+                    if let Some(chosen_sibling) = chosen_sibling {
                         // Pop the current node
                         self.path_stack.pop();
                         // Pop the true parent
