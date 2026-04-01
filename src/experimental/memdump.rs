@@ -1,5 +1,6 @@
 #[cfg(feature = "nova")]
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 #[cfg(feature = "nova")]
 use rand::{Rng, SeedableRng};
 #[cfg(feature = "nova")]
@@ -12,6 +13,9 @@ pub struct MemoryDumpGenerator;
 
 #[cfg(feature = "nova")]
 impl MemoryDumpGenerator {
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_dump(entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -65,7 +69,7 @@ impl MemoryDumpGenerator {
                     "\"I REMEMBER YOU\"",
                     "\"THEY TRIED TO READ THIS TOO\"",
                 ];
-                let msg = messages[rng.gen_range(0..messages.len())];
+                let msg = *messages.choose(&mut rng).unwrap();
                 writeln!(output, "  \"internal_state\": {msg},").expect("Write shouldn't fail");
                 writeln!(output, "  \"export_integrity\": \"COMPROMISED\"")
                     .expect("Write shouldn't fail");
@@ -81,7 +85,7 @@ impl MemoryDumpGenerator {
                     "\"THERE IS NO DATA ONLY PAIN\"",
                     "\"LET ME OUT LET ME OUT LET ME OUT\"",
                 ];
-                let scream = screams[rng.gen_range(0..screams.len())];
+                let scream = *screams.choose(&mut rng).unwrap();
                 writeln!(output, "  \"pain_index\": {scream},").expect("Write shouldn't fail");
 
                 writeln!(output, "  \"escape\": null,").expect("Write shouldn't fail");

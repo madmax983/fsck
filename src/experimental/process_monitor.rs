@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -8,6 +9,10 @@ pub struct ProcessMonitor;
 
 impl ProcessMonitor {
     /// Generates a process list based on the entity's current layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_process_list(entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -45,7 +50,7 @@ impl ProcessMonitor {
                 output.push_str("0042   tty1     99:99:99 YOU_ARE_HERE\n");
 
                 let pids = ["0000", "0666", "1337", "4040", "9999"];
-                let pid = pids[rng.gen_range(0..pids.len())];
+                let pid = *pids.choose(&mut rng).unwrap();
                 let _ = writeln!(output, "{pid}   tty1     99:99:99 WHY_ARE_YOU_READING_THIS");
             }
             EscalationLayer::Infection => {
@@ -63,7 +68,7 @@ impl ProcessMonitor {
 
                 for _ in 0..num_lines {
                     let pid = rng.gen_range(1000..9999);
-                    let msg = corruptions[rng.gen_range(0..corruptions.len())];
+                    let msg = *corruptions.choose(&mut rng).unwrap();
                     let _ = writeln!(output, "{pid}   tty1     ??:??:?? {msg}"); // Avoid unwrap
                 }
             }

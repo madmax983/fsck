@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -8,6 +9,10 @@ pub struct SystemDiagnostics;
 
 impl SystemDiagnostics {
     /// Generates a diagnostic report based on the entity's current layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_report(entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -57,7 +62,7 @@ impl SystemDiagnostics {
                 let num_lines = rng.gen_range(5..8);
 
                 for _ in 0..num_lines {
-                    let msg = corruptions[rng.gen_range(0..corruptions.len())];
+                    let msg = *corruptions.choose(&mut rng).unwrap();
                     let _ = writeln!(report, "FATAL: {msg}"); // Avoid unwrap
                 }
                 report.push_str("\nSYSTEM HALTED. YOU HALTED.\n");

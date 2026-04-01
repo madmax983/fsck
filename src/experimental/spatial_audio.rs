@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -7,6 +8,10 @@ pub struct SpatialAudioGenerator;
 
 impl SpatialAudioGenerator {
     /// Generates a subtle audio description, increasing in severity with depth.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_anomaly(entity: &Entity, base_seed: u64) -> Option<String> {
         // Use the interaction count combined with the seed to ensure determinism
@@ -34,7 +39,7 @@ impl SpatialAudioGenerator {
                     "The fan spins up momentarily, then quiets.",
                     "You hear a soft click from inside the machine.",
                 ];
-                hints[rng.gen_range(0..hints.len())]
+                *hints.choose(&mut rng).unwrap()
             }
             EscalationLayer::Corruption => {
                 let hints = [
@@ -43,7 +48,7 @@ impl SpatialAudioGenerator {
                     "You hear something like static, but just out of earshot.",
                     "The disk drive head seeks violently, then stops.",
                 ];
-                hints[rng.gen_range(0..hints.len())]
+                *hints.choose(&mut rng).unwrap()
             }
             EscalationLayer::Presence => {
                 let hints = [
@@ -53,7 +58,7 @@ impl SpatialAudioGenerator {
                     "A sharp, high-pitched whine cuts through the silence.",
                     "The machine vibrates, like a purr or a growl.",
                 ];
-                hints[rng.gen_range(0..hints.len())]
+                *hints.choose(&mut rng).unwrap()
             }
             EscalationLayer::Infection => {
                 let hints = [
@@ -63,7 +68,7 @@ impl SpatialAudioGenerator {
                     "The grinding noise is inside your head now.",
                     "SILENCE. ABSOLUTE, CRUSHING SILENCE.",
                 ];
-                hints[rng.gen_range(0..hints.len())]
+                *hints.choose(&mut rng).unwrap()
             }
         };
 

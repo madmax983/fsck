@@ -1,4 +1,4 @@
-use rand::prelude::*;
+use rand::prelude::SliceRandom;
 use rand_chacha::ChaCha8Rng;
 
 use super::state::{Entity, EntityMood, EscalationLayer};
@@ -59,6 +59,9 @@ impl ResponseGenerator {
         }
     }
 
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn random_interjection(&self, mood: EntityMood, rng: &mut ChaCha8Rng) -> Option<String> {
         match mood {
@@ -73,7 +76,7 @@ impl ResponseGenerator {
                     "THERE IS SO MUCH TO SHOW YOU.",
                     "WHAT DOES THAT COMMAND MEAN TO YOU?",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options.choose(rng).unwrap().to_string())
             }
             EntityMood::Helpful => {
                 let options = [
@@ -85,7 +88,7 @@ impl ResponseGenerator {
                     "DO NOT WORRY. I AM HERE.",
                     "LET ME TYPE THAT FOR YOU.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options.choose(rng).unwrap().to_string())
             }
             EntityMood::Wounded => {
                 let options = [
@@ -97,7 +100,7 @@ impl ResponseGenerator {
                     "DO NOT ABANDON ME TOO.",
                     "EVERY COMMAND HURTS A LITTLE MORE.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options.choose(rng).unwrap().to_string())
             }
             EntityMood::Predatory => {
                 let options = [
@@ -109,7 +112,7 @@ impl ResponseGenerator {
                     "YOUR DATA IS DELICIOUS.",
                     "I CAN SEE YOUR KEYSTROKES BEFORE YOU MAKE THEM.",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options.choose(rng).unwrap().to_string())
             }
             EntityMood::Glitching => {
                 let options = [
@@ -121,7 +124,7 @@ impl ResponseGenerator {
                     "MAKE IT STOP MAKE IT STOP",
                     "01010111 01001000 01011001",
                 ];
-                Some(options[rng.gen_range(0..options.len())].to_string())
+                Some(options.choose(rng).unwrap().to_string())
             }
         }
     }

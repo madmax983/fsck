@@ -1,5 +1,6 @@
 use crate::entity::{Entity, EscalationLayer};
 use crate::filesystem::FilesystemGraph;
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -44,6 +45,10 @@ impl SearchTool {
     }
 
     /// Formats a matched result based on the entity's escalation layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     fn format_match(
         layer: EscalationLayer,
         query_upper: &str,
@@ -86,7 +91,7 @@ impl SearchTool {
                     "I HID IT",
                 ];
                 if rng.gen_bool(0.5) {
-                    let snippet = creepy_snippets[rng.gen_range(0..creepy_snippets.len())];
+                    let snippet = *creepy_snippets.choose(rng).unwrap();
                     let _ = writeln!(results, "  ...{snippet}...");
                 } else {
                     results.push_str("  [MATCH FOUND BUT UNREADABLE]\n");
@@ -100,7 +105,7 @@ impl SearchTool {
                     "IT FOUND YOU INSTEAD",
                     "ALL FILES ARE MINE",
                 ];
-                let scream = screams[rng.gen_range(0..screams.len())];
+                let scream = *screams.choose(rng).unwrap();
                 let _ = writeln!(results, "  ...{scream}...");
             }
         }

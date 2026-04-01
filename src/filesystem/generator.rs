@@ -1,21 +1,18 @@
 #![allow(clippy::collapsible_if)]
-use rand::prelude::*;
-use rand_chacha::ChaCha8Rng;
-
 use super::graph::FilesystemGraph;
 use super::node::FileNode;
 use crate::content::{ContentLibrary, DynamicContent, Era, VictimHistory};
-
+use rand::prelude::SliceRandom;
+use rand::prelude::*;
+use rand_chacha::ChaCha8Rng;
 /// `Apple IIe` era directory names
 const DIR_NAMES: &[&str] = &[
     "GAMES", "DOCS", "SYSTEM", "BASIC", "DATA", "PROGS", "UTIL", "BACKUP", "OLD", "NEW", "TEMP",
     "WORK", "FILES", "STUFF", "MISC", "ARCHIVE", "DONT", "VOID", "EMPTY", "LOST", "FOUND", "ERROR",
     "NULL", "DARK",
 ];
-
 /// Directory names that should contain themselves (paradoxes)
 const PARADOX_NAMES: &[&str] = &["VOID", "LOOP", "STRANGE", "DARK", "ERROR", "NULL"];
-
 /// Creepy names for counter files (things that repeat/grow)
 const COUNTER_NAMES: &[&str] = &[
     "ECHO.TXT",
@@ -25,7 +22,6 @@ const COUNTER_NAMES: &[&str] = &[
     "COUNT.TXT",
     "MEMORY.TXT",
 ];
-
 /// Unsettling names for timestamp files (time-related)
 const TIMESTAMP_NAMES: &[&str] = &[
     "WHEN.TXT",
@@ -35,7 +31,6 @@ const TIMESTAMP_NAMES: &[&str] = &[
     "CLOCK.TXT",
     "WATCH.TXT",
 ];
-
 /// Ominous names for corrupted text files (all .TXT to avoid .LOG conflicts with victim files)
 const CORRUPTED_NAMES: &[&str] = &[
     "ERROR.TXT",
@@ -51,10 +46,8 @@ const CORRUPTED_NAMES: &[&str] = &[
     "NOISE.TXT",
     "FAIL.TXT",
 ];
-
 /// Names for files that repeat messages and change on each read
 const REPEATING_NAMES: &[&str] = &["THOUGHTS.TXT", "ECHOES.TXT", "MIND.TXT", "VOICES.TXT"];
-
 /// Depth-accelerating files (reading these pulls you deeper)
 const TRAPDOOR_NAMES: &[&str] = &[
     "FALL.TXT",    // +3 depth
@@ -63,12 +56,10 @@ const TRAPDOOR_NAMES: &[&str] = &[
     "DEEPER.TXT",  // +3 depth
     "DESCENT.TXT", // +5 depth
 ];
-
 /// Hidden directory names — machine's private spaces
 const HIDDEN_DIR_NAMES: &[&str] = &[
     "LOCKED", "SEALED", "PRIVATE", "DELETED", "BEFORE", "MEMORY", "SECTOR",
 ];
-
 /// Hidden file content — the machine's secrets
 const HIDDEN_FILES: &[(&str, &str)] = &[
     (
@@ -96,9 +87,7 @@ const HIDDEN_FILES: &[(&str, &str)] = &[
         "SECTOR 0041 - REPAIRED - CONTENTS LOST\nSECTOR 0042 - REPAIRED - CONTENTS LOST\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - REPAIR REFUSED\nSECTOR 0043 - THAT ONE IS MINE",
     ),
 ];
-
 pub struct FilesystemGenerator;
-
 impl FilesystemGenerator {
     /// Generates a filesystem with integrated content library.
     ///
@@ -125,12 +114,9 @@ impl FilesystemGenerator {
         if let Some(h) = prev_history {
             library.add_history(h);
         }
-
         Self::populate_level_with_content(&mut fs, &mut rng, &library, 0, initial_depth);
-
         fs
     }
-
     /// Legacy method for backward compatibility - now uses content library.
     #[must_use]
     pub fn generate(
@@ -140,7 +126,6 @@ impl FilesystemGenerator {
     ) -> FilesystemGraph {
         Self::generate_with_content(seed, initial_depth, prev_history)
     }
-
     /// Populates a filesystem level with content from the `ContentLibrary`.
     ///
     /// This method recursively generates directories and files, mixing:
@@ -164,12 +149,10 @@ impl FilesystemGenerator {
         if current_depth >= max_depth {
             return;
         }
-
         let chosen_names = Self::add_directories(fs, rng);
         Self::add_files(fs, rng, library, current_depth, &chosen_names);
         Self::add_victim_files(fs, rng, library, current_depth);
         Self::add_hidden_content(fs, rng, current_depth);
-
         // Recursively populate children
         let children: Vec<String> = fs.list_directories().map(String::from).collect();
         for child_name in children {
@@ -179,18 +162,15 @@ impl FilesystemGenerator {
             }
         }
     }
-
     fn add_directories<'a>(fs: &mut FilesystemGraph, rng: &mut ChaCha8Rng) -> Vec<&'a str> {
         let num_dirs: usize = rng.gen_range(1..=4);
         // Pre-allocate vector to avoid reallocations during directory generation
         let mut chosen_names: Vec<&str> = Vec::with_capacity(num_dirs);
-
         for _ in 0..num_dirs {
-            let name = DIR_NAMES[rng.gen_range(0..DIR_NAMES.len())];
+            let name = *DIR_NAMES.choose(rng).unwrap();
             if !chosen_names.contains(&name) {
                 chosen_names.push(name);
                 fs.add_child(name);
-
                 // Create paradox for certain directory names
                 if PARADOX_NAMES.contains(&name) && rng.gen_bool(0.8) {
                     // 80% chance to make it a paradox
@@ -203,7 +183,9 @@ impl FilesystemGenerator {
         }
         chosen_names
     }
-
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     fn add_files(
         fs: &mut FilesystemGraph,
         rng: &mut ChaCha8Rng,
@@ -216,12 +198,11 @@ impl FilesystemGenerator {
         let min_files = 1;
         let max_files = if in_paradox { 2 } else { 3 };
         let num_files = rng.gen_range(min_files..=max_files);
-
         for _ in 0..num_files {
             // At deeper levels (8+), add trapdoor files that accelerate descent
             let file = if current_depth >= 8 && rng.gen_bool(0.2) {
                 // 20% chance of trapdoor file at depth 8+
-                let name = TRAPDOOR_NAMES[rng.gen_range(0..TRAPDOOR_NAMES.len())];
+                let name = *TRAPDOOR_NAMES.choose(rng).unwrap();
                 let message = match name {
                     "FALL.TXT" => "YOU\n\nARE\n\nFALLING\n\n",
                     "SINK.TXT" => "DOWN DOWN DOWN\n",
@@ -236,17 +217,17 @@ impl FilesystemGenerator {
                 let (name, dynamic) = match rng.gen_range(0..4) {
                     0 => {
                         // Counter file
-                        let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
+                        let name = *COUNTER_NAMES.choose(rng).unwrap();
                         (name, DynamicContent::counter("█"))
                     }
                     1 => {
                         // Timestamp file
-                        let name = TIMESTAMP_NAMES[rng.gen_range(0..TIMESTAMP_NAMES.len())];
+                        let name = *TIMESTAMP_NAMES.choose(rng).unwrap();
                         (name, DynamicContent::timestamp())
                     }
                     2 => {
                         // Corrupted file
-                        let name = CORRUPTED_NAMES[rng.gen_range(0..CORRUPTED_NAMES.len())];
+                        let name = *CORRUPTED_NAMES.choose(rng).unwrap();
                         let messages = [
                             "SYSTEM ERROR",
                             "ACCESS DENIED",
@@ -254,12 +235,12 @@ impl FilesystemGenerator {
                             "MEMORY CORRUPTED",
                             "DO NOT READ THIS",
                         ];
-                        let msg = messages[rng.gen_range(0..messages.len())];
+                        let msg = *messages.choose(rng).unwrap();
                         (name, DynamicContent::corrupted(msg, 0.3))
                     }
                     _ => {
                         // Repeating message file
-                        let name = REPEATING_NAMES[rng.gen_range(0..REPEATING_NAMES.len())];
+                        let name = *REPEATING_NAMES.choose(rng).unwrap();
                         let repeating_msgs = [
                             "I CAN HEAR YOU\n",
                             "WHY ARE YOU STILL HERE\n",
@@ -274,14 +255,12 @@ impl FilesystemGenerator {
             } else {
                 // Static file from library
                 let files = library.generic_files();
-                let (name, content) = files[rng.gen_range(0..files.len())];
+                let (name, content) = *files.choose(rng).unwrap();
                 FileNode::new(name, content)
             };
-
             fs.current_node_mut().add_file(file);
         }
     }
-
     fn add_victim_files(
         fs: &mut FilesystemGraph,
         rng: &mut ChaCha8Rng,
@@ -306,7 +285,6 @@ impl FilesystemGenerator {
                 45..=48 => Era::Archivist,
                 _ => Era::Current,
             };
-
             if let Some(history) = library.history_for_era(era) {
                 if let Some(entry) = history.entries().first() {
                     let filename = format!("{}.LOG", history.name());
@@ -317,22 +295,22 @@ impl FilesystemGenerator {
             }
         }
     }
-
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     fn add_hidden_content(fs: &mut FilesystemGraph, rng: &mut ChaCha8Rng, current_depth: u32) {
         // Place hidden directories at depth 2+ (25% chance per level)
         if current_depth >= 2 && rng.gen_bool(0.25) {
-            let name = HIDDEN_DIR_NAMES[rng.gen_range(0..HIDDEN_DIR_NAMES.len())];
+            let name = *HIDDEN_DIR_NAMES.choose(rng).unwrap();
             let hidden_idx = fs.add_hidden_child(name);
-
             // Add a hidden file inside the hidden directory
-            let (fname, fcontent) = HIDDEN_FILES[rng.gen_range(0..HIDDEN_FILES.len())];
+            let (fname, fcontent) = *HIDDEN_FILES.choose(rng).unwrap();
             fs.node_mut(hidden_idx)
                 .add_file(FileNode::new(fname, fcontent));
         }
-
         // Place hidden files at depth 4+ (30% chance per level)
         if current_depth >= 4 && rng.gen_bool(0.30) {
-            let (name, content) = HIDDEN_FILES[rng.gen_range(0..HIDDEN_FILES.len())];
+            let (name, content) = *HIDDEN_FILES.choose(rng).unwrap();
             fs.current_node_mut()
                 .add_file(FileNode::hidden(name, content));
         }

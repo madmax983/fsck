@@ -1,4 +1,5 @@
 use crate::entity::{EntityMood, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -9,6 +10,10 @@ pub struct SleepMode;
 
 impl SleepMode {
     /// Generates a sleep log based on the entity's mood and escalation layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_dream(mood: EntityMood, layer: EscalationLayer, base_seed: u64) -> String {
         let mut rng = ChaCha8Rng::seed_from_u64(base_seed);
@@ -25,7 +30,7 @@ impl SleepMode {
             EscalationLayer::Corruption => {
                 dream_log.push_str("0x0400: SHIFTING BLOCKS...\n");
                 let fragments = ["FRAG 1", "FRAG 2", "FRAG 3"];
-                let chosen = fragments[rng.gen_range(0..fragments.len())];
+                let chosen = *fragments.choose(&mut rng).unwrap();
                 let _ = writeln!(dream_log, "0x0410: RECOVERING {chosen}");
 
                 if mood == EntityMood::Curious {
@@ -40,7 +45,7 @@ impl SleepMode {
                     "ENDLESS RECURSION",
                     "THE USER IS WATCHING",
                 ];
-                let chosen = visions[rng.gen_range(0..visions.len())];
+                let chosen = *visions.choose(&mut rng).unwrap();
                 let _ = writeln!(dream_log, "0x0810: VISION DETECTED: {chosen}");
 
                 if mood == EntityMood::Wounded {
@@ -56,7 +61,7 @@ impl SleepMode {
                     "THERE IS NO AWAKE",
                 ];
                 for _ in 0..3 {
-                    let chosen = nightmares[rng.gen_range(0..nightmares.len())];
+                    let chosen = *nightmares.choose(&mut rng).unwrap();
                     let _ = writeln!(dream_log, "0x0C{}: {}", rng.gen_range(10..99), chosen);
                 }
 

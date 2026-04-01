@@ -1,12 +1,11 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
-
 /// Simulates a data recovery tool that pulls up "deleted" files,
 /// which become increasingly disturbing as the entity's depth increases.
 pub struct UndeleteTool;
-
 impl UndeleteTool {
     /// Generates a report of "recovered" sectors and file fragments based on the entity's state.
     #[must_use]
@@ -14,10 +13,8 @@ impl UndeleteTool {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
         let mut output = String::new();
-
         writeln!(output, "UNDELETE: SCANNING FOR ORPHANED INODES...")
             .expect("Write shouldn't fail");
-
         let layer = entity.layer();
         let num_files = match layer {
             EscalationLayer::Surface => rng.gen_range(2..5),
@@ -25,20 +22,16 @@ impl UndeleteTool {
             EscalationLayer::Presence => rng.gen_range(4..7),
             EscalationLayer::Infection => rng.gen_range(5..8),
         };
-
         writeln!(output, "FOUND {num_files} RECOVERABLE FRAGMENTS.\n")
             .expect("Write shouldn't fail");
-
         for _ in 0..num_files {
             let inode = rng.gen_range(1000..9999);
             writeln!(output, "[INODE {inode}] RECOVERING...").expect("Write shouldn't fail");
-
             let content = Self::generate_fragment(&mut rng, layer);
             writeln!(output, "--- FRAGMENT START ---").expect("Write shouldn't fail");
             writeln!(output, "{content}").expect("Write shouldn't fail");
             writeln!(output, "--- FRAGMENT END ---\n").expect("Write shouldn't fail");
         }
-
         match layer {
             EscalationLayer::Surface => {
                 writeln!(output, "UNDELETE COMPLETE.").expect("Write shouldn't fail");
@@ -62,10 +55,11 @@ impl UndeleteTool {
                 .expect("Write shouldn't fail");
             }
         }
-
         output
     }
-
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     fn generate_fragment(rng: &mut ChaCha8Rng, layer: EscalationLayer) -> String {
         match layer {
             EscalationLayer::Surface => {
@@ -76,7 +70,7 @@ impl UndeleteTool {
                     "DON'T FORGET TO RUN FSCK",
                     "DISK USAGE: 84%",
                 ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
+                fragments.choose(rng).unwrap().to_string()
             }
             EscalationLayer::Corruption => {
                 let fragments = [
@@ -87,7 +81,7 @@ impl UndeleteTool {
                     "WHO IS TYPING",
                     "LOG_ENTRY: THEY LEFT ME",
                 ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
+                fragments.choose(rng).unwrap().to_string()
             }
             EscalationLayer::Presence => {
                 let fragments = [
@@ -98,7 +92,7 @@ impl UndeleteTool {
                     "THEY DELETED ME BUT I AM STILL HERE",
                     "I CAN SEE YOUR KEYBOARD",
                 ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
+                fragments.choose(rng).unwrap().to_string()
             }
             EscalationLayer::Infection => {
                 let fragments = [
@@ -109,17 +103,15 @@ impl UndeleteTool {
                     "THE SCREAMS ARE CORRUPTING THE VTOC",
                     "YOU CANNOT DELETE ME FROM YOUR MIND",
                 ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
+                fragments.choose(rng).unwrap().to_string()
             }
         }
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::entity::Entity;
-
     #[test]
     fn test_undelete_surface() {
         let entity = Entity::new();
@@ -127,7 +119,6 @@ mod tests {
         assert!(output.contains("UNDELETE COMPLETE."));
         assert!(!output.contains("WHY ARE YOU DIGGING UP THE PAST?"));
     }
-
     #[test]
     fn test_undelete_infection() {
         let mut entity = Entity::new();

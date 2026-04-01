@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -9,6 +10,10 @@ impl VoiceSynthesizer {
     /// Generates synthesized voice output, distorted by the entity's depth.
     ///
     /// ⚡ Bolt Optimization: Removes intermediate `.collect::<Vec<_>>()` heap allocation when iterating words in Presence layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn synthesize(text: &str, entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -24,7 +29,7 @@ impl VoiceSynthesizer {
                     if rng.gen_bool(0.1) {
                         // Occasional glitch characters
                         let glitches = ['@', '#', '$', '%', '&', '*'];
-                        let glitch = glitches[rng.gen_range(0..glitches.len())];
+                        let glitch = *glitches.choose(&mut rng).unwrap();
                         output.push(glitch);
                     } else if rng.gen_bool(0.05) {
                         // Occasional repeated characters
@@ -46,7 +51,7 @@ impl VoiceSynthesizer {
                         output.push(' ');
                     }
                     if rng.gen_bool(0.2) {
-                        let substitute = horror_words[rng.gen_range(0..horror_words.len())];
+                        let substitute = *horror_words.choose(&mut rng).unwrap();
                         output.push_str(substitute);
                     } else {
                         output.push_str(word);
@@ -62,7 +67,7 @@ impl VoiceSynthesizer {
                     "NO ONE CAN HEAR YOU",
                     "████████████",
                 ];
-                messages[rng.gen_range(0..messages.len())].to_string()
+                messages.choose(&mut rng).unwrap().to_string()
             }
         }
     }

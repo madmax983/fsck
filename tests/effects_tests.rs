@@ -17,7 +17,7 @@ fn test_mild_corruption_preserves_length() {
     let effect = CorruptionEffect::new(CorruptionIntensity::Mild);
     let input = "HELLO WORLD";
     let output = effect.apply(input, 12345);
-    assert_eq!(input.len(), output.len());
+    assert_eq!(input.chars().count(), output.chars().count());
 }
 
 #[test]

@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -9,6 +10,10 @@ pub struct HexDumpGenerator;
 impl HexDumpGenerator {
     /// Generates a hex dump of the provided content.
     /// The dump format is standard: offset, 16 hex bytes, and ASCII representation.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate_dump(content: &str, entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -45,7 +50,7 @@ impl HexDumpGenerator {
                         is_corrupted = true;
                         // Mutate hex byte to something strange
                         let odd_bytes: [u8; 5] = [0xAD, 0xEF, 0x00, 0xFF, 0x66];
-                        hex_val = odd_bytes[rng.gen_range(0..odd_bytes.len())];
+                        hex_val = *odd_bytes.choose(&mut rng).unwrap();
                     }
 
                     let _ = write!(output, "{hex_val:02X} ");
@@ -70,7 +75,7 @@ impl HexDumpGenerator {
                     "W.H.Y...........",
                     "D.E.E.P.E.R.....",
                 ];
-                let msg = messages[rng.gen_range(0..messages.len())];
+                let msg = *messages.choose(&mut rng).unwrap();
                 output.push_str(&msg[0..chunk_size]); // Match chunk size roughly
             } else {
                 for &byte in chunk {

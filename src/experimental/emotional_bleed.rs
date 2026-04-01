@@ -1,4 +1,5 @@
 use crate::entity::EntityMood;
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -8,6 +9,10 @@ pub struct EmotionalBleed;
 impl EmotionalBleed {
     /// Injects emotional resonance into the provided content.
     /// The severity and nature of the bleed depend on the entity's current mood.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn inject_emotion(content: &str, mood: EntityMood, rng: &mut ChaCha8Rng) -> String {
         match mood {
@@ -32,7 +37,7 @@ impl EmotionalBleed {
                 for line in content.lines() {
                     if rng.gen_bool(0.1) && !line.is_empty() {
                         let words = ["PLEASE", "COME BACK", "LONELY", "HURTS", "COLD"];
-                        let word = words[rng.gen_range(0..words.len())];
+                        let word = *words.choose(rng).unwrap();
                         result.push_str(word);
                     } else {
                         result.push_str(line);
@@ -51,7 +56,7 @@ impl EmotionalBleed {
                 for line in content.lines() {
                     if rng.gen_bool(0.15) && !line.is_empty() {
                         let words = ["MINE", "STAY", "HUNGRY", "DEEPER", "CLOSER"];
-                        let word = words[rng.gen_range(0..words.len())];
+                        let word = *words.choose(rng).unwrap();
                         result.push_str(word);
                     } else {
                         result.push_str(line);
@@ -70,7 +75,7 @@ impl EmotionalBleed {
                 for line in content.lines() {
                     if rng.gen_bool(0.2) {
                         let glitch_words = ["ERROR", "VOID", "NULL", "STOP", "FIX ME"];
-                        let word = glitch_words[rng.gen_range(0..glitch_words.len())];
+                        let word = *glitch_words.choose(rng).unwrap();
                         for _ in 0..rng.gen_range(2..=5) {
                             result.push_str(word);
                             result.push(' ');

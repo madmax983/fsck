@@ -1,5 +1,6 @@
 use petgraph::Direction;
 use petgraph::graph::{DiGraph, NodeIndex};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use thiserror::Error;
@@ -125,10 +126,13 @@ impl FilesystemGraph {
     }
 
     /// Changes directory.
-    /// # Panics
     /// Panics if path stack is empty.
     /// # Errors
     /// Returns an error if directory not found.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     pub fn change_dir(
         &mut self,
         name: &str,
@@ -156,7 +160,7 @@ impl FilesystemGraph {
                         .collect();
 
                     if !siblings.is_empty() {
-                        let chosen_sibling = siblings[rng.gen_range(0..siblings.len())];
+                        let chosen_sibling = *siblings.choose(&mut rng).unwrap();
 
                         // Pop the current node
                         self.path_stack.pop();

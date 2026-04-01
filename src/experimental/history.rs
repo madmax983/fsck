@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -8,6 +9,10 @@ pub struct CommandHistory;
 
 impl CommandHistory {
     /// Generates the history output based on the entity's current layer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn generate(entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -44,11 +49,11 @@ impl CommandHistory {
 
             for _ in 0..inject_count {
                 if history_items.is_empty() {
-                    let cmd = fake_commands[rng.gen_range(0..fake_commands.len())];
+                    let cmd = *fake_commands.choose(&mut rng).unwrap();
                     history_items.push(cmd);
                 } else {
                     let insert_idx = rng.gen_range(0..history_items.len());
-                    let cmd = fake_commands[rng.gen_range(0..fake_commands.len())];
+                    let cmd = *fake_commands.choose(&mut rng).unwrap();
                     history_items.insert(insert_idx, cmd);
                 }
             }

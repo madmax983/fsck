@@ -1,3 +1,4 @@
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -51,6 +52,9 @@ impl CorruptionEffect {
         Self { intensity }
     }
 
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn apply(&self, text: &str, seed: u64) -> String {
         if matches!(self.intensity, CorruptionIntensity::None) {
@@ -65,7 +69,7 @@ impl CorruptionEffect {
             if ch.is_whitespace() {
                 result.push(ch);
             } else if rng.r#gen::<f32>() < rate {
-                result.push(CORRUPTION_CHARS[rng.gen_range(0..CORRUPTION_CHARS.len())]);
+                result.push(*CORRUPTION_CHARS.choose(&mut rng).unwrap());
             } else {
                 result.push(ch);
             }

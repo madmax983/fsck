@@ -1,3 +1,4 @@
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -92,6 +93,10 @@ impl DynamicContent {
     /// - `Timestamp`: Current timestamp (placeholder format in this version)
     /// - `Corrupted`: Text with randomly corrupted characters based on intensity
     /// - `RepeatingText`: The next message in the cycle
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     pub fn generate(&mut self) -> String {
         match self {
             Self::Counter { base, count } => {
@@ -117,7 +122,7 @@ impl DynamicContent {
                     if rng.r#gen::<f32>() < *intensity {
                         // Corrupt this character
                         let corrupt = ['█', '▓', '▒', '░', '?', '#', '@', '$'];
-                        result.push(corrupt[rng.gen_range(0..corrupt.len())]);
+                        result.push(*corrupt.choose(&mut rng).unwrap());
                     } else {
                         result.push(ch);
                     }

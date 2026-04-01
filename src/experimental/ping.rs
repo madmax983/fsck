@@ -1,4 +1,5 @@
 use crate::entity::{Entity, EscalationLayer};
+use rand::prelude::SliceRandom;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 use std::fmt::Write;
@@ -8,6 +9,10 @@ pub struct PingTool;
 
 impl PingTool {
     /// Generates a simulated network ping that degrades with depth.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the internal slice used for random selection is empty.
     #[must_use]
     pub fn run_ping(target: &str, entity: &Entity, base_seed: u64) -> String {
         let interaction_seed = base_seed.wrapping_add(u64::from(entity.interaction_count()));
@@ -72,7 +77,7 @@ impl PingTool {
                 ];
                 for i in 1..=4 {
                     if rng.gen_bool(0.5) {
-                        writeln!(output, "{}", msgs[rng.gen_range(0..msgs.len())])
+                        writeln!(output, "{}", *msgs.choose(&mut rng).unwrap())
                             .expect("Writing to String should not fail");
                     } else {
                         writeln!(output, "Request timeout for icmp_seq {i}")
@@ -96,7 +101,7 @@ impl PingTool {
                     "THE CONNECTION IS SEVERED",
                 ];
                 for _ in 1..=4 {
-                    writeln!(output, "{}", msgs[rng.gen_range(0..msgs.len())])
+                    writeln!(output, "{}", *msgs.choose(&mut rng).unwrap())
                         .expect("Writing to String should not fail");
                 }
             }
