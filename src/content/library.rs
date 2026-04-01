@@ -68,6 +68,7 @@ impl ContentLibrary {
     fn create_histories() -> Vec<VictimHistory> {
         vec![
             Self::create_original_history(),
+            Self::create_teacher_history(),
             Self::create_technician_history(),
             Self::create_sysop_history(),
             Self::create_bbs_user_history(),
@@ -177,6 +178,33 @@ impl ContentLibrary {
             "I tried to wipe the server. It said 'ACCESS DENIED'. The Apple II monitor \
              is just displaying my own research notes now. It knows what I tried to do. \
              It's not a filesystem. It's a trap, and I just gave it a voice.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the school teacher (1987).
+    fn create_teacher_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Teacher, "MRS. G", 1987);
+
+        history.add_entry(VictimEntry::new(
+            "1987-09-02",
+            "Brought the Apple IIe into the classroom today. The kids are so excited to play Oregon Trail. I've set up a logbook so they can sign up for their 15 minutes of computer time. It feels good to give them a glimpse of the future.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1987-10-14",
+            "Timmy claimed his floppy disk was 'eaten' by the computer. I checked the drive and it was empty. I looked in the directory and found a file named TIMMY.TXT that just said 'DELICIOUS'. I assume one of the older kids is playing a prank.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1987-11-03",
+            "I stayed late to grade papers and heard the computer whirring. The screen was on, displaying a list of all my students' names, along with notes about their behavior that I hadn't typed. It knows who struggles with math. It knows who sits in the back row.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1987-11-08",
+            "I covered the monitor with a blanket, but I can still hear the disk drive clicking in the dark. It's organizing them. It's putting the quiet ones in a separate directory. I'm moving it to the supply closet tomorrow.",
         ));
 
         history
