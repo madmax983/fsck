@@ -349,6 +349,7 @@ fn test_all_eras_have_unique_histories() {
     let sysop = lib.history_for_era(Era::Sysop);
     let bbs_user = lib.history_for_era(Era::BBSUser);
     let y2k = lib.history_for_era(Era::Y2K);
+    let recovery = lib.history_for_era(Era::Recovery);
     let estate = lib.history_for_era(Era::EstateSale);
     let journalist = lib.history_for_era(Era::Journalist);
     let hacker = lib.history_for_era(Era::Hacker);
@@ -361,6 +362,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(sysop.is_some());
     assert!(bbs_user.is_some());
     assert!(y2k.is_some());
+    assert!(recovery.is_some());
     assert!(estate.is_some());
     assert!(journalist.is_some());
     assert!(hacker.is_some());
@@ -391,6 +393,18 @@ fn test_researcher_era_exists() {
     assert_eq!(history.name(), "ARIS");
     assert_eq!(history.year(), 2023);
     assert!(history.entries().len() >= 4);
+}
+
+#[test]
+fn test_recovery_history() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Recovery);
+    assert!(history.is_some());
+
+    let history = history.unwrap();
+    assert_eq!(history.name(), "BEN");
+    assert_eq!(history.year(), 2001);
+    assert!(!history.entries().is_empty());
 }
 
 #[test]

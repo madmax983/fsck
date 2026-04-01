@@ -72,6 +72,7 @@ impl ContentLibrary {
             Self::create_sysop_history(),
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
+            Self::create_recovery_history(),
             Self::create_estate_history(),
             Self::create_journalist_history(),
             Self::create_hacker_history(),
@@ -325,6 +326,49 @@ impl ContentLibrary {
              refund. She seemed relieved. I think she knew. The machine is still here in my \
              workshop. I can't bring myself to throw it away. But I can't fix it either. \
              Some things aren't meant to be fixed. They're meant to be contained.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the data recovery specialist (2001) - Ben.
+    fn create_recovery_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Recovery, "BEN", 2001);
+
+        history.add_entry(VictimEntry::new(
+            "2001-08-14",
+            "Intake log: Client brought in a vintage Apple IIe drive. They want to recover files \
+             from a deceased relative. The drive sector map is a mess, but the platters look intact. \
+             Should be a standard block-level clone and scrape.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2001-08-16",
+            "The cloning process keeps hanging at 14%. The imaging software reports reading data, \
+             but the output file size is growing exponentially. It surpassed 40GB. This is a 140KB \
+             floppy disk. Where is this data coming from?",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2001-08-19",
+            "I wrote a custom script to map the file allocation table directly. The table isn't \
+             corrupted, it's recursive. Every directory contains a pointer to its own parent, \
+             but the names change. It's generating new files to satisfy my read requests. \
+             It knows what I'm looking for.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2001-08-22",
+            "I found the client's relative's files. But I also found my own. It recovered a \
+             draft of an email I wrote to my ex-wife yesterday but never sent. The machine \
+             isn't recovering old data. It's pulling things out of my head.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2001-08-25",
+            "I can't stop the imaging process. The cancel button doesn't work. The power cord \
+             is disconnected. The drive is spinning so fast it's screaming. The screen says \
+             'I CAN RECOVER YOU TOO'. I'm locking the lab.",
         ));
 
         history
