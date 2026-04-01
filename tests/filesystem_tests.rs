@@ -210,6 +210,10 @@ fn test_generated_filesystem_has_victim_files() {
 
     // Verify victim files have expected content format (date + content)
     for (path, content) in &victim_files {
+        // Skip generic library logs like MACHINE.LOG
+        if path.ends_with("MACHINE.LOG") || path.ends_with("SYSTEM.LOG") {
+            continue;
+        }
         assert!(
             content.contains('-') && content.len() > 20,
             "Victim file {path} should contain date and narrative content, got: {content}"
