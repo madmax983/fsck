@@ -341,10 +341,22 @@ fn test_cryptographer_era_content() {
 }
 
 #[test]
+fn test_teacher_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Teacher);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "MRS. G");
+    assert_eq!(history.year(), 1987);
+    assert!(history.entries().len() >= 4);
+}
+
+#[test]
 fn test_all_eras_have_unique_histories() {
     let lib = ContentLibrary::new();
 
     let original = lib.history_for_era(Era::Original);
+    let teacher = lib.history_for_era(Era::Teacher);
     let technician = lib.history_for_era(Era::Technician);
     let sysop = lib.history_for_era(Era::Sysop);
     let bbs_user = lib.history_for_era(Era::BBSUser);
@@ -358,6 +370,7 @@ fn test_all_eras_have_unique_histories() {
     let researcher = lib.history_for_era(Era::Researcher);
 
     assert!(original.is_some());
+    assert!(teacher.is_some());
     assert!(technician.is_some());
     assert!(sysop.is_some());
     assert!(bbs_user.is_some());

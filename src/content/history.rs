@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 pub enum Era {
     /// 1984 - The original owner
     Original,
+    /// 1987 - The school teacher
+    Teacher,
     /// 1991 - The repair technician
     Technician,
     /// 1995 - BBS Sysop
