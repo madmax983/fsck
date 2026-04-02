@@ -174,9 +174,17 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
+            "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
+            #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_env(&self) -> CommandResult {
+        let output = crate::experimental::EnvVarsGenerator::generate_env(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
