@@ -290,3 +290,24 @@ fn test_help_infection() {
             || output.contains("NO ONE CAN HELP YOU NOW.")
     );
 }
+
+#[test]
+fn test_type_history_txt() {
+    let mut fs = FilesystemGraph::new();
+    fs.current_node_mut()
+        .add_file(fsck::filesystem::FileNode::new("HISTORY.TXT", "YOUR ACTIONS BECOME HISTORY.\n"));
+
+    let mut entity = Entity::new();
+    entity.record_command("CATALOG");
+    entity.record_command("RUN ESCAPE");
+
+    let mut executor = CommandExecutor::new(fs, entity);
+    let result = executor.execute(Command::Type("HISTORY.TXT".to_string()));
+
+    assert!(!result.is_error());
+    let output = result.output();
+    assert!(output.contains("YOUR ACTIONS BECOME HISTORY."));
+    assert!(output.contains("YOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:"));
+    assert!(output.contains("CATALOG"));
+    assert!(output.contains("RUN ESCAPE"));
+}

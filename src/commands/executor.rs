@@ -314,6 +314,20 @@ impl CommandExecutor {
             );
         }
 
+        if filename_upper == "HISTORY.TXT" {
+            use std::fmt::Write;
+            content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
+            let commands_list =
+                self.entity
+                    .commands_seen
+                    .iter()
+                    .fold(String::new(), |mut acc, cmd| {
+                        let _ = writeln!(acc, "  {cmd}");
+                        acc
+                    });
+            content.push_str(&commands_list);
+        }
+
         #[cfg(feature = "nova")]
         let content = {
             use crate::experimental::EmotionalBleed;
