@@ -337,46 +337,21 @@ impl CommandExecutor {
         CommandResult::success("\x1B[2J\x1B[H")
     }
 
-    fn build_recovery_report(revealed: &[String]) -> String {
+    fn build_recovery_report(revealed: &[String], output: &mut String) {
         if revealed.is_empty() {
-            "NO ERRORS FOUND\n".to_string()
+            output.push_str("NO ERRORS FOUND\n");
         } else {
-            let mut report = format!("{} SECTOR(S) RECOVERED:\n", revealed.len());
+            use std::fmt::Write;
+            writeln!(output, "{} SECTOR(S) RECOVERED:", revealed.len())
+                .expect("Writing to String buffer should not fail");
             for name in revealed {
-                use std::fmt::Write;
-                writeln!(report, "  RECOVERED: {name}")
+                writeln!(output, "  RECOVERED: {name}")
                     .expect("Writing to String buffer should not fail");
             }
-            report
         }
     }
 
-    fn assemble_fsck_output(
-        scan_output: String,
-        recovery: &str,
-        entity_text: Option<String>,
-        layer: EscalationLayer,
-        scan_seed: u64,
-    ) -> String {
-        let mut output = scan_output;
-        output.push_str(recovery);
-
-        if let Some(entity_response) = entity_text {
-            output.push('\n');
-            output.push_str(&entity_response);
-            output.push('\n');
-        }
-
-        output.push('\n');
-
-        if matches!(layer, EscalationLayer::Infection) {
-            let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
-            output = corruption.apply(&output, scan_seed);
-        }
-
-        output
-    }
-
+    /// ⚡ Bolt Optimization: Eliminates 4 intermediate String allocations per FSCK command by using a single mutable String buffer.
     fn fsck(&mut self, _args: &[String]) -> CommandResult {
         let layer = self.entity.layer();
         let fsck_count = self.entity.fsck_count();
@@ -385,17 +360,30 @@ impl CommandExecutor {
         self.entity.increment_fsck();
 
         let scan_seed = 0xF5C0_0000u64.wrapping_add(u64::from(fsck_count));
-        let scan_output = crate::commands::scan::FsckScanGenerator::generate_fsck_scan(
-            layer, fsck_count, scan_seed,
+        let mut output = String::with_capacity(512);
+
+        crate::commands::scan::FsckScanGenerator::generate_fsck_scan(
+            layer,
+            fsck_count,
+            scan_seed,
+            &mut output,
         );
 
         let revealed = self.fs.reveal_hidden_in_current();
 
-        let recovery = Self::build_recovery_report(&revealed);
+        Self::build_recovery_report(&revealed, &mut output);
 
         let entity_text = self
             .responses
             .fsck_response(mood, layer, self.entity.fsck_count());
+
+        if let Some(entity_response) = entity_text {
+            output.push('\n');
+            output.push_str(&entity_response);
+            output.push('\n');
+        }
+
+        output.push('\n');
 
         if matches!(
             layer,
@@ -407,10 +395,9 @@ impl CommandExecutor {
 
         if matches!(layer, EscalationLayer::Infection) {
             self.entity.add_depth(3);
+            let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
+            output = corruption.apply(&output, scan_seed);
         }
-
-        let output =
-            Self::assemble_fsck_output(scan_output, &recovery, entity_text, layer, scan_seed);
 
         CommandResult::success(&output)
     }
