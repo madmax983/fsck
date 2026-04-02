@@ -204,7 +204,8 @@ impl CommandExecutor {
     }
 
     fn catalog(&self) -> CommandResult {
-        let mut output = String::new();
+        // ⚡ Bolt Optimization: Pre-allocate String capacity for catalog output to prevent multiple heap re-allocations.
+        let mut output = String::with_capacity(256);
         output.push_str("\nDISK VOLUME 254\n\n");
 
         for dir in self.fs.list_directories() {
