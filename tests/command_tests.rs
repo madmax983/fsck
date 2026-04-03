@@ -295,7 +295,10 @@ fn test_help_infection() {
 fn test_type_history_txt() {
     let mut fs = FilesystemGraph::new();
     fs.current_node_mut()
-        .add_file(fsck::filesystem::FileNode::new("HISTORY.TXT", "YOUR ACTIONS BECOME HISTORY.\n"));
+        .add_file(fsck::filesystem::FileNode::new(
+            "HISTORY.TXT",
+            "YOUR ACTIONS BECOME HISTORY.\n",
+        ));
 
     let mut entity = Entity::new();
     entity.record_command("CATALOG");
