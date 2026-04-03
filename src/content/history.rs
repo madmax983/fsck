@@ -19,6 +19,8 @@ pub enum Era {
     Recovery,
     /// 2003 - Estate sale buyer
     EstateSale,
+    /// 2006 - Collector of oddities
+    Collector,
     /// 2008 - Investigative journalist
     Journalist,
     /// 2010 - Amateur hacker
