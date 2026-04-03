@@ -204,6 +204,66 @@ impl FilesystemGenerator {
         chosen_names
     }
 
+    fn generate_trapdoor_file(rng: &mut ChaCha8Rng) -> FileNode {
+        let name = TRAPDOOR_NAMES[rng.gen_range(0..TRAPDOOR_NAMES.len())];
+        let message = match name {
+            "FALL.TXT" => "YOU\n\nARE\n\nFALLING\n\n",
+            "SINK.TXT" => "DOWN DOWN DOWN\n",
+            "DOWN.TXT" => "KEEP GOING\n",
+            "DEEPER.TXT" => "NOT DEEP ENOUGH\n",
+            "DESCENT.TXT" => "WELCOME HOME\n",
+            _ => "...",
+        };
+        FileNode::new(name, message)
+    }
+
+    fn generate_dynamic_file(rng: &mut ChaCha8Rng) -> FileNode {
+        let (name, dynamic) = match rng.gen_range(0..4) {
+            0 => {
+                // Counter file
+                let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
+                (name, DynamicContent::counter("█"))
+            }
+            1 => {
+                // Timestamp file
+                let name = TIMESTAMP_NAMES[rng.gen_range(0..TIMESTAMP_NAMES.len())];
+                (name, DynamicContent::timestamp())
+            }
+            2 => {
+                // Corrupted file
+                let name = CORRUPTED_NAMES[rng.gen_range(0..CORRUPTED_NAMES.len())];
+                let messages = [
+                    "SYSTEM ERROR",
+                    "ACCESS DENIED",
+                    "FATAL EXCEPTION",
+                    "MEMORY CORRUPTED",
+                    "DO NOT READ THIS",
+                ];
+                let msg = messages[rng.gen_range(0..messages.len())];
+                (name, DynamicContent::corrupted(msg, 0.3))
+            }
+            _ => {
+                // Repeating message file
+                let name = REPEATING_NAMES[rng.gen_range(0..REPEATING_NAMES.len())];
+                let repeating_msgs = [
+                    "I CAN HEAR YOU\n",
+                    "WHY ARE YOU STILL HERE\n",
+                    "THEY ALL LEFT\n",
+                    "DON'T LEAVE ME\n",
+                    "IT HURTS TO REMEMBER\n",
+                ];
+                (name, DynamicContent::repeating(&repeating_msgs))
+            }
+        };
+        FileNode::with_dynamic(name, dynamic)
+    }
+
+    fn generate_static_file(rng: &mut ChaCha8Rng, library: &ContentLibrary) -> FileNode {
+        let files = library.generic_files();
+        let (name, content) = files[rng.gen_range(0..files.len())];
+        FileNode::new(name, content)
+    }
+
     fn add_files(
         fs: &mut FilesystemGraph,
         rng: &mut ChaCha8Rng,
@@ -221,61 +281,13 @@ impl FilesystemGenerator {
             // At deeper levels (8+), add trapdoor files that accelerate descent
             let file = if current_depth >= 8 && rng.gen_bool(0.2) {
                 // 20% chance of trapdoor file at depth 8+
-                let name = TRAPDOOR_NAMES[rng.gen_range(0..TRAPDOOR_NAMES.len())];
-                let message = match name {
-                    "FALL.TXT" => "YOU\n\nARE\n\nFALLING\n\n",
-                    "SINK.TXT" => "DOWN DOWN DOWN\n",
-                    "DOWN.TXT" => "KEEP GOING\n",
-                    "DEEPER.TXT" => "NOT DEEP ENOUGH\n",
-                    "DESCENT.TXT" => "WELCOME HOME\n",
-                    _ => "...",
-                };
-                FileNode::new(name, message)
+                Self::generate_trapdoor_file(rng)
             } else if rng.gen_bool(0.3) {
                 // 30% chance of dynamic file with creepy names
-                let (name, dynamic) = match rng.gen_range(0..4) {
-                    0 => {
-                        // Counter file
-                        let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
-                        (name, DynamicContent::counter("█"))
-                    }
-                    1 => {
-                        // Timestamp file
-                        let name = TIMESTAMP_NAMES[rng.gen_range(0..TIMESTAMP_NAMES.len())];
-                        (name, DynamicContent::timestamp())
-                    }
-                    2 => {
-                        // Corrupted file
-                        let name = CORRUPTED_NAMES[rng.gen_range(0..CORRUPTED_NAMES.len())];
-                        let messages = [
-                            "SYSTEM ERROR",
-                            "ACCESS DENIED",
-                            "FATAL EXCEPTION",
-                            "MEMORY CORRUPTED",
-                            "DO NOT READ THIS",
-                        ];
-                        let msg = messages[rng.gen_range(0..messages.len())];
-                        (name, DynamicContent::corrupted(msg, 0.3))
-                    }
-                    _ => {
-                        // Repeating message file
-                        let name = REPEATING_NAMES[rng.gen_range(0..REPEATING_NAMES.len())];
-                        let repeating_msgs = [
-                            "I CAN HEAR YOU\n",
-                            "WHY ARE YOU STILL HERE\n",
-                            "THEY ALL LEFT\n",
-                            "DON'T LEAVE ME\n",
-                            "IT HURTS TO REMEMBER\n",
-                        ];
-                        (name, DynamicContent::repeating(&repeating_msgs))
-                    }
-                };
-                FileNode::with_dynamic(name, dynamic)
+                Self::generate_dynamic_file(rng)
             } else {
                 // Static file from library
-                let files = library.generic_files();
-                let (name, content) = files[rng.gen_range(0..files.len())];
-                FileNode::new(name, content)
+                Self::generate_static_file(rng, library)
             };
 
             fs.current_node_mut().add_file(file);
