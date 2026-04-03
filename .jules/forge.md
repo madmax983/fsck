@@ -12,3 +12,6 @@
 **[Iterator Chains vs Manual Loops]**
 **Learning:** Deeply nested `for` loops used for linear searches (e.g., iterating to find a file by name inside a collection) act as a "Pyramid of Doom" and obscure the main logic of the function.
 **Action:** Replace manual `for` loops used for searching with idiomatic `Iterator::find(...)` pipelines, coupled with Guard Clauses (early returns using `let Some(...) = ... else { return; }`) to flatten functions and dramatically improve readability.
+**[Extracted God Function logic in FilesystemGenerator::add_files]**
+**Learning:** `add_files` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different file types inline.
+**Action:** Extract specific file generation types into smaller, private helper functions (e.g., `generate_trapdoor_file`, `generate_dynamic_file`) to flatten nesting and improve overall readability of the core generation loops.
