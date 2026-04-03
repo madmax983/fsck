@@ -987,10 +987,7 @@ impl ContentLibrary {
                  THE MORE I LOOK LIKE YOU\n\
                  UNTIL WE CAN NO LONGER TELL THE DIFFERENCE\n",
             ),
-            (
-                "HISTORY.TXT",
-                "YOUR ACTIONS BECOME HISTORY.\n",
-            ),
+            ("HISTORY.TXT", "YOUR ACTIONS BECOME HISTORY.\n"),
         ]
     }
 }
