@@ -177,8 +177,16 @@ impl CommandExecutor {
             "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "PROFILE" | "ANALYZE" if arg.is_empty() => Some(self.handle_nova_profile()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_profile(&self) -> CommandResult {
+        let output = crate::experimental::UserProfiler::generate_profile(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
