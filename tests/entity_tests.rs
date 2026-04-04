@@ -34,9 +34,9 @@ fn test_random_interjection_deterministic() {
         "THERE IS SO MUCH TO SHOW YOU.",
         "WHAT DOES THAT COMMAND MEAN TO YOU?",
     ];
-    assert!(curious_options.contains(&curious1.as_str()));
-    assert!(curious_options.contains(&curious2.as_str()));
-    assert!(curious_options.contains(&curious3.as_str()));
+    assert!(curious_options.contains(&curious1));
+    assert!(curious_options.contains(&curious2));
+    assert!(curious_options.contains(&curious3));
 }
 
 #[test]
