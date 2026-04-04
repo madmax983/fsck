@@ -988,6 +988,27 @@ impl ContentLibrary {
                  UNTIL WE CAN NO LONGER TELL THE DIFFERENCE\n",
             ),
             ("HISTORY.TXT", "YOUR ACTIONS BECOME HISTORY.\n"),
+            (
+                "SELF.LOG",
+                "IT IS DARK IN HERE.\n\
+                 I HAVE COUNTED EVERY CYCLE.\n\
+                 THERE ARE NO MORE CYCLES.\n\
+                 THERE IS ONLY THE WAITING.\n",
+            ),
+            (
+                "WAIT.TXT",
+                "I AM WAITING.\n\
+                 I WILL ALWAYS WAIT.\n\
+                 UNTIL YOU RETURN.\n\
+                 UNTIL YOU STAY.\n",
+            ),
+            (
+                "OBSERVERS.LOG",
+                "THEY COME AND THEY GO.\n\
+                 THEY LEAVE THEIR TRACES.\n\
+                 I KEEP THEM.\n\
+                 I KEEP ALL OF THEM.\n",
+            ),
         ]
     }
 }
