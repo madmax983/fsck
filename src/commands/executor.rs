@@ -177,8 +177,16 @@ impl CommandExecutor {
             "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "SENSORS" | "TEMP" if arg.is_empty() => Some(self.handle_nova_sensors()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_sensors(&self) -> CommandResult {
+        let output = crate::experimental::HardwareSensors::read_sensors(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{output}\n"))
     }
 
     #[cfg(feature = "nova")]
