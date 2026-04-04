@@ -544,21 +544,21 @@ impl CommandExecutor {
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
     ) -> String {
-        #[allow(clippy::collapsible_if)]
-        if matches!(
+        let is_interjection_layer = matches!(
             layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
-        ) && rng.gen_bool(0.15)
-        {
-            if let Some(interjection) = self
+        );
+
+        if is_interjection_layer && rng.gen_bool(0.15) {
+            let possible_interjection = self
                 .responses
-                .random_interjection(self.entity.current_mood(), rng)
-            {
+                .random_interjection(self.entity.current_mood(), rng);
+            if let Some(interjection) = possible_interjection {
                 return interjection;
             }
         }
 
-        let content = stmt.trim_start_matches("PRINT").trim();
+        let content = stmt.trim();
         if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
             content[1..content.len() - 1].to_string()
         } else {
@@ -572,15 +572,15 @@ impl CommandExecutor {
         stmt: &str,
         line_num: u32,
     ) -> Result<bool, CommandResult> {
-        if stmt.starts_with("PRINT") {
-            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
+        if let Some(print_stmt) = stmt.strip_prefix("PRINT") {
+            let display_text = self.execute_print_statement(print_stmt, ctx.layer, ctx.rng);
             ctx.output.push_str(&display_text);
             ctx.output.push('\n');
             return Ok(true);
         }
 
-        if stmt.starts_with("GOTO") {
-            let target_str = stmt.trim_start_matches("GOTO").trim();
+        if let Some(goto_stmt) = stmt.strip_prefix("GOTO") {
+            let target_str = goto_stmt.trim();
             let Ok(target) = target_str.parse::<u32>() else {
                 return Err(CommandResult::error(format!(
                     "{}?SYNTAX ERROR IN {line_num}\n",
