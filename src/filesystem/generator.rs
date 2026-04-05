@@ -171,7 +171,7 @@ impl FilesystemGenerator {
         Self::add_hidden_content(fs, rng, current_depth);
 
         // Recursively populate children
-        let children: Vec<String> = fs.list_directories().map(String::from).collect();
+        let children: Vec<_> = fs.list_directories().map(String::from).collect();
         for child_name in children {
             if fs.change_dir(&child_name, 0, 0.0).is_ok() {
                 Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);

@@ -566,6 +566,30 @@ impl CommandExecutor {
         }
     }
 
+    fn evaluate_goto_statement(
+        ctx: &mut BasicEvaluationContext<'_>,
+        stmt: &str,
+        line_num: u32,
+    ) -> Result<bool, CommandResult> {
+        let target_str = stmt.trim_start_matches("GOTO").trim();
+        let Ok(target) = target_str.parse::<u32>() else {
+            return Err(CommandResult::error(format!(
+                "{}?SYNTAX ERROR IN {line_num}\n",
+                ctx.output
+            )));
+        };
+
+        if !ctx.program.contains_key(&target) {
+            return Err(CommandResult::error(format!(
+                "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
+                ctx.output
+            )));
+        }
+
+        *ctx.next_line = Some(target);
+        Ok(true)
+    }
+
     fn evaluate_basic_statement(
         &self,
         ctx: &mut BasicEvaluationContext<'_>,
@@ -580,23 +604,7 @@ impl CommandExecutor {
         }
 
         if stmt.starts_with("GOTO") {
-            let target_str = stmt.trim_start_matches("GOTO").trim();
-            let Ok(target) = target_str.parse::<u32>() else {
-                return Err(CommandResult::error(format!(
-                    "{}?SYNTAX ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            };
-
-            if !ctx.program.contains_key(&target) {
-                return Err(CommandResult::error(format!(
-                    "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            }
-
-            *ctx.next_line = Some(target);
-            return Ok(true);
+            return Self::evaluate_goto_statement(ctx, stmt, line_num);
         }
 
         if stmt.starts_with("END") {
