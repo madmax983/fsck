@@ -42,3 +42,7 @@ pub use spatial_audio::SpatialAudioGenerator;
 pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;
+#[cfg(feature = "nova")]
+pub mod radio_tuner;
+#[cfg(feature = "nova")]
+pub use radio_tuner::RadioTuner;
