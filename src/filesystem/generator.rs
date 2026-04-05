@@ -314,10 +314,11 @@ impl FilesystemGenerator {
                 26..=28 => Era::Journalist,
                 29..=31 => Era::Hacker,
                 32..=35 => Era::Cryptographer,
-                36..=40 => Era::Explorer,
-                41..=44 => Era::Streamer,
-                45..=48 => Era::Researcher,
-                49..=52 => Era::Archivist,
+                36..=38 => Era::Collector,
+                39..=42 => Era::Explorer,
+                43..=46 => Era::Streamer,
+                47..=50 => Era::Researcher,
+                51..=54 => Era::Archivist,
                 _ => Era::Current,
             };
 

@@ -25,6 +25,8 @@ pub enum Era {
     Hacker,
     /// 2014 - Cryptographer
     Cryptographer,
+    /// 2016 - Vintage hardware collector
+    Collector,
     /// 2019 - Urban explorer
     Explorer,
     /// 2022 - Retro hardware streamer

@@ -78,6 +78,7 @@ impl ContentLibrary {
             Self::create_journalist_history(),
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
+            Self::create_collector_history(),
             Self::create_explorer_history(),
             Self::create_streamer_history(),
             Self::create_researcher_history(),
@@ -594,6 +595,27 @@ impl ContentLibrary {
              'I CAN SOLVE YOU TOO.' I'm unplugging the power supply, but the cursor \
              is still blinking. I can hear the drive clicking in prime intervals. \
              2, 3, 5, 7, 11... It's counting down.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the vintage hardware collector (2016) - Greg.
+    fn create_collector_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Collector, "GREG", 2016);
+
+        history.add_entry(VictimEntry::new(
+            "2016-04-12",
+            "Just picked this beauty up from an estate sale. The casing is pristine, \
+             hardly any yellowing. Booted it up and the disk drive purrs like a kitten. \
+             It even has a custom operating system loaded on it. Can't wait to dump the ROMs.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2016-04-14",
+            "The file structure on this thing is bizarre. I tried mapping out the directory \
+             tree but I keep ending up in folders that shouldn't exist. I found a file with \
+             my name on it. It knows things about my collection. I'm going to unplug it now.",
         ));
 
         history

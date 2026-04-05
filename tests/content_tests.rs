@@ -39,8 +39,10 @@ fn test_history_has_entries() {
 fn test_history_by_era() {
     let h1 = VictimHistory::new(Era::Original, "JAMIE", 1984);
     let h2 = VictimHistory::new(Era::Technician, "MIKE", 1991);
+    let h3 = VictimHistory::new(Era::Collector, "GREG", 2016);
     assert!(h1.era() == Era::Original);
     assert!(h2.era() == Era::Technician);
+    assert!(h3.era() == Era::Collector);
 }
 
 #[test]
