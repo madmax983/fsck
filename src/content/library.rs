@@ -82,7 +82,35 @@ impl ContentLibrary {
             Self::create_streamer_history(),
             Self::create_researcher_history(),
             Self::create_archivist_history(),
+            Self::create_developer_history(),
         ]
+    }
+
+    /// Creates the history for the First Prototype Developer (1979) - Woz (or an unknown dev).
+    fn create_developer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Developer, "PROTOTYPE DEV", 1979);
+
+        history.add_entry(VictimEntry::new(
+            "1979-11-02",
+            "The breadboard prototype is finally booting. But the ROM is behaving strangely. I haven't even burned the complete monitor program yet, but the cursor is blinking. It shouldn't be doing that without the video generation logic properly initialized.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1979-11-05",
+            "I checked the address buses. They are pulling voltages that shouldn't exist in a 5V system. It's almost like the traces are rerouting themselves. I asked Steve about it and he just laughed, said I was working too late.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1979-11-08",
+            "I unhooked the power supply entirely. Left it on the bench overnight. When I came in this morning, the phosphor monitor was still glowing faintly. And it had typed 'HELLO'.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1979-11-10",
+            "I am sealing the prototype in a concrete block. This isn't a machine. It's something else that found a way in through the copper. If anyone finds this... do not give it power.",
+        ));
+
+        history
     }
 
     /// Creates the history for the BBS User (1998) - Marcus.

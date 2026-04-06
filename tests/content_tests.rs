@@ -8,6 +8,17 @@ fn test_create_victim_history() {
 }
 
 #[test]
+fn test_developer_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Developer);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "PROTOTYPE DEV");
+    assert_eq!(history.year(), 1979);
+    assert!(history.entries().len() >= 4);
+}
+
+#[test]
 fn test_new_generic_files_exist() {
     let library = ContentLibrary::new();
     let files = library.generic_files();

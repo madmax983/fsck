@@ -33,6 +33,8 @@ pub enum Era {
     Researcher,
     /// 2025 - Digital Archivist
     Archivist,
+    /// 1979 - First Prototype Developer
+    Developer,
     /// Previous player's session
     Previous,
     /// Current player

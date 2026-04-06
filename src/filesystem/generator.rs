@@ -318,6 +318,7 @@ impl FilesystemGenerator {
                 41..=44 => Era::Streamer,
                 45..=48 => Era::Researcher,
                 49..=52 => Era::Archivist,
+                53..=56 => Era::Developer,
                 _ => Era::Current,
             };
 
