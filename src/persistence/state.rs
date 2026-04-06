@@ -55,18 +55,40 @@ impl GameState {
 
     /// Records a command into the game history buffer.
     /// ⚡ Bolt Optimization: Removes unnecessary `.clone()` allocation on every user input.
+    /// ⚡ Bolt Optimization: Uses case-insensitive substring search to avoid `cmd.to_uppercase()` heap allocation.
     pub fn record_command(&mut self, cmd: &str) {
         let cmd_string = cmd.to_string();
 
-        let cmd_upper = cmd.to_uppercase();
-        if cmd_upper.contains("FSCK")
-            || cmd_upper.contains("QUIT")
-            || cmd_upper.contains("RUN ESCAPE")
-            || cmd_upper.contains("CD ..")
-            || cmd_upper.contains("HELP")
-            || cmd_upper.contains("HELLO")
-            || cmd_upper.contains("WHO")
-        {
+        let is_notable = cmd
+            .as_bytes()
+            .windows(4)
+            .any(|w| w.eq_ignore_ascii_case(b"FSCK"))
+            || cmd
+                .as_bytes()
+                .windows(4)
+                .any(|w| w.eq_ignore_ascii_case(b"QUIT"))
+            || cmd
+                .as_bytes()
+                .windows(10)
+                .any(|w| w.eq_ignore_ascii_case(b"RUN ESCAPE"))
+            || cmd
+                .as_bytes()
+                .windows(5)
+                .any(|w| w.eq_ignore_ascii_case(b"CD .."))
+            || cmd
+                .as_bytes()
+                .windows(4)
+                .any(|w| w.eq_ignore_ascii_case(b"HELP"))
+            || cmd
+                .as_bytes()
+                .windows(5)
+                .any(|w| w.eq_ignore_ascii_case(b"HELLO"))
+            || cmd
+                .as_bytes()
+                .windows(3)
+                .any(|w| w.eq_ignore_ascii_case(b"WHO"));
+
+        if is_notable {
             self.notable_actions.push(cmd_string.clone());
             if self.notable_actions.len() > 20 {
                 self.notable_actions.remove(0);
