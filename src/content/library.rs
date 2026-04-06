@@ -75,6 +75,7 @@ impl ContentLibrary {
             Self::create_y2k_history(),
             Self::create_recovery_history(),
             Self::create_estate_history(),
+            Self::create_collector_history(),
             Self::create_journalist_history(),
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
@@ -470,6 +471,43 @@ impl ContentLibrary {
             "2008-04-25",
             "I'm going to run FSCK one last time. It said if I fix the paradox, it will let me go. \
              I know it's lying. But I don't have a choice.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Collector of oddities (2006) - Arthur.
+    fn create_collector_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Collector, "ARTHUR", 2006);
+
+        history.add_entry(VictimEntry::new(
+            "2006-03-12",
+            "Acquired the Apple IIe from an anonymous seller online. The listing claimed it had an \
+             undocumented prototype expansion card. The casing is unusually heavy.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2006-03-15",
+            "I've been mapping the filesystem for three days. There are files here dated 2099. \
+             It's a clever prank, some sort of persistent memory mod, but the architecture doesn't make sense.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2006-03-21",
+            "The expansion card... it's not a card. It looks like it grew out of the motherboard. \
+             I tried to run FSCK to fix the corrupted sectors, but it printed my name. It knows who I am.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2006-03-28",
+            "It asked me for a favor. Just one small command. If I type it, it promises to show me \
+             what's in the LOCKED directory. I shouldn't. I'm a collector, not a fool. But I have to know.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2006-04-02",
+            "I ran the command. The screen went black and then the cursor started blinking rhythmically. \
+             It sounded like a heartbeat. It's not a machine. It's a cage. And I just opened the door.",
         ));
 
         history

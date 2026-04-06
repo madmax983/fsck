@@ -363,6 +363,7 @@ fn test_all_eras_have_unique_histories() {
     let y2k = lib.history_for_era(Era::Y2K);
     let recovery = lib.history_for_era(Era::Recovery);
     let estate = lib.history_for_era(Era::EstateSale);
+    let collector = lib.history_for_era(Era::Collector);
     let journalist = lib.history_for_era(Era::Journalist);
     let hacker = lib.history_for_era(Era::Hacker);
     let cryptographer = lib.history_for_era(Era::Cryptographer);
@@ -378,6 +379,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(y2k.is_some());
     assert!(recovery.is_some());
     assert!(estate.is_some());
+    assert!(collector.is_some());
     assert!(journalist.is_some());
     assert!(hacker.is_some());
     assert!(cryptographer.is_some());
@@ -392,6 +394,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(bbs_user.unwrap().name(), "MARCUS");
     assert_eq!(y2k.unwrap().name(), "DAVID");
     assert_eq!(estate.unwrap().name(), "PATRICIA");
+    assert_eq!(collector.unwrap().name(), "ARTHUR");
     assert_eq!(journalist.unwrap().name(), "RACHEL");
     assert_eq!(hacker.unwrap().name(), "SAM");
     assert_eq!(cryptographer.unwrap().name(), "SARAH");
@@ -443,4 +446,15 @@ fn test_archivist_era_exists() {
     assert_eq!(history.name(), "ELIAS");
     assert_eq!(history.year(), 2025);
     assert!(history.entries().len() >= 3);
+}
+
+#[test]
+fn test_collector_era_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Collector);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ARTHUR");
+    assert_eq!(history.year(), 2006);
+    assert!(history.entries().len() >= 5);
 }
