@@ -152,20 +152,24 @@ impl VictimHistory {
         )
         .expect("Writing to String should not fail");
 
-        if commands.iter().any(|c| c.to_uppercase().contains("FSCK")) {
+        // ⚡ Bolt Optimization: Uses zero-allocation byte-slice windows instead of .to_uppercase() to avoid heap allocations when checking substrings.
+        let contains_pattern = |cmd: &str, pattern: &[u8]| {
+            cmd.as_bytes()
+                .windows(pattern.len())
+                .any(|w| w.eq_ignore_ascii_case(pattern))
+        };
+
+        if commands.iter().any(|c| contains_pattern(c, b"FSCK")) {
             entry_content
                 .push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
         }
-        if commands.iter().any(|c| c.to_uppercase().contains("QUIT")) {
+        if commands.iter().any(|c| contains_pattern(c, b"QUIT")) {
             entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
         }
-        if commands
-            .iter()
-            .any(|c| c.to_uppercase().contains("RUN ESCAPE"))
-        {
+        if commands.iter().any(|c| contains_pattern(c, b"RUN ESCAPE")) {
             entry_content.push_str("THEY TRIED TO ESCAPE. IT WAS FUTILE.\n");
         }
-        if commands.iter().any(|c| c.to_uppercase().contains("CD ..")) {
+        if commands.iter().any(|c| contains_pattern(c, b"CD ..")) {
             entry_content.push_str("THEY TRIED TO GO BACK. BUT THE PATHS SHIFT.\n");
         }
 

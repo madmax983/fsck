@@ -58,14 +58,21 @@ impl GameState {
     pub fn record_command(&mut self, cmd: &str) {
         let cmd_string = cmd.to_string();
 
-        let cmd_upper = cmd.to_uppercase();
-        if cmd_upper.contains("FSCK")
-            || cmd_upper.contains("QUIT")
-            || cmd_upper.contains("RUN ESCAPE")
-            || cmd_upper.contains("CD ..")
-            || cmd_upper.contains("HELP")
-            || cmd_upper.contains("HELLO")
-            || cmd_upper.contains("WHO")
+        // ⚡ Bolt Optimization: Uses zero-allocation byte-slice windows instead of .to_uppercase() to avoid heap allocations when checking substrings.
+        let cmd_bytes = cmd.as_bytes();
+        let contains_pattern = |pattern: &[u8]| {
+            cmd_bytes
+                .windows(pattern.len())
+                .any(|w| w.eq_ignore_ascii_case(pattern))
+        };
+
+        if contains_pattern(b"FSCK")
+            || contains_pattern(b"QUIT")
+            || contains_pattern(b"RUN ESCAPE")
+            || contains_pattern(b"CD ..")
+            || contains_pattern(b"HELP")
+            || contains_pattern(b"HELLO")
+            || contains_pattern(b"WHO")
         {
             self.notable_actions.push(cmd_string.clone());
             if self.notable_actions.len() > 20 {
