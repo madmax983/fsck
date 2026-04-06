@@ -15,3 +15,6 @@
 **[Extracted God Function logic in FilesystemGenerator::add_files]**
 **Learning:** `add_files` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different file types inline.
 **Action:** Extract specific file generation types into smaller, private helper functions (e.g., `generate_trapdoor_file`, `generate_dynamic_file`) to flatten nesting and improve overall readability of the core generation loops.
+**[Refactor Basic Evaluation Prefix Extraction]**
+**Learning:** Using `starts_with` combined with `trim_start_matches` to check and extract prefixes from strings is repetitive and can lead to bugs if not handled carefully (e.g., `trim_start_matches` removing all leading occurrences rather than just one).
+**Action:** Use the idiomatic `strip_prefix` combined with `if let Some(...)` to simultaneously check for a prefix and extract the remainder of the string safely and cleanly.
