@@ -147,6 +147,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_tune(&self, arg: &str) -> CommandResult {
+        let tune_output = crate::experimental::RadioReceiver::tune(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(tune_output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let cmd_word_upper = cmd_word.to_uppercase();
@@ -177,6 +183,8 @@ impl CommandExecutor {
             "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
+            #[cfg(feature = "nova")]
+            "TUNE" | "RADIO" if !arg.is_empty() => Some(self.handle_nova_tune(arg)),
             _ => None,
         }
     }
