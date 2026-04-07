@@ -39,10 +39,10 @@ fn test_history_has_entries() {
 fn test_history_by_era() {
     let h1 = VictimHistory::new(Era::Original, "JAMIE", 1984);
     let h2 = VictimHistory::new(Era::Technician, "MIKE", 1991);
-    let h3 = VictimHistory::new(Era::Collector, "GREG", 2016);
+    let h3 = VictimHistory::new(Era::VintageCollector, "GREG", 2016);
     assert!(h1.era() == Era::Original);
     assert!(h2.era() == Era::Technician);
-    assert!(h3.era() == Era::Collector);
+    assert!(h3.era() == Era::VintageCollector);
 }
 
 #[test]
@@ -369,6 +369,7 @@ fn test_all_eras_have_unique_histories() {
     let journalist = lib.history_for_era(Era::Journalist);
     let hacker = lib.history_for_era(Era::Hacker);
     let cryptographer = lib.history_for_era(Era::Cryptographer);
+    let vintage_collector = lib.history_for_era(Era::VintageCollector);
     let explorer = lib.history_for_era(Era::Explorer);
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
@@ -385,6 +386,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(journalist.is_some());
     assert!(hacker.is_some());
     assert!(cryptographer.is_some());
+    assert!(vintage_collector.is_some());
     assert!(explorer.is_some());
     assert!(streamer.is_some());
     assert!(researcher.is_some());
@@ -400,6 +402,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(journalist.unwrap().name(), "RACHEL");
     assert_eq!(hacker.unwrap().name(), "SAM");
     assert_eq!(cryptographer.unwrap().name(), "SARAH");
+    assert_eq!(vintage_collector.unwrap().name(), "GREG");
     assert_eq!(explorer.unwrap().name(), "ALEX");
     assert_eq!(streamer.unwrap().name(), "CHRIS");
     assert_eq!(researcher.unwrap().name(), "ARIS");
@@ -459,4 +462,15 @@ fn test_collector_era_exists() {
     assert_eq!(history.name(), "ARTHUR");
     assert_eq!(history.year(), 2006);
     assert!(history.entries().len() >= 5);
+}
+
+#[test]
+fn test_vintage_collector_era_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::VintageCollector);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "GREG");
+    assert_eq!(history.year(), 2016);
+    assert!(history.entries().len() >= 2);
 }
