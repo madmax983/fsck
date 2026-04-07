@@ -79,7 +79,7 @@ impl ContentLibrary {
             Self::create_journalist_history(),
             Self::create_hacker_history(),
             Self::create_cryptographer_history(),
-            Self::create_collector_history(),
+            Self::create_vintage_collector_history(),
             Self::create_explorer_history(),
             Self::create_streamer_history(),
             Self::create_researcher_history(),
@@ -639,8 +639,8 @@ impl ContentLibrary {
     }
 
     /// Creates the history for the vintage hardware collector (2016) - Greg.
-    fn create_collector_history() -> VictimHistory {
-        let mut history = VictimHistory::new(Era::Collector, "GREG", 2016);
+    fn create_vintage_collector_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::VintageCollector, "GREG", 2016);
 
         history.add_entry(VictimEntry::new(
             "2016-04-12",

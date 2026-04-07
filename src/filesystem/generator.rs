@@ -315,7 +315,7 @@ impl FilesystemGenerator {
                 27..=28 => Era::Journalist,
                 29..=31 => Era::Hacker,
                 32..=35 => Era::Cryptographer,
-                36..=38 => Era::Collector,
+                36..=38 => Era::VintageCollector,
                 39..=42 => Era::Explorer,
                 43..=46 => Era::Streamer,
                 47..=50 => Era::Researcher,
