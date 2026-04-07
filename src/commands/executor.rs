@@ -179,8 +179,20 @@ impl CommandExecutor {
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
             #[cfg(feature = "nova")]
             "PROFILE" | "ANALYZE" if arg.is_empty() => Some(self.handle_nova_profile()),
+            #[cfg(feature = "nova")]
+            "SLEEP" if arg.is_empty() => Some(self.handle_nova_sleep()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_sleep(&self) -> CommandResult {
+        let output = crate::experimental::SleepMode::generate_dream(
+            self.entity.current_mood(),
+            self.entity.layer(),
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+        );
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
