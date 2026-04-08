@@ -126,6 +126,16 @@ impl FilesystemGenerator {
             library.add_history(h);
         }
 
+        // Place the previous player's history in the root directory
+        if let Some(history) = library.history_for_era(Era::Previous) {
+            if let Some(entry) = history.entries().first() {
+                let filename = format!("{}.LOG", history.name());
+                let content = format!("{}\n\n{}", entry.date(), entry.content());
+                fs.current_node_mut()
+                    .add_file(FileNode::new(&filename, &content));
+            }
+        }
+
         Self::populate_level_with_content(&mut fs, &mut rng, &library, 0, initial_depth);
 
         fs
@@ -303,8 +313,7 @@ impl FilesystemGenerator {
         // Occasionally place victim history files (deeper = more likely)
         if current_depth >= 1 && rng.gen_bool(0.4) {
             let era = match current_depth {
-                1..=2 => Era::Previous,
-                3..=5 => Era::Original,
+                1..=5 => Era::Original,
                 6..=8 => Era::Teacher,
                 9..=14 => Era::Technician,
                 15..=16 => Era::Sysop,

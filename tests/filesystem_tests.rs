@@ -587,3 +587,30 @@ fn test_researcher_era_history() {
     assert!(content.contains("2023-04-12"));
     assert!(content.contains("LLM"));
 }
+
+#[test]
+fn test_previous_session_history_at_root() {
+    use fsck::content::VictimHistory;
+
+    let commands = vec![
+        "FSCK".to_string(),
+        "CATALOG".to_string(),
+        "cd ..".to_string(),
+    ];
+    let prev_history = VictimHistory::from_previous_session(&commands).unwrap();
+
+    let fs = FilesystemGenerator::generate_with_content(123, 2, Some(prev_history));
+
+    // The root node should contain "THE LAST ONE.LOG"
+    let mut found = false;
+    for file in fs.current_node().files() {
+        if file.name() == "THE LAST ONE.LOG" {
+            found = true;
+            let content = file.content();
+            assert!(content.contains("THEY ATTEMPTED 3 NOTABLE ACTIONS"));
+            assert!(content.contains("THEY RAN FSCK. IT HURT."));
+        }
+    }
+
+    assert!(found, "Expected to find THE LAST ONE.LOG in the root directory");
+}
