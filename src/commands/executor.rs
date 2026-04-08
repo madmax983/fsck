@@ -320,42 +320,30 @@ impl CommandExecutor {
     }
 
     fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
-        if filename_upper == "OBSERVE.TXT" {
-            use std::fmt::Write;
-            content.push_str("\n\nI SAW YOU TYPE:\n");
-            let commands_list =
-                self.entity
-                    .commands_seen
-                    .iter()
-                    .fold(String::new(), |mut acc, cmd| {
-                        let _ = writeln!(acc, "  {cmd}");
-                        acc
-                    });
-            content.push_str(&commands_list);
-        }
+        use std::fmt::Write;
 
-        if filename_upper == "MACHINE.LOG" {
-            use std::fmt::Write;
-            let interactions = self.entity.interaction_count();
-            let max_depth = self.entity.max_depth_reached();
-            let _ = write!(
-                content,
-                "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
-            );
-        }
-
-        if filename_upper == "HISTORY.TXT" {
-            use std::fmt::Write;
-            content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
-            let commands_list =
-                self.entity
-                    .commands_seen
-                    .iter()
-                    .fold(String::new(), |mut acc, cmd| {
-                        let _ = writeln!(acc, "  {cmd}");
-                        acc
-                    });
-            content.push_str(&commands_list);
+        match filename_upper {
+            "OBSERVE.TXT" => {
+                content.push_str("\n\nI SAW YOU TYPE:\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
+            "MACHINE.LOG" => {
+                let interactions = self.entity.interaction_count();
+                let max_depth = self.entity.max_depth_reached();
+                let _ = write!(
+                    content,
+                    "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
+                );
+            }
+            "HISTORY.TXT" => {
+                content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
+            _ => {}
         }
     }
 

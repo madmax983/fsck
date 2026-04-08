@@ -302,26 +302,7 @@ impl FilesystemGenerator {
     ) {
         // Occasionally place victim history files (deeper = more likely)
         if current_depth >= 1 && rng.gen_bool(0.4) {
-            let era = match current_depth {
-                1..=2 => Era::Previous,
-                3..=5 => Era::Original,
-                6..=8 => Era::Teacher,
-                9..=14 => Era::Technician,
-                15..=16 => Era::Sysop,
-                17..=19 => Era::BBSUser,
-                20..=22 => Era::Recovery,
-                23..=24 => Era::EstateSale,
-                25..=26 => Era::Collector,
-                27..=28 => Era::Journalist,
-                29..=31 => Era::Hacker,
-                32..=35 => Era::Cryptographer,
-                36..=38 => Era::VintageCollector,
-                39..=42 => Era::Explorer,
-                43..=46 => Era::Streamer,
-                47..=50 => Era::Researcher,
-                51..=54 => Era::Archivist,
-                _ => Era::Current,
-            };
+            let era = Era::from(current_depth);
 
             if let Some(history) = library.history_for_era(era) {
                 if let Some(entry) = history.entries().first() {
