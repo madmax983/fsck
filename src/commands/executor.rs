@@ -180,9 +180,20 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             "PROFILE" | "ANALYZE" if arg.is_empty() => Some(self.handle_nova_profile()),
             #[cfg(feature = "nova")]
+            "SENSORS" | "THERMAL" if arg.is_empty() => Some(self.handle_nova_sensors()),
+            #[cfg(feature = "nova")]
             "SLEEP" if arg.is_empty() => Some(self.handle_nova_sleep()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_sensors(&self) -> CommandResult {
+        let output = crate::experimental::SensorReadingsGenerator::generate_readings(
+            &self.entity,
+            0xF5C0_0000,
+        );
+        CommandResult::success(format!("{output}\n"))
     }
 
     #[cfg(feature = "nova")]
