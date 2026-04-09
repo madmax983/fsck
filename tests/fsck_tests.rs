@@ -279,7 +279,8 @@ fn test_generated_filesystem_has_hidden_content() {
             if let Some(d2) = dirs.first() {
                 if fs.change_dir(d2, 0, 0.0).is_ok() {
                     // At depth 2+, try revealing hidden content
-                    let revealed = fs.reveal_hidden_in_current();
+                    let mut revealed = Vec::new();
+                    fs.reveal_hidden_in_current(&mut revealed);
                     // May or may not have hidden content (25% chance at depth 2)
                     // Just verify the mechanism works without panicking
                     let _ = revealed;

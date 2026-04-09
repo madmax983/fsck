@@ -16,7 +16,7 @@ pub enum DynamicContent {
     },
     /// Text that cycles through different messages on each read
     RepeatingText {
-        messages: Vec<String>,
+        messages: Vec<&'static str>,
         current_index: usize,
     },
 }
@@ -68,14 +68,14 @@ impl DynamicContent {
     /// Creates a repeating text generator.
     ///
     /// # Arguments
-    /// * `messages` - A list of strings to cycle through on each read
+    /// * `messages` - A list of static strings to cycle through on each read
     ///
     /// # Returns
     /// A generator that returns the next message in the list, wrapping around.
     #[must_use]
-    pub fn repeating(messages: &[&str]) -> Self {
+    pub fn repeating(messages: &[&'static str]) -> Self {
         Self::RepeatingText {
-            messages: messages.iter().map(ToString::to_string).collect(),
+            messages: messages.to_vec(),
             current_index: 0,
         }
     }
@@ -83,6 +83,7 @@ impl DynamicContent {
     /// Generates content for this dynamic source.
     /// ⚡ Bolt Optimization: Uses `.with_capacity(text.len() + 1)` in `Corrupted` to prevent
     /// repeated allocations during generation.
+    /// ⚡ Bolt Optimization: Switched `RepeatingText.messages` from `Vec<String>` to `Vec<&'static str>` to eliminate heap allocations when initializing and cycling through static predefined repeating messages.
     ///
     /// This method mutates internal state (counters, seeds) to produce
     /// different output on each call.
@@ -133,9 +134,9 @@ impl DynamicContent {
                 if messages.is_empty() {
                     return String::new();
                 }
-                let msg = messages[*current_index].clone();
+                let msg = messages[*current_index];
                 *current_index = (*current_index + 1) % messages.len();
-                msg
+                msg.to_string()
             }
         }
     }

@@ -104,17 +104,13 @@ impl FilesystemGraph {
     }
 
     /// Reveal all hidden files and directories in the current node.
-    /// Returns names of everything that was revealed.
-    pub fn reveal_hidden_in_current(&mut self) -> Vec<String> {
+    /// Appends the names of everything that was revealed into the provided vector.
+    /// ⚡ Bolt Optimization: Accept a `&mut Vec<String>` to eliminate intermediate `Vec` allocations.
+    pub fn reveal_hidden_in_current(&mut self, revealed: &mut Vec<String>) {
         // Reveal hidden files in current directory
-        let mut revealed = self.graph[self.current].reveal_hidden_files();
+        self.graph[self.current].reveal_hidden_files(revealed);
 
         // Reveal hidden child directories
-        // ⚡ Bolt Optimization: Avoid intermediate Vec allocation by collecting directly or operating in-place if possible.
-        // Wait, petgraph might not allow modifying self.graph while iterating neighbors.
-        // Let's use `SmallVec` or just `collect`.
-        // Actually, just collecting into a `Vec` is fine if we are mutating the graph.
-        // Let's look at `cd ..` disorientation.
         let hidden_children: Vec<NodeIndex> = self
             .graph
             .neighbors_directed(self.current, Direction::Outgoing)
@@ -125,8 +121,6 @@ impl FilesystemGraph {
             self.graph[idx].reveal();
             revealed.push(self.graph[idx].name().to_string());
         }
-
-        revealed
     }
 
     /// Changes directory.
