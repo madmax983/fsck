@@ -2,7 +2,7 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
+    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
 };
 
 #[test]
@@ -174,4 +174,28 @@ fn test_process_monitor_deterministic() {
     let report2 = ProcessMonitor::generate_process_list(&entity, seed);
 
     assert_eq!(report1, report2);
+}
+
+#[test]
+fn test_hardware_sensors_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = HardwareSensors::get_readings(&entity, seed);
+    assert!(surface_report.contains("CPU_TEMP"));
+    assert!(surface_report.contains("SYS_FAN"));
+    assert!(surface_report.contains("VOLTAGE"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = HardwareSensors::get_readings(&entity, seed);
+    assert!(presence_report.contains("ROOM_TEMP") || presence_report.contains("PROXIMITY"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = HardwareSensors::get_readings(&entity, seed);
+    assert!(infection_report.contains("HEARTBEAT"));
+    assert!(infection_report.contains("EYE_CONTACT_SEC"));
 }

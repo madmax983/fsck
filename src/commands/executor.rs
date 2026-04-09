@@ -147,6 +147,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_sensors(&self) -> CommandResult {
+        let report = crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{report}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let cmd_word_upper = cmd_word.to_uppercase();
@@ -175,6 +181,8 @@ impl CommandExecutor {
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
             "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
+            #[cfg(feature = "nova")]
+            "SENSORS" | "SENSE" | "TEMP" if arg.is_empty() => Some(self.handle_nova_sensors()),
             #[cfg(feature = "nova")]
             "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
             #[cfg(feature = "nova")]
