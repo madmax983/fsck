@@ -138,15 +138,13 @@ impl DirNode {
     }
 
     /// Reveal all hidden files, returning their names
-    pub fn reveal_hidden_files(&mut self) -> Vec<String> {
-        let mut revealed = Vec::new();
+    pub fn reveal_hidden_files(&mut self, revealed: &mut Vec<String>) {
         for file in &mut self.files {
             if file.is_hidden() {
                 revealed.push(file.name().to_string());
                 file.reveal();
             }
         }
-        revealed
     }
 
     pub fn add_file(&mut self, file: FileNode) {

@@ -422,7 +422,8 @@ impl CommandExecutor {
             &mut output,
         );
 
-        let revealed = self.fs.reveal_hidden_in_current();
+        let mut revealed = Vec::new();
+        self.fs.reveal_hidden_in_current(&mut revealed);
 
         Self::build_recovery_report(&revealed, &mut output);
 
