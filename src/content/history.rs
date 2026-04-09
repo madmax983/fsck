@@ -43,6 +43,31 @@ pub enum Era {
     Current,
 }
 
+impl From<u32> for Era {
+    fn from(depth: u32) -> Self {
+        match depth {
+            1..=2 => Self::Previous,
+            3..=5 => Self::Original,
+            6..=8 => Self::Teacher,
+            9..=14 => Self::Technician,
+            15..=16 => Self::Sysop,
+            17..=19 => Self::BBSUser,
+            20..=22 => Self::Recovery,
+            23..=24 => Self::EstateSale,
+            25..=26 => Self::Collector,
+            27..=28 => Self::Journalist,
+            29..=31 => Self::Hacker,
+            32..=35 => Self::Cryptographer,
+            36..=38 => Self::VintageCollector,
+            39..=42 => Self::Explorer,
+            43..=46 => Self::Streamer,
+            47..=50 => Self::Researcher,
+            51..=54 => Self::Archivist,
+            _ => Self::Current,
+        }
+    }
+}
+
 /// A single diary/log entry from a victim
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VictimEntry {

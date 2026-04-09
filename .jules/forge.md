@@ -15,3 +15,6 @@
 **[Extracted God Function logic in FilesystemGenerator::add_files]**
 **Learning:** `add_files` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different file types inline.
 **Action:** Extract specific file generation types into smaller, private helper functions (e.g., `generate_trapdoor_file`, `generate_dynamic_file`) to flatten nesting and improve overall readability of the core generation loops.
+**[Refactor God-function Conversion & String Allocations]**
+**Learning:** Hardcoded, monolithic depth-to-Era conversion mappings (`match` blocks) inside generator functions make business logic bloated. Also, using `.fold(String::new(), ...)` to construct strings dynamically generates unnecessary heap allocations when the content could be appended directly.
+**Action:** Extract generic type conversions into `From<T> / Into<T>` trait implementations to encapsulate mapping logic cleanly out of main execution loops. Replace intermediate string generation in closures by using simple `for` loops writing directly to the target mutable string buffer using `writeln!`.
