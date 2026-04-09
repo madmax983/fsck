@@ -570,7 +570,7 @@ impl CommandExecutor {
 
     fn execute_print_statement(
         &self,
-        stmt: &str,
+        content: &str,
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
     ) -> String {
@@ -588,7 +588,7 @@ impl CommandExecutor {
             }
         }
 
-        let content = stmt.trim_start_matches("PRINT").trim();
+        let content = content.trim();
         if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
             content[1..content.len() - 1].to_string()
         } else {
@@ -598,11 +598,10 @@ impl CommandExecutor {
 
     fn evaluate_goto_statement(
         ctx: &mut BasicEvaluationContext<'_>,
-        stmt: &str,
+        target_str: &str,
         line_num: u32,
     ) -> Result<bool, CommandResult> {
-        let target_str = stmt.trim_start_matches("GOTO").trim();
-        let Ok(target) = target_str.parse::<u32>() else {
+        let Ok(target) = target_str.trim().parse::<u32>() else {
             return Err(CommandResult::error(format!(
                 "{}?SYNTAX ERROR IN {line_num}\n",
                 ctx.output
@@ -626,15 +625,15 @@ impl CommandExecutor {
         stmt: &str,
         line_num: u32,
     ) -> Result<bool, CommandResult> {
-        if stmt.starts_with("PRINT") {
-            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
+        if let Some(content) = stmt.strip_prefix("PRINT") {
+            let display_text = self.execute_print_statement(content, ctx.layer, ctx.rng);
             ctx.output.push_str(&display_text);
             ctx.output.push('\n');
             return Ok(true);
         }
 
-        if stmt.starts_with("GOTO") {
-            return Self::evaluate_goto_statement(ctx, stmt, line_num);
+        if let Some(target_str) = stmt.strip_prefix("GOTO") {
+            return Self::evaluate_goto_statement(ctx, target_str, line_num);
         }
 
         if stmt.starts_with("END") {

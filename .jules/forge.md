@@ -15,3 +15,6 @@
 **[Extracted God Function logic in FilesystemGenerator::add_files]**
 **Learning:** `add_files` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different file types inline.
 **Action:** Extract specific file generation types into smaller, private helper functions (e.g., `generate_trapdoor_file`, `generate_dynamic_file`) to flatten nesting and improve overall readability of the core generation loops.
+**[Refactor BASIC Evaluation Statements]**
+**Learning:** `evaluate_basic_statement` used sequential `.starts_with(...)` checks followed by string slicing (`trim_start_matches(...)`) which is less idiomatic and requires checking the string twice.
+**Action:** Use `.strip_prefix(...)` with early returns (Guard Clauses) in `if let Some(content) = ...` blocks. This ensures the prefix is checked and safely removed in a single operation, improving robustness and idiomatic Rust style.
