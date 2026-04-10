@@ -85,6 +85,7 @@ impl Game {
     pub fn get_prompt(&self) -> String {
         self.prompt_manipulator
             .generate_prompt(self.executor.entity())
+            .to_string()
     }
 
     /// Save the current game state to storage
