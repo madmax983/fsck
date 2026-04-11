@@ -509,28 +509,25 @@ impl CommandExecutor {
     }
 
     fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
-        let layer = self.entity.layer();
-        match prog_upper {
-            "ESCAPE" => match layer {
-                EscalationLayer::Surface => None,
-                EscalationLayer::Corruption => {
-                    Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
-                }
-                EscalationLayer::Presence => Some(CommandResult::error("?YOU CANNOT LEAVE.\n")),
-                EscalationLayer::Infection => {
-                    Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
-                }
-            },
-            "REMEMBER" => match layer {
-                EscalationLayer::Surface => None,
-                EscalationLayer::Corruption => {
-                    Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
-                }
-                EscalationLayer::Presence => Some(CommandResult::success("?THEY LEFT ME HERE\n")),
-                EscalationLayer::Infection => {
-                    Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
-                }
-            },
+        match (prog_upper, self.entity.layer()) {
+            ("ESCAPE", EscalationLayer::Corruption) => {
+                Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
+            }
+            ("ESCAPE", EscalationLayer::Presence) => {
+                Some(CommandResult::error("?YOU CANNOT LEAVE.\n"))
+            }
+            ("ESCAPE", EscalationLayer::Infection) => {
+                Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
+            }
+            ("REMEMBER", EscalationLayer::Corruption) => {
+                Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
+            }
+            ("REMEMBER", EscalationLayer::Presence) => {
+                Some(CommandResult::success("?THEY LEFT ME HERE\n"))
+            }
+            ("REMEMBER", EscalationLayer::Infection) => {
+                Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
+            }
             _ => None,
         }
     }

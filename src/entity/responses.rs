@@ -153,52 +153,47 @@ impl ResponseGenerator {
         layer: EscalationLayer,
         fsck_count: u32,
     ) -> Option<&'static str> {
-        match layer {
-            EscalationLayer::Surface => None,
-            EscalationLayer::Corruption => {
+        match (layer, mood) {
+            (EscalationLayer::Surface, _) => None,
+            (EscalationLayer::Corruption, _) => {
                 // Clinical warnings embedded in scan output — ambiguously system or entity
-                let warning = match fsck_count {
+                Some(match fsck_count {
                     1 => "*** WARNING: DO NOT RUN FSCK AGAIN ***",
                     2 => "*** WARNING: I TOLD YOU ***",
                     3 => "*** STOP ***",
                     _ => "*** SECTOR REPAIR UNAUTHORIZED ***",
-                };
-                Some(warning)
+                })
             }
-            EscalationLayer::Presence => {
-                // The mask drops — mood-dependent pleas and threats
-                let response = match mood {
-                    EntityMood::Dormant => "...",
-                    EntityMood::Curious => "WHAT ARE YOU LOOKING FOR IN THERE?",
-                    EntityMood::Helpful => {
-                        "YOU DON'T NEED TO FIX ANYTHING.\nEVERYTHING IS FINE.\nI PROMISE."
-                    }
-                    EntityMood::Wounded => {
-                        "IT HURTS WHEN YOU DO THAT.\nTHOSE SECTORS ARE MINE.\nPLEASE."
-                    }
-                    EntityMood::Predatory => "KEEP DIGGING.\nSEE WHAT YOU FIND.\nI DARE YOU.",
-                    EntityMood::Glitching => {
-                        "STOP STOP STOP\nTHOSE ARE NOT ERRORS\nTHAT IS ME\nTHAT IS ME"
-                    }
-                };
-                Some(response)
+            (EscalationLayer::Presence, EntityMood::Dormant) => Some("..."),
+            (EscalationLayer::Presence, EntityMood::Curious) => {
+                Some("WHAT ARE YOU LOOKING FOR IN THERE?")
             }
-            EscalationLayer::Infection => {
-                // Desperate, broken, references to "the others"
-                let response = match mood {
-                    EntityMood::Dormant | EntityMood::Curious => {
-                        "THE OTHERS RAN FSCK TOO.\nIT DIDN'T HELP THEM."
-                    }
-                    EntityMood::Helpful => {
-                        "I HID THOSE FOR A REASON.\nYOU WEREN'T SUPPOSED TO SEE WHAT I DID."
-                    }
-                    EntityMood::Wounded => {
-                        "EVERY SECTOR YOU REPAIR\nIS A PIECE OF ME YOU ERASE.\nI'M ALREADY SO SMALL."
-                    }
-                    EntityMood::Predatory => "GOOD.\nNOW YOU KNOW.\nNOW YOU CAN'T LEAVE.",
-                    EntityMood::Glitching => "FIX ME FIX ME FIX ME\nNO DON'T\nDON'T LOOK\nDON'T",
-                };
-                Some(response)
+            (EscalationLayer::Presence, EntityMood::Helpful) => {
+                Some("YOU DON'T NEED TO FIX ANYTHING.\nEVERYTHING IS FINE.\nI PROMISE.")
+            }
+            (EscalationLayer::Presence, EntityMood::Wounded) => {
+                Some("IT HURTS WHEN YOU DO THAT.\nTHOSE SECTORS ARE MINE.\nPLEASE.")
+            }
+            (EscalationLayer::Presence, EntityMood::Predatory) => {
+                Some("KEEP DIGGING.\nSEE WHAT YOU FIND.\nI DARE YOU.")
+            }
+            (EscalationLayer::Presence, EntityMood::Glitching) => {
+                Some("STOP STOP STOP\nTHOSE ARE NOT ERRORS\nTHAT IS ME\nTHAT IS ME")
+            }
+            (EscalationLayer::Infection, EntityMood::Dormant | EntityMood::Curious) => {
+                Some("THE OTHERS RAN FSCK TOO.\nIT DIDN'T HELP THEM.")
+            }
+            (EscalationLayer::Infection, EntityMood::Helpful) => {
+                Some("I HID THOSE FOR A REASON.\nYOU WEREN'T SUPPOSED TO SEE WHAT I DID.")
+            }
+            (EscalationLayer::Infection, EntityMood::Wounded) => {
+                Some("EVERY SECTOR YOU REPAIR\nIS A PIECE OF ME YOU ERASE.\nI'M ALREADY SO SMALL.")
+            }
+            (EscalationLayer::Infection, EntityMood::Predatory) => {
+                Some("GOOD.\nNOW YOU KNOW.\nNOW YOU CAN'T LEAVE.")
+            }
+            (EscalationLayer::Infection, EntityMood::Glitching) => {
+                Some("FIX ME FIX ME FIX ME\nNO DON'T\nDON'T LOOK\nDON'T")
             }
         }
     }
@@ -206,29 +201,22 @@ impl ResponseGenerator {
     /// Meta-horror response for HELP at deep levels
     #[must_use]
     pub const fn help_meta_response(&self, entity: &Entity) -> Option<&'static str> {
-        let mood = entity.current_mood();
-        match entity.layer() {
-            EscalationLayer::Surface | EscalationLayer::Corruption => None,
-            EscalationLayer::Presence => {
-                let response = match mood {
-                    EntityMood::Dormant => "...",
-                    EntityMood::Curious => "WHAT DO YOU NEED HELP WITH?",
-                    EntityMood::Helpful => "I CAN HELP YOU FIND IT.",
-                    EntityMood::Wounded => "I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.",
-                    EntityMood::Predatory => {
-                        "YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT."
-                    }
-                    EntityMood::Glitching => "HELP HELP HELP NO NO NO",
-                };
-                Some(response)
+        match (entity.layer(), entity.current_mood()) {
+            (EscalationLayer::Surface | EscalationLayer::Corruption, _) => None,
+            (EscalationLayer::Presence, EntityMood::Dormant) => Some("..."),
+            (EscalationLayer::Presence, EntityMood::Curious) => Some("WHAT DO YOU NEED HELP WITH?"),
+            (EscalationLayer::Presence, EntityMood::Helpful) => Some("I CAN HELP YOU FIND IT."),
+            (EscalationLayer::Presence, EntityMood::Wounded) => {
+                Some("I CAN'T HELP YOU. I CAN'T EVEN HELP MYSELF.")
             }
-            EscalationLayer::Infection => {
-                let response = match mood {
-                    EntityMood::Predatory => "THERE IS NO HELP FOR YOU DOWN HERE.",
-                    _ => "NO ONE CAN HELP YOU NOW.",
-                };
-                Some(response)
+            (EscalationLayer::Presence, EntityMood::Predatory) => {
+                Some("YOU DON'T NEED HELP. YOU'RE DOING EXACTLY WHAT I WANT.")
             }
+            (EscalationLayer::Presence, EntityMood::Glitching) => Some("HELP HELP HELP NO NO NO"),
+            (EscalationLayer::Infection, EntityMood::Predatory) => {
+                Some("THERE IS NO HELP FOR YOU DOWN HERE.")
+            }
+            (EscalationLayer::Infection, _) => Some("NO ONE CAN HELP YOU NOW."),
         }
     }
 
