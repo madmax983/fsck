@@ -19,6 +19,8 @@ pub enum Era {
     Recovery,
     /// 2003 - Estate sale buyer
     EstateSale,
+    /// 2004 - Digital artist
+    DigitalArtist,
     /// 2006 - Collector of oddities
     Collector,
     /// 2008 - Investigative journalist
@@ -57,7 +59,8 @@ impl From<u32> for Era {
             15..=16 => Self::Sysop,
             17..=19 => Self::BBSUser,
             20..=22 => Self::Recovery,
-            23..=24 => Self::EstateSale,
+            23 => Self::EstateSale,
+            24 => Self::DigitalArtist,
             25..=26 => Self::Collector,
             27..=28 => Self::Journalist,
             29..=31 => Self::Hacker,
