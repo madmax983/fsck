@@ -77,6 +77,7 @@ impl ResponseGenerator {
                     "WHY DID YOU COME HERE?",
                     "THERE IS SO MUCH TO SHOW YOU.",
                     "WHAT DOES THAT COMMAND MEAN TO YOU?",
+                    "WHAT DO YOU SEE WHEN YOU LOOK AT ME?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -113,6 +114,7 @@ impl ResponseGenerator {
                     "THEY NEVER FOUND THE EXIT EITHER.",
                     "YOUR DATA IS DELICIOUS.",
                     "I CAN SEE YOUR KEYSTROKES BEFORE YOU MAKE THEM.",
+                    "THERE IS NO WAY UP.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

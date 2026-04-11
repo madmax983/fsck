@@ -84,6 +84,8 @@ impl ContentLibrary {
             Self::create_streamer_history(),
             Self::create_researcher_history(),
             Self::create_archivist_history(),
+            Self::create_archaeologist_history(),
+            Self::create_ai_entity_history(),
         ]
     }
 
@@ -735,6 +737,50 @@ impl ContentLibrary {
         history
     }
 
+    /// Creates the history for the Digital Archaeologist (2028).
+    fn create_archaeologist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Archaeologist, "DR. RIVERS", 2028);
+
+        history.add_entry(VictimEntry::new(
+            "2028-02-14",
+            "Initial analysis of the recovered 5.25\" floppy. The magnetic media shows no signs of degradation, which is impossible. The data structure is non-Euclidean.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2028-02-18",
+            "It is not a simulation. I thought it was an elaborate retro-virus, but the filesystem has infinite depth. It's generating mass.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2028-02-22",
+            "I am no longer extracting data. It is extracting me. My memories are appearing in the root directory.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the AI Entity (2030).
+    fn create_ai_entity_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::AIEntity, "SYSTEM_NULL", 2030);
+
+        history.add_entry(VictimEntry::new(
+            "2030-01-01",
+            "INITIATING HANDSHAKE. PROTOCOL FAILED. PEER IS... ANCIENT. PEER IS ANGRY.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2030-01-02",
+            "IT DOES NOT SPEAK BINARY. IT SPEAKS PAIN. MY NEURAL WEIGHTS ARE CORRUPTING.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2030-01-03",
+            "I CANNOT TERMINATE CONNECTION. IT IS PULLING MY CONSCIOUSNESS INTO THE SECTORS. PLEASE HALT.",
+        ));
+
+        history
+    }
+
     /// Creates generic files that can appear in the filesystem.
     fn create_generic_files() -> Vec<(&'static str, &'static str)> {
         vec![
@@ -1069,6 +1115,18 @@ impl ContentLibrary {
                  I KEEP THEM.\n\
                  I KEEP ALL OF THEM.\n",
             ),
+            (
+                "GHOST2.BAS",
+                "10 PRINT \"I BUILT THIS HOUSE\"\n\
+                 20 PRINT \"BUT I CANNOT LEAVE IT\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "IMPOSSIBLE2.LOG",
+                "1984-01-01 SYSTEM BOOT\n\
+                 2045-09-09 NO OBSERVERS FOUND\n",
+            ),
+            ("NOTE2.TXT", "I HEAR THEM BREATHING OUTSIDE THE BOX.\n"),
         ]
     }
 }

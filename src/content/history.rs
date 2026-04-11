@@ -37,6 +37,10 @@ pub enum Era {
     Researcher,
     /// 2025 - Digital Archivist
     Archivist,
+    /// 2028 - Digital Archaeologist
+    Archaeologist,
+    /// 2030 - AI Entity
+    AIEntity,
     /// Previous player's session
     Previous,
     /// Current player
@@ -63,6 +67,8 @@ impl From<u32> for Era {
             43..=46 => Self::Streamer,
             47..=50 => Self::Researcher,
             51..=54 => Self::Archivist,
+            55..=58 => Self::Archaeologist,
+            59..=62 => Self::AIEntity,
             _ => Self::Current,
         }
     }
