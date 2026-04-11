@@ -110,16 +110,17 @@ impl FilesystemGraph {
         // Reveal hidden files in current directory
         self.graph[self.current].reveal_hidden_files(revealed);
 
-        // Reveal hidden child directories
-        let hidden_children: Vec<NodeIndex> = self
+        // ⚡ Bolt Optimization: Replace `.collect::<Vec<_>>()` with `.detach()` and `next_node()` to iterate without intermediate heap allocations.
+        let mut walker = self
             .graph
             .neighbors_directed(self.current, Direction::Outgoing)
-            .filter(|&idx| self.graph[idx].is_hidden())
-            .collect();
+            .detach();
 
-        for idx in hidden_children {
-            self.graph[idx].reveal();
-            revealed.push(self.graph[idx].name().to_string());
+        while let Some(idx) = walker.next_node(&self.graph) {
+            if self.graph[idx].is_hidden() {
+                self.graph[idx].reveal();
+                revealed.push(self.graph[idx].name().to_string());
+            }
         }
     }
 
