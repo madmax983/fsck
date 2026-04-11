@@ -121,14 +121,14 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_dump(&self, arg: &str) -> CommandResult {
-        let filename = arg.to_uppercase();
+        // ⚡ Bolt Optimization: Uses `.eq_ignore_ascii_case()` to avoid allocating a new string with `.to_uppercase()`.
         let Some(file) = self
             .fs
             .current_node()
             .visible_files()
-            .find(|f| f.name() == filename)
+            .find(|f| f.name().eq_ignore_ascii_case(arg))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", arg.to_uppercase()));
         };
         let content = file.content();
         let dump = crate::experimental::HexDumpGenerator::generate_dump(
@@ -305,16 +305,17 @@ impl CommandExecutor {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
 
-        let filename_upper = filename.to_uppercase();
+        // ⚡ Bolt Optimization: Uses `.eq_ignore_ascii_case()` to avoid allocating a new string with `.to_uppercase()`.
         let Some(file) = self
             .fs
             .current_node()
             .visible_files()
-            .find(|f| f.name() == filename_upper)
+            .find(|f| f.name().eq_ignore_ascii_case(filename))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"));
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", filename.to_uppercase()));
         };
 
+        let filename_upper = file.name().to_string();
         let mut content = file.content();
 
         self.inject_dynamic_file_content(&filename_upper, &mut content);
@@ -508,10 +509,10 @@ impl CommandExecutor {
         CommandResult::error(format!("{response}\n"))
     }
 
-    fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
+    fn check_run_easter_eggs(&self, prog: &str) -> Option<CommandResult> {
         let layer = self.entity.layer();
-        match prog_upper {
-            "ESCAPE" => match layer {
+        if prog.eq_ignore_ascii_case("ESCAPE") {
+            return match layer {
                 EscalationLayer::Surface => None,
                 EscalationLayer::Corruption => {
                     Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
@@ -520,8 +521,9 @@ impl CommandExecutor {
                 EscalationLayer::Infection => {
                     Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
                 }
-            },
-            "REMEMBER" => match layer {
+            };
+        } else if prog.eq_ignore_ascii_case("REMEMBER") {
+            return match layer {
                 EscalationLayer::Surface => None,
                 EscalationLayer::Corruption => {
                     Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
@@ -530,20 +532,28 @@ impl CommandExecutor {
                 EscalationLayer::Infection => {
                     Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
                 }
-            },
-            _ => None,
+            };
         }
+        None
     }
 
-    fn find_program_content(&self, prog_upper: &str) -> Option<String> {
-        let bas_name = format!("{prog_upper}.BAS");
-
+    // ⚡ Bolt Optimization: Removed string allocations format!("{prog}.BAS") by extracting suffix and comparing parts with `eq_ignore_ascii_case()`.
+    fn find_program_content(&self, prog: &str) -> Option<String> {
         self.fs
             .current_node()
             .visible_files()
             .find(|file| {
                 let name = file.name();
-                name == prog_upper || name == bas_name
+                if name.eq_ignore_ascii_case(prog) {
+                    return true;
+                }
+                #[allow(clippy::collapsible_if)]
+                if let Some(prefix) = name.strip_suffix(".BAS") {
+                    if prefix.eq_ignore_ascii_case(prog) {
+                        return true;
+                    }
+                }
+                false
             })
             .map(|file| file.read().into_owned())
     }
@@ -715,14 +725,12 @@ impl CommandExecutor {
     }
 
     fn run(&self, prog: &str) -> CommandResult {
-        let prog_upper = prog.to_uppercase();
-
         // Easter Eggs
-        if let Some(result) = self.check_run_easter_eggs(&prog_upper) {
+        if let Some(result) = self.check_run_easter_eggs(prog) {
             return result;
         }
 
-        let Some(content) = self.find_program_content(&prog_upper) else {
+        let Some(content) = self.find_program_content(prog) else {
             return CommandResult::error("?PROGRAM NOT FOUND\n");
         };
 

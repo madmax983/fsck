@@ -30,13 +30,18 @@ impl UserProfiler {
         let mut type_count = 0;
         let mut run_count = 0;
 
+        // ⚡ Bolt Optimization: Uses byte-slice window matching with `eq_ignore_ascii_case()`
+        // inside the loop instead of performing a `.to_uppercase()` heap allocation for every command.
         for cmd in &entity.commands_seen {
-            let cmd_upper = cmd.to_uppercase();
-            if cmd_upper.starts_with("CD ") || cmd_upper.contains("CHANGE DIR") {
+            let cmd_bytes = cmd.as_bytes();
+            let is_cd = (cmd_bytes.len() >= 3 && cmd_bytes[..3].eq_ignore_ascii_case(b"CD ")) ||
+                cmd_bytes.windows(10).any(|w| w.eq_ignore_ascii_case(b"CHANGE DIR"));
+
+            if is_cd {
                 cd_count += 1;
-            } else if cmd_upper.starts_with("TYPE ") {
+            } else if cmd_bytes.len() >= 5 && cmd_bytes[..5].eq_ignore_ascii_case(b"TYPE ") {
                 type_count += 1;
-            } else if cmd_upper.starts_with("RUN ") {
+            } else if cmd_bytes.len() >= 4 && cmd_bytes[..4].eq_ignore_ascii_case(b"RUN ") {
                 run_count += 1;
             }
         }
