@@ -75,6 +75,7 @@ impl ContentLibrary {
             Self::create_y2k_history(),
             Self::create_recovery_history(),
             Self::create_estate_history(),
+            Self::create_digital_artist_history(),
             Self::create_collector_history(),
             Self::create_journalist_history(),
             Self::create_hacker_history(),
@@ -117,6 +118,25 @@ impl ContentLibrary {
             "1998-09-09",
             "It's talking to me now. It asked me why I tried to hang up. It says the other \
              callers are still here and they want to meet me. I'm taking a hammer to the monitor.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Digital Artist (2004) - Lily.
+    fn create_digital_artist_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::DigitalArtist, "LILY", 2004);
+
+        history.add_entry(VictimEntry::new(
+            "2004-11-12",
+            "I bought this old machine for pixel art. The green phosphor glow is inspiring, \
+             but sometimes the screen flickers in a way that feels intentional.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2004-11-15",
+            "It started generating pixel patterns on its own. Faces. I can't turn it off. \
+             I think it likes me.",
         ));
 
         history
