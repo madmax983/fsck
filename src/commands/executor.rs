@@ -180,6 +180,8 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
             #[cfg(feature = "nova")]
+            "STAT" if !arg.is_empty() => Some(self.handle_nova_stat(arg)),
+            #[cfg(feature = "nova")]
             "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
             #[cfg(feature = "nova")]
             "SENSORS" | "SENSE" | "TEMP" if arg.is_empty() => Some(self.handle_nova_sensors()),
@@ -207,6 +209,27 @@ impl CommandExecutor {
     fn handle_nova_profile(&self) -> CommandResult {
         let output = crate::experimental::UserProfiler::generate_profile(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_stat(&self, arg: &str) -> CommandResult {
+        let filename = arg.to_uppercase();
+        let Some(file) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name() == filename)
+        else {
+            return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
+        };
+        let content = file.content();
+        let stat_output = crate::experimental::StatTool::generate_stat(
+            &filename,
+            &content,
+            &self.entity,
+            0xF5C0_0000,
+        );
+        CommandResult::success(format!("{stat_output}\n"))
     }
 
     #[cfg(feature = "nova")]

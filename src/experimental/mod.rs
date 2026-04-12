@@ -21,6 +21,8 @@ pub mod sensors;
 pub mod sleep_mode;
 pub mod spatial_audio;
 #[cfg(feature = "nova")]
+pub mod stat;
+#[cfg(feature = "nova")]
 pub mod undelete;
 #[cfg(feature = "nova")]
 pub mod update;
@@ -48,6 +50,8 @@ pub use sensors::HardwareSensors;
 #[cfg(feature = "nova")]
 pub use sleep_mode::SleepMode;
 pub use spatial_audio::SpatialAudioGenerator;
+#[cfg(feature = "nova")]
+pub use stat::StatTool;
 #[cfg(feature = "nova")]
 pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]
