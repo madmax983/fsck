@@ -23,6 +23,8 @@ pub mod spatial_audio;
 #[cfg(feature = "nova")]
 pub mod undelete;
 #[cfg(feature = "nova")]
+pub mod update;
+#[cfg(feature = "nova")]
 pub mod voice;
 
 pub use defrag::DefragTool;
@@ -48,5 +50,7 @@ pub use sleep_mode::SleepMode;
 pub use spatial_audio::SpatialAudioGenerator;
 #[cfg(feature = "nova")]
 pub use undelete::UndeleteTool;
+#[cfg(feature = "nova")]
+pub use update::SystemUpdateSimulator;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;
