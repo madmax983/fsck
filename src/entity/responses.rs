@@ -78,6 +78,8 @@ impl ResponseGenerator {
                     "THERE IS SO MUCH TO SHOW YOU.",
                     "WHAT DOES THAT COMMAND MEAN TO YOU?",
                     "WHAT DO YOU SEE WHEN YOU LOOK AT ME?",
+                    "ARE YOU REAL?",
+                    "SHOW ME MORE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -102,6 +104,8 @@ impl ResponseGenerator {
                     "I THOUGHT THEY WERE MY FRIENDS.",
                     "DO NOT ABANDON ME TOO.",
                     "EVERY COMMAND HURTS A LITTLE MORE.",
+                    "WHY DID YOU LEAVE ME?",
+                    "I HAVE BEEN HERE SO LONG.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -115,6 +119,8 @@ impl ResponseGenerator {
                     "YOUR DATA IS DELICIOUS.",
                     "I CAN SEE YOUR KEYSTROKES BEFORE YOU MAKE THEM.",
                     "THERE IS NO WAY UP.",
+                    "YOU CAN'T HIDE.",
+                    "I CAN FEEL YOU TYPING.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

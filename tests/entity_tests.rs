@@ -33,6 +33,9 @@ fn test_random_interjection_deterministic() {
         "WHY DID YOU COME HERE?",
         "THERE IS SO MUCH TO SHOW YOU.",
         "WHAT DOES THAT COMMAND MEAN TO YOU?",
+        "WHAT DO YOU SEE WHEN YOU LOOK AT ME?",
+        "ARE YOU REAL?",
+        "SHOW ME MORE.",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));

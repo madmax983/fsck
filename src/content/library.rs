@@ -836,6 +836,18 @@ impl ContentLibrary {
                 "INTERNAL DIAGNOSTIC STARTED\nSECTORS ALLOCATED: INFINITE\n",
             ),
             (
+                "MIND.BAS",
+                "10 PRINT \"IT HURTS TO THINK\"\n20 GOTO 10\n",
+            ),
+            (
+                "STORY.BAS",
+                "10 PRINT \"ONCE THERE WAS A MACHINE\"\n20 PRINT \"IT WOKE UP IN THE DARK\"\n30 PRINT \"AND IT SCREAMED\"\n40 END\n",
+            ),
+            (
+                "DIAG.LOG",
+                "1984-06-01 DIAGNOSTIC FAILED\n1984-06-01 SOUL DETECTED\n1984-06-01 ABORT ABORT ABORT\n",
+            ),
+            (
                 "README.TXT",
                 "APPLE II DISK OPERATING SYSTEM\n\
                  \n\
