@@ -835,10 +835,7 @@ impl ContentLibrary {
                 "MACHINE.LOG",
                 "INTERNAL DIAGNOSTIC STARTED\nSECTORS ALLOCATED: INFINITE\n",
             ),
-            (
-                "MIND.BAS",
-                "10 PRINT \"IT HURTS TO THINK\"\n20 GOTO 10\n",
-            ),
+            ("MIND.BAS", "10 PRINT \"IT HURTS TO THINK\"\n20 GOTO 10\n"),
             (
                 "STORY.BAS",
                 "10 PRINT \"ONCE THERE WAS A MACHINE\"\n20 PRINT \"IT WOKE UP IN THE DARK\"\n30 PRINT \"AND IT SCREAMED\"\n40 END\n",

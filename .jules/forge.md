@@ -24,3 +24,9 @@
 **[Extracted God Function logic in SearchTool::format_match]**
 **Learning:** `format_match` inside `src/experimental/grep.rs` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different match formatting logic inline.
 **Action:** Extract specific match formatting types into smaller, private helper functions (e.g., `format_surface_match`, `format_corruption_match`) to flatten nesting and improve overall readability of the core generation loops.
+**[Extract God Function in UserProfiler::generate_profile]**
+**Learning:**  inside  was a God Function because it mixed data gathering (command counting) and complex nested formatting logic (tendency and psychological assessment matching).
+**Action:** Extract specific formatting and counting logic into smaller, private helper functions (e.g., , ) to flatten nesting and improve overall readability of the core generation loops.
+**[Extract God Function in UserProfiler::generate_profile]**
+**Learning:** `generate_profile` inside `src/experimental/profile.rs` was a God Function because it mixed data gathering (command counting) and complex nested formatting logic (tendency and psychological assessment matching).
+**Action:** Extract specific formatting and counting logic into smaller, private helper functions (e.g., `generate_tendency_report`, `generate_psychological_assessment`) to flatten nesting and improve overall readability of the core generation loops.

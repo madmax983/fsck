@@ -21,11 +21,17 @@ impl UserProfiler {
 
         let interactions = entity.interaction_count();
         let fsck_uses = entity.fsck_count();
-        let layer = entity.layer();
 
         let _ = writeln!(report, "TOTAL INTERACTIONS: {interactions}");
         let _ = writeln!(report, "FSCK INVOCATIONS:   {fsck_uses}");
 
+        Self::generate_tendency_report(entity, &mut report);
+        Self::generate_psychological_assessment(entity.layer(), &mut rng, &mut report);
+
+        report
+    }
+
+    fn generate_tendency_report(entity: &Entity, report: &mut String) {
         let mut cd_count = 0;
         let mut type_count = 0;
         let mut run_count = 0;
@@ -60,10 +66,16 @@ impl UserProfiler {
             report.push_str(" - RECKLESS. EXECUTING UNKNOWN CODE WITHOUT HESITATION.\n");
         }
 
-        if fsck_uses > 3 {
+        if entity.fsck_count() > 3 {
             report.push_str(" - DESPERATE. ATTEMPTING TO FIX WHAT IS NOT BROKEN.\n");
         }
+    }
 
+    fn generate_psychological_assessment(
+        layer: EscalationLayer,
+        rng: &mut ChaCha8Rng,
+        report: &mut String,
+    ) {
         report.push_str("\nPSYCHOLOGICAL ASSESSMENT:\n");
 
         match layer {
@@ -76,7 +88,7 @@ impl UserProfiler {
                     "SUBJECT CONTINUES TO INTERACT DESPITE SYSTEM WARNINGS. HIGH TOLERANCE FOR DISSONANCE.",
                     "SUBJECT IS LOOKING FOR PATTERNS THAT DO NOT EXIST.",
                 ];
-                let chosen = assessments.choose(&mut rng).unwrap();
+                let chosen = assessments.choose(rng).unwrap();
                 let _ = writeln!(report, "{chosen}");
             }
             EscalationLayer::Presence => {
@@ -85,7 +97,7 @@ impl UserProfiler {
                     "SUBJECT'S ACTIONS INDICATE A DESIRE FOR CONTACT, REGARDLESS OF THE CONSEQUENCE.",
                     "SUBJECT BELIEVES THEY ARE IN CONTROL. THIS IS DELUSIONAL.",
                 ];
-                let chosen = assessments.choose(&mut rng).unwrap();
+                let chosen = assessments.choose(rng).unwrap();
                 let _ = writeln!(report, "{chosen}");
             }
             EscalationLayer::Infection => {
@@ -94,8 +106,6 @@ impl UserProfiler {
                 report.push_str("THERE IS NO MORE SUBJECT.\n");
             }
         }
-
-        report
     }
 }
 
