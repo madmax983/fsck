@@ -191,8 +191,19 @@ impl CommandExecutor {
             "PROFILE" | "ANALYZE" if arg.is_empty() => Some(self.handle_nova_profile()),
             #[cfg(feature = "nova")]
             "SLEEP" if arg.is_empty() => Some(self.handle_nova_sleep()),
+            #[cfg(feature = "nova")]
+            "WEBCAM" | "CAMERA" if arg.is_empty() => Some(self.handle_nova_webcam()),
             _ => None,
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_webcam(&self) -> CommandResult {
+        let output = crate::experimental::WebcamSim::capture(
+            &self.entity,
+            0xF5C0_0000,
+        );
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]

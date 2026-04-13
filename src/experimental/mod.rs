@@ -28,6 +28,8 @@ pub mod undelete;
 pub mod update;
 #[cfg(feature = "nova")]
 pub mod voice;
+#[cfg(feature = "nova")]
+pub mod webcam;
 
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
@@ -58,3 +60,5 @@ pub use undelete::UndeleteTool;
 pub use update::SystemUpdateSimulator;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;
+#[cfg(feature = "nova")]
+pub use webcam::WebcamSim;
