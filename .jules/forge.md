@@ -21,3 +21,6 @@
 **[Extracted God Function logic in SystemDiagnostics::generate_report]**
 **Learning:** `generate_report` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different report types inline.
 **Action:** Extract specific report generation types into smaller, private helper functions (e.g., `generate_surface_report`, `generate_corruption_report`) to flatten nesting and improve overall readability of the core generation loops.
+**[Extracted God Function logic in SearchTool::format_match]**
+**Learning:** `format_match` inside `src/experimental/grep.rs` was a God Function because it contained deep nesting and complex `match` statements for generating multiple different match formatting logic inline.
+**Action:** Extract specific match formatting types into smaller, private helper functions (e.g., `format_surface_match`, `format_corruption_match`) to flatten nesting and improve overall readability of the core generation loops.

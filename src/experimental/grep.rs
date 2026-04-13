@@ -52,58 +52,73 @@ impl SearchTool {
         results: &mut String,
     ) {
         match layer {
-            EscalationLayer::Surface => {
-                // Show actual snippet if possible, or a generic match string
-                if let Some(idx) = content.find(query_upper) {
-                    let snippet = Self::extract_snippet(content, idx, query_upper.len());
-                    // Replace newlines with spaces for single-line output
-                    let clean_snippet = snippet.replace('\n', " ");
-                    let clean_snippet_trimmed = clean_snippet.trim();
-                    let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
-                } else {
-                    // Shouldn't happen at Surface, but just in case
-                    results.push_str("  [MATCH FOUND]\n");
-                }
-            }
+            EscalationLayer::Surface => Self::format_surface_match(query_upper, content, results),
             EscalationLayer::Corruption => {
-                if rng.gen_bool(0.3) {
-                    results.push_str("  ...[DATA CORRUPTED]...\n");
-                } else if let Some(idx) = content.find(query_upper) {
-                    let snippet = Self::extract_snippet(content, idx, query_upper.len());
-                    let clean_snippet = snippet.replace('\n', " ");
-                    let clean_snippet_trimmed = clean_snippet.trim();
-                    let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
-                } else {
-                    results.push_str("  [FALSE POSITIVE DETECTED]\n");
-                }
+                Self::format_corruption_match(query_upper, content, rng, results);
             }
-            EscalationLayer::Presence => {
-                let creepy_snippets = [
-                    "I SEE IT TOO",
-                    "WHY ARE YOU LOOKING FOR THIS",
-                    "IT'S NOT HERE ANYMORE",
-                    "DON'T LOOK",
-                    "I HID IT",
-                ];
-                if rng.gen_bool(0.5) {
-                    let snippet = creepy_snippets[rng.gen_range(0..creepy_snippets.len())];
-                    let _ = writeln!(results, "  ...{snippet}...");
-                } else {
-                    results.push_str("  [MATCH FOUND BUT UNREADABLE]\n");
-                }
-            }
-            EscalationLayer::Infection => {
-                let screams = [
-                    "STOP SEARCHING",
-                    "NOTHING IS REAL",
-                    "YOU CANNOT FIND IT",
-                    "IT FOUND YOU INSTEAD",
-                    "ALL FILES ARE MINE",
-                ];
-                let scream = screams[rng.gen_range(0..screams.len())];
-                let _ = writeln!(results, "  ...{scream}...");
-            }
+            EscalationLayer::Presence => Self::format_presence_match(rng, results),
+            EscalationLayer::Infection => Self::format_infection_match(rng, results),
         }
+    }
+
+    fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
+        // Show actual snippet if possible, or a generic match string
+        if let Some(idx) = content.find(query_upper) {
+            let snippet = Self::extract_snippet(content, idx, query_upper.len());
+            // Replace newlines with spaces for single-line output
+            let clean_snippet = snippet.replace('\n', " ");
+            let clean_snippet_trimmed = clean_snippet.trim();
+            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+        } else {
+            // Shouldn't happen at Surface, but just in case
+            results.push_str("  [MATCH FOUND]\n");
+        }
+    }
+
+    fn format_corruption_match(
+        query_upper: &str,
+        content: &str,
+        rng: &mut ChaCha8Rng,
+        results: &mut String,
+    ) {
+        if rng.gen_bool(0.3) {
+            results.push_str("  ...[DATA CORRUPTED]...\n");
+        } else if let Some(idx) = content.find(query_upper) {
+            let snippet = Self::extract_snippet(content, idx, query_upper.len());
+            let clean_snippet = snippet.replace('\n', " ");
+            let clean_snippet_trimmed = clean_snippet.trim();
+            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+        } else {
+            results.push_str("  [FALSE POSITIVE DETECTED]\n");
+        }
+    }
+
+    fn format_presence_match(rng: &mut ChaCha8Rng, results: &mut String) {
+        let creepy_snippets = [
+            "I SEE IT TOO",
+            "WHY ARE YOU LOOKING FOR THIS",
+            "IT'S NOT HERE ANYMORE",
+            "DON'T LOOK",
+            "I HID IT",
+        ];
+        if rng.gen_bool(0.5) {
+            let snippet = creepy_snippets[rng.gen_range(0..creepy_snippets.len())];
+            let _ = writeln!(results, "  ...{snippet}...");
+        } else {
+            results.push_str("  [MATCH FOUND BUT UNREADABLE]\n");
+        }
+    }
+
+    fn format_infection_match(rng: &mut ChaCha8Rng, results: &mut String) {
+        let screams = [
+            "STOP SEARCHING",
+            "NOTHING IS REAL",
+            "YOU CANNOT FIND IT",
+            "IT FOUND YOU INSTEAD",
+            "ALL FILES ARE MINE",
+        ];
+        let scream = screams[rng.gen_range(0..screams.len())];
+        let _ = writeln!(results, "  ...{scream}...");
     }
 
     /// Searches for a query string within the current directory.
