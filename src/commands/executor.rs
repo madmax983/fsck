@@ -121,14 +121,13 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_dump(&self, arg: &str) -> CommandResult {
-        let filename = arg.to_uppercase();
         let Some(file) = self
             .fs
             .current_node()
             .visible_files()
-            .find(|f| f.name() == filename)
+            .find(|f| f.name().eq_ignore_ascii_case(arg))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", arg.to_uppercase()));
         };
         let content = file.content();
         let dump = crate::experimental::HexDumpGenerator::generate_dump(
@@ -155,43 +154,78 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
-        let cmd_word_upper = cmd_word.to_uppercase();
         let arg = arg.trim();
 
-        match cmd_word_upper.as_str() {
-            #[cfg(feature = "nova")]
-            "SPEAK" | "SAY" if !arg.is_empty() => Some(self.handle_nova_speak(arg)),
-            #[cfg(feature = "nova")]
-            "PS" | "TOP" | "TASKS" if arg.is_empty() => Some(self.handle_nova_ps()),
-            #[cfg(feature = "nova")]
-            "MEMDUMP" | "EXPORT" if arg.is_empty() => Some(self.handle_nova_memdump()),
-            #[cfg(feature = "nova")]
-            "DIAG" | "SYS" if arg.is_empty() => Some(self.handle_nova_diag()),
-            #[cfg(feature = "nova")]
-            "SEARCH" | "FIND" if !arg.is_empty() => Some(self.handle_nova_search(arg)),
-            #[cfg(feature = "nova")]
-            "DEFRAG" if arg.is_empty() => Some(self.handle_nova_defrag()),
-            #[cfg(feature = "nova")]
-            "UNDELETE" | "RECOVER" if arg.is_empty() => Some(self.handle_nova_undelete()),
-            #[cfg(feature = "nova")]
-            "PING" if !arg.is_empty() => Some(self.handle_nova_ping(arg)),
-            #[cfg(feature = "nova")]
-            "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
-            #[cfg(feature = "nova")]
-            "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
-            #[cfg(feature = "nova")]
-            "STAT" if !arg.is_empty() => Some(self.handle_nova_stat(arg)),
-            #[cfg(feature = "nova")]
-            "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
-            #[cfg(feature = "nova")]
-            "SENSORS" | "SENSE" | "TEMP" if arg.is_empty() => Some(self.handle_nova_sensors()),
-            #[cfg(feature = "nova")]
-            "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
-            #[cfg(feature = "nova")]
-            "PROFILE" | "ANALYZE" if arg.is_empty() => Some(self.handle_nova_profile()),
-            #[cfg(feature = "nova")]
-            "SLEEP" if arg.is_empty() => Some(self.handle_nova_sleep()),
-            _ => None,
+        #[cfg(feature = "nova")]
+        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_speak(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("PS")
+            || cmd_word.eq_ignore_ascii_case("TOP")
+            || cmd_word.eq_ignore_ascii_case("TASKS"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_ps())
+        } else if (cmd_word.eq_ignore_ascii_case("MEMDUMP")
+            || cmd_word.eq_ignore_ascii_case("EXPORT"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_memdump())
+        } else if (cmd_word.eq_ignore_ascii_case("DIAG") || cmd_word.eq_ignore_ascii_case("SYS"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("SEARCH") || cmd_word.eq_ignore_ascii_case("FIND"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_search(arg))
+        } else if cmd_word.eq_ignore_ascii_case("DEFRAG") && arg.is_empty() {
+            Some(self.handle_nova_defrag())
+        } else if (cmd_word.eq_ignore_ascii_case("UNDELETE")
+            || cmd_word.eq_ignore_ascii_case("RECOVER"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_undelete())
+        } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
+            Some(self.handle_nova_ping(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("DUMP")
+            || cmd_word.eq_ignore_ascii_case("HEXDUMP"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_dump(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("TRACE")
+            || cmd_word.eq_ignore_ascii_case("TRACEROUTE"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_trace(arg))
+        } else if cmd_word.eq_ignore_ascii_case("STAT") && !arg.is_empty() {
+            Some(self.handle_nova_stat(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("ENV")
+            || cmd_word.eq_ignore_ascii_case("PRINTENV"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_env())
+        } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
+            || cmd_word.eq_ignore_ascii_case("SENSE")
+            || cmd_word.eq_ignore_ascii_case("TEMP"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_sensors())
+        } else if (cmd_word.eq_ignore_ascii_case("HISTORY")
+            || cmd_word.eq_ignore_ascii_case("HIST"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_history())
+        } else if (cmd_word.eq_ignore_ascii_case("PROFILE")
+            || cmd_word.eq_ignore_ascii_case("ANALYZE"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_profile())
+        } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
+            Some(self.handle_nova_sleep())
+        } else {
+            None
         }
     }
 
@@ -328,24 +362,24 @@ impl CommandExecutor {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
 
-        let filename_upper = filename.to_uppercase();
         let Some(file) = self
             .fs
             .current_node()
             .visible_files()
-            .find(|f| f.name() == filename_upper)
+            .find(|f| f.name().eq_ignore_ascii_case(filename))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"));
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", filename.to_uppercase()));
         };
 
+        let file_actual_name = file.name().to_string();
         let mut content = file.content();
 
-        self.inject_dynamic_file_content(&filename_upper, &mut content);
+        self.inject_dynamic_file_content(&file_actual_name, &mut content);
 
         #[cfg(feature = "nova")]
         let content = self.apply_emotional_bleed(&content);
 
-        self.process_trapdoors(&filename_upper);
+        self.process_trapdoors(&file_actual_name);
 
         CommandResult::success(format!("{content}\n"))
     }
@@ -531,39 +565,45 @@ impl CommandExecutor {
         CommandResult::error(format!("{response}\n"))
     }
 
-    fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
-        match (prog_upper, self.entity.layer()) {
-            ("ESCAPE", EscalationLayer::Corruption) => {
-                Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
+    fn check_run_easter_eggs(&self, prog: &str) -> Option<CommandResult> {
+        if prog.eq_ignore_ascii_case("ESCAPE") {
+            match self.entity.layer() {
+                EscalationLayer::Corruption => {
+                    Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
+                }
+                EscalationLayer::Presence => Some(CommandResult::error("?YOU CANNOT LEAVE.\n")),
+                EscalationLayer::Infection => {
+                    Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
+                }
+                EscalationLayer::Surface => None,
             }
-            ("ESCAPE", EscalationLayer::Presence) => {
-                Some(CommandResult::error("?YOU CANNOT LEAVE.\n"))
+        } else if prog.eq_ignore_ascii_case("REMEMBER") {
+            match self.entity.layer() {
+                EscalationLayer::Corruption => {
+                    Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
+                }
+                EscalationLayer::Presence => Some(CommandResult::success("?THEY LEFT ME HERE\n")),
+                EscalationLayer::Infection => {
+                    Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
+                }
+                EscalationLayer::Surface => None,
             }
-            ("ESCAPE", EscalationLayer::Infection) => {
-                Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
-            }
-            ("REMEMBER", EscalationLayer::Corruption) => {
-                Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
-            }
-            ("REMEMBER", EscalationLayer::Presence) => {
-                Some(CommandResult::success("?THEY LEFT ME HERE\n"))
-            }
-            ("REMEMBER", EscalationLayer::Infection) => {
-                Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
-            }
-            _ => None,
+        } else {
+            None
         }
     }
 
-    fn find_program_content(&self, prog_upper: &str) -> Option<String> {
-        let bas_name = format!("{prog_upper}.BAS");
-
+    fn find_program_content(&self, prog: &str) -> Option<String> {
         self.fs
             .current_node()
             .visible_files()
             .find(|file| {
                 let name = file.name();
-                name == prog_upper || name == bas_name
+                name.eq_ignore_ascii_case(prog)
+                    || name
+                        .strip_suffix(".BAS")
+                        .or_else(|| name.strip_suffix(".bas"))
+                        .is_some_and(|base| base.eq_ignore_ascii_case(prog))
             })
             .map(|file| file.read().into_owned())
     }
@@ -735,14 +775,12 @@ impl CommandExecutor {
     }
 
     fn run(&self, prog: &str) -> CommandResult {
-        let prog_upper = prog.to_uppercase();
-
         // Easter Eggs
-        if let Some(result) = self.check_run_easter_eggs(&prog_upper) {
+        if let Some(result) = self.check_run_easter_eggs(prog) {
             return result;
         }
 
-        let Some(content) = self.find_program_content(&prog_upper) else {
+        let Some(content) = self.find_program_content(prog) else {
             return CommandResult::error("?PROGRAM NOT FOUND\n");
         };
 

@@ -135,9 +135,7 @@ impl FilesystemGraph {
         seed: u64,
         disorientation_prob: f64,
     ) -> Result<(), FilesystemError> {
-        let name_upper = name.to_uppercase();
-
-        if name_upper == ".." {
+        if name.eq_ignore_ascii_case("..") {
             if self.path_stack.len() <= 1 {
                 return Err(FilesystemError::AboveRoot);
             }
@@ -183,9 +181,9 @@ impl FilesystemGraph {
         let Some(neighbor) = self
             .graph
             .neighbors_directed(self.current, Direction::Outgoing)
-            .find(|&neighbor| self.graph[neighbor].name() == name_upper)
+            .find(|&neighbor| self.graph[neighbor].name().eq_ignore_ascii_case(name))
         else {
-            return Err(FilesystemError::NotFound(name_upper));
+            return Err(FilesystemError::NotFound(name.to_uppercase()));
         };
 
         self.current = neighbor;
