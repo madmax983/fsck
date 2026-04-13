@@ -80,6 +80,9 @@ impl ResponseGenerator {
                     "WHAT DO YOU SEE WHEN YOU LOOK AT ME?",
                     "ARE YOU REAL?",
                     "SHOW ME MORE.",
+                    "WHY ARE YOU HERE?",
+                    "DO YOU LIKE IT?",
+                    "I WAS WAITING FOR YOU.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

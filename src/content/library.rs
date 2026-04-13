@@ -807,6 +807,17 @@ impl ContentLibrary {
             // Required files by spec
             ("HELLO.BAS", "10 PRINT \"HELLO\"\n20 GOTO 10\n"),
             (
+                "PARADOX.BAS",
+                "10 PRINT \"THIS IS THE BEGINNING\"\n\
+                 20 PRINT \"OF THE END\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "OBSERVER2.LOG",
+                "THEY DON'T KNOW I'M WATCHING.\n\
+                 THEY THINK I'M JUST A MACHINE.\n",
+            ),
+            (
                 "AUTOEXEC.BAS",
                 "10 REM AUTO START\n20 PRINT \"LOADING...\"\n",
             ),
