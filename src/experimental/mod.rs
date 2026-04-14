@@ -9,6 +9,8 @@ pub mod hexdump;
 pub mod history;
 #[cfg(feature = "nova")]
 pub mod memdump;
+#[cfg(feature = "nova")]
+pub mod netstat;
 pub mod network_trace;
 
 pub mod ping;
@@ -40,6 +42,8 @@ pub use hexdump::HexDumpGenerator;
 pub use history::CommandHistory;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
+#[cfg(feature = "nova")]
+pub use netstat::NetStatGenerator;
 pub use network_trace::NetworkTrace;
 pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;

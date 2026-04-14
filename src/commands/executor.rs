@@ -206,6 +206,8 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_env())
+        } else if cmd_word.eq_ignore_ascii_case("NETSTAT") && arg.is_empty() {
+            Some(self.handle_nova_netstat())
         } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
             || cmd_word.eq_ignore_ascii_case("SENSE")
             || cmd_word.eq_ignore_ascii_case("TEMP"))
@@ -269,6 +271,13 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_env(&self) -> CommandResult {
         let output = crate::experimental::EnvVarsGenerator::generate_env(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_netstat(&self) -> CommandResult {
+        let output =
+            crate::experimental::NetStatGenerator::generate_netstat(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
