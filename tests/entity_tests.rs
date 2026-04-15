@@ -39,6 +39,8 @@ fn test_random_interjection_deterministic() {
         "WHY ARE YOU HERE?",
         "DO YOU LIKE IT?",
         "I WAS WAITING FOR YOU.",
+        "WHAT HAPPENS IF YOU TURN IT OFF?",
+        "DO YOU FEEL IT TOO?",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));
