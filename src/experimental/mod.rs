@@ -3,6 +3,8 @@ pub mod diagnostics;
 pub mod emotional_bleed;
 #[cfg(feature = "nova")]
 pub mod env;
+#[cfg(feature = "nova")]
+pub mod fortune;
 pub mod grep;
 pub mod hexdump;
 #[cfg(feature = "nova")]
@@ -36,6 +38,8 @@ pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
 #[cfg(feature = "nova")]
 pub use env::EnvVarsGenerator;
+#[cfg(feature = "nova")]
+pub use fortune::FortuneGenerator;
 pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
