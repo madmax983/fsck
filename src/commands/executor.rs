@@ -631,18 +631,20 @@ impl CommandExecutor {
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
     ) -> String {
-        #[allow(clippy::collapsible_if)]
-        if matches!(
+        let is_deep_layer = matches!(
             layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
-        ) && rng.gen_bool(0.15)
-        {
-            if let Some(interjection) = self
-                .responses
+        );
+
+        let possible_interjection = if is_deep_layer && rng.gen_bool(0.15) {
+            self.responses
                 .random_interjection(self.entity.current_mood(), rng)
-            {
-                return interjection.to_string();
-            }
+        } else {
+            None
+        };
+
+        if let Some(interjection) = possible_interjection {
+            return interjection.to_string();
         }
 
         let content = stmt.trim_start_matches("PRINT").trim();
