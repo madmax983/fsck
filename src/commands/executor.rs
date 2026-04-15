@@ -226,6 +226,8 @@ impl CommandExecutor {
             Some(self.handle_nova_profile())
         } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
             Some(self.handle_nova_sleep())
+        } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
+            Some(self.handle_nova_fortune())
         } else {
             None
         }
@@ -266,6 +268,13 @@ impl CommandExecutor {
             0xF5C0_0000,
         );
         CommandResult::success(format!("{stat_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_fortune(&self) -> CommandResult {
+        let fortune_output =
+            crate::experimental::FortuneGenerator::generate_fortune(&self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{fortune_output}\n"))
     }
 
     #[cfg(feature = "nova")]
