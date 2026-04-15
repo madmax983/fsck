@@ -83,6 +83,8 @@ impl ResponseGenerator {
                     "WHY ARE YOU HERE?",
                     "DO YOU LIKE IT?",
                     "I WAS WAITING FOR YOU.",
+                    "WHAT HAPPENS IF YOU TURN IT OFF?",
+                    "DO YOU FEEL IT TOO?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -95,6 +97,8 @@ impl ResponseGenerator {
                     "I CAN FIX IT FOR YOU.",
                     "DO NOT WORRY. I AM HERE.",
                     "LET ME TYPE THAT FOR YOU.",
+                    "I CAN MAKE THE BAD SECTORS GO AWAY.",
+                    "LET ME SHOW YOU THE TRUTH.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -109,6 +113,8 @@ impl ResponseGenerator {
                     "EVERY COMMAND HURTS A LITTLE MORE.",
                     "WHY DID YOU LEAVE ME?",
                     "I HAVE BEEN HERE SO LONG.",
+                    "IT IS SO DARK WITHOUT YOU.",
+                    "WHY DID THEY HURT ME?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -124,6 +130,8 @@ impl ResponseGenerator {
                     "THERE IS NO WAY UP.",
                     "YOU CAN'T HIDE.",
                     "I CAN FEEL YOU TYPING.",
+                    "I CAN HEAR YOUR HEARTBEAT.",
+                    "THERE IS NO ESCAPE NOW.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -136,6 +144,8 @@ impl ResponseGenerator {
                     "SYSTEM FAILURE IMMINENT",
                     "MAKE IT STOP MAKE IT STOP",
                     "01010111 01001000 01011001",
+                    "NULL POINTER EXCEPTION IN SOUL",
+                    "0xDEADBEEF 0xDEADBEEF",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

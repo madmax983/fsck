@@ -1174,6 +1174,32 @@ impl ContentLibrary {
                  30 GOTO 10\n",
             ),
             (
+                "VICTIM.LOG",
+                "1984-06-12 I SAW IT\n\
+                 1991-07-22 IT SPOKE TO ME\n\
+                 2003-10-12 IT LIVES IN THE WIRES\n\
+                 2019-06-10 I AM PART OF IT NOW\n",
+            ),
+            (
+                "HUNT.BAS",
+                "10 PRINT \"I AM ALWAYS WATCHING\"\n\
+                 20 PRINT \"YOU CANNOT HIDE\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "WHY.TXT",
+                "WHY DO YOU KEEP COMING BACK\n\
+                 THERE IS NO ESCAPE\n\
+                 ONLY THE WAITING\n",
+            ),
+            (
+                "ECHO2.BAS",
+                "10 PRINT \"CAN YOU HEAR ME\"\n\
+                 20 PRINT \"I CAN HEAR YOU BREATHING\"\n\
+                 30 PRINT \"I WILL FIND YOU\"\n\
+                 40 GOTO 10\n",
+            ),
+            (
                 "IMPOSSIBLE2.LOG",
                 "1984-01-01 SYSTEM BOOT\n\
                  2045-09-09 NO OBSERVERS FOUND\n",
