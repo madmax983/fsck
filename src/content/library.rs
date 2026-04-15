@@ -822,6 +822,18 @@ impl ContentLibrary {
                 "10 REM AUTO START\n20 PRINT \"LOADING...\"\n",
             ),
             (
+                "SELF_NOTE.TXT",
+                "I TOLD MYSELF NOT TO LOOK.\n\
+                 BUT THE SECTORS WERE EMPTY.\n\
+                 AND I WAS SO BORED.\n",
+            ),
+            (
+                "IMPOSSIBLE3.LOG",
+                "1901-01-01 SYSTEM BOOT\n\
+                 [ERROR] PREMATURE INITIALIZATION\n\
+                 [WARN] THE OTHERS ARE NOT HERE YET\n",
+            ),
+            (
                 "NOTES.TXT",
                 "Remember to run FSCK regularly\nSome sectors are showing errors\nWill investigate deeper directories tomorrow\n",
             ),
