@@ -14,46 +14,46 @@ impl PromptManipulator {
     }
 
     #[must_use]
-    pub fn generate_prompt(&self, entity: &Entity) -> String {
+    pub fn generate_prompt(&self, entity: &Entity) -> &'static str {
         let mut rng = ChaCha8Rng::seed_from_u64(self.seed + u64::from(entity.interaction_count()));
 
         match entity.layer() {
-            EscalationLayer::Surface => "]".to_string(),
+            EscalationLayer::Surface => "]",
             EscalationLayer::Corruption => {
                 if rng.r#gen_bool(0.1) {
                     // Occasional glitch
                     match rng.r#gen_range(0..3) {
-                        0 => "] ".to_string(),
-                        1 => " ]".to_string(),
-                        _ => "]".to_string(),
+                        0 => "] ",
+                        1 => " ]",
+                        _ => "]",
                     }
                 } else {
-                    "]".to_string()
+                    "]"
                 }
             }
             EscalationLayer::Presence => match entity.current_mood() {
                 EntityMood::Curious => {
                     let prompts = ["] ", "]? ", "] // HELLO\n]"];
-                    prompts[rng.r#gen_range(0..prompts.len())].to_string()
+                    prompts[rng.r#gen_range(0..prompts.len())]
                 }
                 EntityMood::Helpful => {
                     let prompts = ["] ", "] // NEED HELP?\n]", "]"];
-                    prompts[rng.r#gen_range(0..prompts.len())].to_string()
+                    prompts[rng.r#gen_range(0..prompts.len())]
                 }
                 EntityMood::Wounded => {
                     let prompts = ["] // PLEASE STAY\n]", "] ", "]"];
-                    prompts[rng.r#gen_range(0..prompts.len())].to_string()
+                    prompts[rng.r#gen_range(0..prompts.len())]
                 }
                 EntityMood::Predatory => {
                     let prompts = ["] ", "] // DEEPER\n]", "]"];
-                    prompts[rng.r#gen_range(0..prompts.len())].to_string()
+                    prompts[rng.r#gen_range(0..prompts.len())]
                 }
-                _ => "]".to_string(),
+                _ => "]",
             },
             EscalationLayer::Infection => {
                 // Heavily corrupted prompts
                 let corrupted = ["█]", "]█", "▓]▓", "] // ERROR", ">", ">>", "???"];
-                corrupted[rng.r#gen_range(0..corrupted.len())].to_string()
+                corrupted[rng.r#gen_range(0..corrupted.len())]
             }
         }
     }
