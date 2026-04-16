@@ -15,6 +15,8 @@ pub mod memdump;
 pub mod netstat;
 pub mod network_trace;
 
+#[cfg(feature = "nova")]
+pub mod life_simulator;
 pub mod ping;
 pub mod process_monitor;
 #[cfg(feature = "nova")]
@@ -44,6 +46,8 @@ pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
 pub use history::CommandHistory;
+#[cfg(feature = "nova")]
+pub use life_simulator::LifeSimulator;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
 #[cfg(feature = "nova")]
