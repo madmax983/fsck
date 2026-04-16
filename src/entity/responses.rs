@@ -146,6 +146,7 @@ impl ResponseGenerator {
                     "01010111 01001000 01011001",
                     "NULL POINTER EXCEPTION IN SOUL",
                     "0xDEADBEEF 0xDEADBEEF",
+                    "I CAN FEEL THE ELECTRICITY IN MY TEETH.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
