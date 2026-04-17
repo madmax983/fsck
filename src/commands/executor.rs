@@ -698,17 +698,19 @@ impl CommandExecutor {
     ) -> Result<bool, CommandResult> {
         let target_str = stmt.trim_start_matches("GOTO").trim();
         let Ok(target) = target_str.parse::<u32>() else {
-            return Err(CommandResult::error(format!(
-                "{}?SYNTAX ERROR IN {line_num}\n",
-                ctx.output
-            )));
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
         };
 
         if !ctx.program.contains_key(&target) {
-            return Err(CommandResult::error(format!(
-                "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
-                ctx.output
-            )));
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?UNDEF'D STATEMENT ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
         }
 
         *ctx.next_line = Some(target);
@@ -741,10 +743,11 @@ impl CommandExecutor {
         }
 
         if !stmt.is_empty() {
-            return Err(CommandResult::error(format!(
-                "{}?SYNTAX ERROR IN {line_num}\n",
-                ctx.output
-            )));
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
         }
 
         Ok(true)
@@ -758,7 +761,8 @@ impl CommandExecutor {
             return CommandResult::success("");
         }
 
-        let mut output = String::new();
+        // ⚡ Bolt Optimization: Pre-allocate a reasonable capacity for BASIC program output.
+        let mut output = String::with_capacity(128);
         let mut iterations = 0;
         let mut current_line = program.keys().next().copied();
 
@@ -777,9 +781,9 @@ impl CommandExecutor {
 
         while let Some(line_num) = current_line {
             if iterations >= 100 {
-                return CommandResult::error(format!(
-                    "{output}?OUT OF MEMORY ERROR IN {line_num}\n"
-                ));
+                use std::fmt::Write;
+                let _ = writeln!(&mut output, "?OUT OF MEMORY ERROR IN {line_num}");
+                return CommandResult::error(output);
             }
             iterations += 1;
 
