@@ -413,11 +413,13 @@ impl CommandExecutor {
         self.inject_dynamic_file_content(&file_actual_name, &mut content);
 
         #[cfg(feature = "nova")]
-        let content = self.apply_emotional_bleed(&content);
+        let mut content = self.apply_emotional_bleed(&content);
 
         self.process_trapdoors(&file_actual_name);
 
-        CommandResult::success(format!("{content}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        content.push('\n');
+        CommandResult::success(content)
     }
 
     fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
