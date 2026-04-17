@@ -14,9 +14,8 @@ pub enum EscalationLayer {
     Infection,
 }
 
-impl EscalationLayer {
-    #[must_use]
-    pub const fn from_depth(depth: u32) -> Self {
+impl From<u32> for EscalationLayer {
+    fn from(depth: u32) -> Self {
         match depth {
             0..=5 => Self::Surface,
             6..=15 => Self::Corruption,
@@ -71,12 +70,12 @@ impl Entity {
     }
 
     #[must_use]
-    pub const fn layer(&self) -> EscalationLayer {
-        EscalationLayer::from_depth(self.max_depth_reached + self.depth_modifier)
+    pub fn layer(&self) -> EscalationLayer {
+        EscalationLayer::from(self.max_depth_reached + self.depth_modifier)
     }
 
     /// Increase depth modifier (from reading special files)
-    pub const fn add_depth(&mut self, amount: u32) {
+    pub fn add_depth(&mut self, amount: u32) {
         self.depth_modifier += amount;
         // Treat as reaching new depth for mood updates
         let effective_depth = self.max_depth_reached + self.depth_modifier;
@@ -101,7 +100,7 @@ impl Entity {
         self.max_depth_reached
     }
 
-    pub const fn update_depth(&mut self, depth: u32) {
+    pub fn update_depth(&mut self, depth: u32) {
         self.current_depth = depth;
         if depth > self.max_depth_reached {
             self.max_depth_reached = depth;
@@ -124,14 +123,14 @@ impl Entity {
     }
 
     /// Record an fsck invocation. Every 3rd use adds depth pressure.
-    pub const fn increment_fsck(&mut self) {
+    pub fn increment_fsck(&mut self) {
         self.fsck_count += 1;
         if self.fsck_count % 3 == 0 {
             self.add_depth(2);
         }
     }
 
-    const fn update_mood(&mut self) {
+    fn update_mood(&mut self) {
         self.mood = match self.layer() {
             EscalationLayer::Surface => {
                 if self.interaction_count < 5 {

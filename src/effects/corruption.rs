@@ -17,9 +17,8 @@ pub enum CorruptionIntensity {
     Total,    // 70%+ of characters
 }
 
-impl CorruptionIntensity {
-    #[must_use]
-    pub const fn from_depth(depth: u32) -> Self {
+impl From<u32> for CorruptionIntensity {
+    fn from(depth: u32) -> Self {
         match depth {
             0..=10 => Self::None,
             11..=20 => Self::Mild,
@@ -28,7 +27,9 @@ impl CorruptionIntensity {
             _ => Self::Total,
         }
     }
+}
 
+impl CorruptionIntensity {
     const fn corruption_rate(self) -> f32 {
         match self {
             Self::None => 0.0,

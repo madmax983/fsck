@@ -124,6 +124,46 @@ impl FilesystemGraph {
         }
     }
 
+    fn handle_disorientation(
+        &mut self,
+        seed: u64,
+        disorientation_prob: f64,
+    ) -> bool {
+        if self.path_stack.len() < 3 {
+            return false;
+        }
+
+        let mut rng = ChaCha8Rng::seed_from_u64(seed);
+        if !rng.gen_bool(disorientation_prob) {
+            return false;
+        }
+
+        let grandparent = self.path_stack[self.path_stack.len() - 3];
+        let current_parent = self.path_stack[self.path_stack.len() - 2];
+
+        // ⚡ Bolt Optimization: Replace `.collect::<Vec<_>>()` and random indexing with `Iterator::choose`.
+        // This avoids heap allocating an intermediate vector of siblings.
+        let chosen_sibling = self
+            .graph
+            .neighbors_directed(grandparent, Direction::Outgoing)
+            .filter(|&idx| idx != current_parent && !self.graph[idx].is_hidden())
+            .choose(&mut rng);
+
+        if let Some(chosen_sibling) = chosen_sibling {
+            // Pop the current node
+            self.path_stack.pop();
+            // Pop the true parent
+            self.path_stack.pop();
+            // Push the chosen sibling (the new "parent")
+            self.path_stack.push(chosen_sibling);
+
+            self.current = chosen_sibling;
+            return true;
+        }
+
+        false
+    }
+
     /// Changes directory.
     /// # Panics
     /// Panics if path stack is empty.
@@ -141,32 +181,8 @@ impl FilesystemGraph {
             }
 
             // At Corruption layer+, `cd ..` occasionally returns to wrong parent
-            if self.path_stack.len() >= 3 {
-                let mut rng = ChaCha8Rng::seed_from_u64(seed);
-                if rng.gen_bool(disorientation_prob) {
-                    let grandparent = self.path_stack[self.path_stack.len() - 3];
-                    let current_parent = self.path_stack[self.path_stack.len() - 2];
-
-                    // ⚡ Bolt Optimization: Replace `.collect::<Vec<_>>()` and random indexing with `Iterator::choose`.
-                    // This avoids heap allocating an intermediate vector of siblings.
-                    let chosen_sibling = self
-                        .graph
-                        .neighbors_directed(grandparent, Direction::Outgoing)
-                        .filter(|&idx| idx != current_parent && !self.graph[idx].is_hidden())
-                        .choose(&mut rng);
-
-                    if let Some(chosen_sibling) = chosen_sibling {
-                        // Pop the current node
-                        self.path_stack.pop();
-                        // Pop the true parent
-                        self.path_stack.pop();
-                        // Push the chosen sibling (the new "parent")
-                        self.path_stack.push(chosen_sibling);
-
-                        self.current = chosen_sibling;
-                        return Ok(());
-                    }
-                }
+            if self.handle_disorientation(seed, disorientation_prob) {
+                return Ok(());
             }
 
             self.path_stack.pop();
