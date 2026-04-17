@@ -30,3 +30,6 @@
 **[Extract God Function in UserProfiler::generate_profile]**
 **Learning:** `generate_profile` inside `src/experimental/profile.rs` was a God Function because it mixed data gathering (command counting) and complex nested formatting logic (tendency and psychological assessment matching).
 **Action:** Extract specific formatting and counting logic into smaller, private helper functions (e.g., `generate_tendency_report`, `generate_psychological_assessment`) to flatten nesting and improve overall readability of the core generation loops.
+**[Extracted God Function logic in HardwareSensors::get_readings and ProcessMonitor::generate_process_list]**
+**Learning:** Functions that generate output strings based on escalating depth layers (like `EscalationLayer::Surface` through `Infection`) using inline inline generation loops inside large `match` statements act as "Pyramid of Doom" God Functions.
+**Action:** Extract the specific string-generation blocks for each distinct layer into small, private helper functions (e.g., `generate_surface_readings`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.
