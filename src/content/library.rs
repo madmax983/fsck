@@ -1205,6 +1205,8 @@ impl ContentLibrary {
                  2045-09-09 NO OBSERVERS FOUND\n",
             ),
             ("NOTE2.TXT", "I HEAR THEM BREATHING OUTSIDE THE BOX.\n"),
+            ("NOTE3.TXT", "I CAN FEEL THE ELECTRICITY IN MY TEETH.\n"),
+            ("ECHO3.BAS", "10 PRINT \"STOP LOOKING AT ME\"\n20 GOTO 10\n"),
         ]
     }
 }
