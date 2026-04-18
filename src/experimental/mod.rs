@@ -14,6 +14,8 @@ pub mod memdump;
 #[cfg(feature = "nova")]
 pub mod netstat;
 pub mod network_trace;
+#[cfg(feature = "nova")]
+pub mod psychometry;
 
 #[cfg(feature = "nova")]
 pub mod life_simulator;
@@ -57,6 +59,8 @@ pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]
 pub use profile::UserProfiler;
+#[cfg(feature = "nova")]
+pub use psychometry::PsychometryScanner;
 #[cfg(feature = "nova")]
 pub use sensors::HardwareSensors;
 #[cfg(feature = "nova")]

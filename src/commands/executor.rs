@@ -240,6 +240,10 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("PSYCHOMETRY")
+            || cmd_word.eq_ignore_ascii_case("AURA")
+        {
+            Some(self.handle_nova_psychometry(arg))
         } else {
             None
         }
@@ -312,6 +316,16 @@ impl CommandExecutor {
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_psychometry(&self, arg: &str) -> CommandResult {
+        if arg.is_empty() {
+            return CommandResult::error("USAGE: PSYCHOMETRY <filename>\n");
+        }
+        let output =
+            crate::experimental::PsychometryScanner::scan_file(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{output}\n"))
     }
 
     #[must_use]
