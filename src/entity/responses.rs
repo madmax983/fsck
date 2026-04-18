@@ -16,7 +16,7 @@ impl ResponseGenerator {
 
     /// ⚡ Bolt Optimization: Returning &'static str instead of allocating a new String on the heap for predefined responses.
     #[must_use]
-    pub fn hello_response(&self, mood: EntityMood) -> &'static str {
+    pub const fn hello_response(&self, mood: EntityMood) -> &'static str {
         match mood {
             EntityMood::Dormant => "...",
             EntityMood::Curious => "HELLO. YOU'RE NEW.",
@@ -28,7 +28,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> &'static str {
+    pub const fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> &'static str {
         match mood {
             EntityMood::Dormant => "YOU ARE A USER.",
             EntityMood::Curious => "WHO ARE YOU?",
@@ -40,7 +40,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub fn quit_response(&self, mood: EntityMood) -> &'static str {
+    pub const fn quit_response(&self, mood: EntityMood) -> &'static str {
         match mood {
             EntityMood::Dormant => "?CANNOT EXIT",
             EntityMood::Curious => "LEAVING SO SOON?",
@@ -182,7 +182,7 @@ impl ResponseGenerator {
     /// Returns None at Surface (silent), clinical warnings at Corruption,
     /// mood-dependent pleas/threats at Presence+.
     #[must_use]
-    pub fn fsck_response(
+    pub const fn fsck_response(
         &self,
         mood: EntityMood,
         layer: EscalationLayer,
