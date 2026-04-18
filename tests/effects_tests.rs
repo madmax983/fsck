@@ -40,15 +40,15 @@ fn test_same_seed_produces_same_corruption() {
 #[test]
 fn test_intensity_from_depth() {
     assert!(matches!(
-        CorruptionIntensity::from_depth(5),
+        CorruptionIntensity::from(5),
         CorruptionIntensity::None
     ));
     assert!(matches!(
-        CorruptionIntensity::from_depth(15),
+        CorruptionIntensity::from(15),
         CorruptionIntensity::Mild
     ));
     assert!(matches!(
-        CorruptionIntensity::from_depth(45),
+        CorruptionIntensity::from(45),
         CorruptionIntensity::Severe
     ));
 }

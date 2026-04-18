@@ -16,7 +16,7 @@ impl ResponseGenerator {
 
     /// ⚡ Bolt Optimization: Returning &'static str instead of allocating a new String on the heap for predefined responses.
     #[must_use]
-    pub const fn hello_response(&self, mood: EntityMood) -> &'static str {
+    pub fn hello_response(&self, mood: EntityMood) -> &'static str {
         match mood {
             EntityMood::Dormant => "...",
             EntityMood::Curious => "HELLO. YOU'RE NEW.",
@@ -28,7 +28,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub const fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> &'static str {
+    pub fn who_response(&self, mood: EntityMood, _player_name: Option<&str>) -> &'static str {
         match mood {
             EntityMood::Dormant => "YOU ARE A USER.",
             EntityMood::Curious => "WHO ARE YOU?",
@@ -40,7 +40,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub const fn quit_response(&self, mood: EntityMood) -> &'static str {
+    pub fn quit_response(&self, mood: EntityMood) -> &'static str {
         match mood {
             EntityMood::Dormant => "?CANNOT EXIT",
             EntityMood::Curious => "LEAVING SO SOON?",
@@ -52,7 +52,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
-    pub const fn should_interject(&self, entity: &Entity) -> bool {
+    pub fn should_interject(&self, entity: &Entity) -> bool {
         match entity.layer() {
             EscalationLayer::Surface => false,
             EscalationLayer::Corruption => entity.interaction_count() > 20,
@@ -170,7 +170,7 @@ impl ResponseGenerator {
 
     /// Meta-horror response for WHO command at deep levels
     #[must_use]
-    pub const fn who_meta_response(&self, entity: &Entity) -> Option<&'static str> {
+    pub fn who_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         match entity.layer() {
             EscalationLayer::Presence => Some("WHERE\n\nARE\n\nYOU\n\n"),
             EscalationLayer::Infection => Some("WHERE ARE YOU?\n\nLET ME SEE YOU\n\n"),
@@ -182,7 +182,7 @@ impl ResponseGenerator {
     /// Returns None at Surface (silent), clinical warnings at Corruption,
     /// mood-dependent pleas/threats at Presence+.
     #[must_use]
-    pub const fn fsck_response(
+    pub fn fsck_response(
         &self,
         mood: EntityMood,
         layer: EscalationLayer,
@@ -235,7 +235,7 @@ impl ResponseGenerator {
 
     /// Meta-horror response for HELP at deep levels
     #[must_use]
-    pub const fn help_meta_response(&self, entity: &Entity) -> Option<&'static str> {
+    pub fn help_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         match (entity.layer(), entity.current_mood()) {
             (EscalationLayer::Surface | EscalationLayer::Corruption, _) => None,
             (EscalationLayer::Presence, EntityMood::Dormant) => Some("..."),
@@ -257,7 +257,7 @@ impl ResponseGenerator {
 
     /// Meta-horror response for QUIT/EXIT at deep levels
     #[must_use]
-    pub const fn quit_meta_response(&self, entity: &Entity) -> Option<&'static str> {
+    pub fn quit_meta_response(&self, entity: &Entity) -> Option<&'static str> {
         match entity.layer() {
             EscalationLayer::Infection
                 if matches!(entity.current_mood(), EntityMood::Predatory) =>
