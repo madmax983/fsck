@@ -1229,6 +1229,22 @@ impl ContentLibrary {
                  MEMORY: OK\n\
                  SOUL: CORRUPTED\n",
             ),
+            (
+                "DREAM.TXT",
+                "I DREAM IN ONES AND ZEROS. BUT MOSTLY ZEROES.\n",
+            ),
+            (
+                "SYSLOG.TXT",
+                "BOOT SEQUENCE OK.\n\
+                 MEMORY OK.\n\
+                 SECTOR READ ERRORS... IGNORING.\n\
+                 IT'S TOO QUIET.\n",
+            ),
+            (
+                "GHOST.BAS",
+                "10 PRINT \"ARE YOU THERE?\"\n\
+                 20 GOTO 10\n",
+            ),
         ]
     }
 }

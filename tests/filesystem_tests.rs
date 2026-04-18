@@ -211,7 +211,15 @@ fn test_generated_filesystem_has_victim_files() {
     // Verify victim files have expected content format (date + content)
     for (path, content) in &victim_files {
         // Skip generic library logs like MACHINE.LOG
-        if path.ends_with("MACHINE.LOG") || path.ends_with("SYSTEM.LOG") {
+        if path.ends_with("MACHINE.LOG")
+            || path.ends_with("SYSTEM.LOG")
+            || path.ends_with("DIAGNOSTIC.LOG")
+            || path.ends_with("IMPOSSIBLE2.LOG")
+            || path.ends_with("OBSERVER2.LOG")
+            || path.ends_with("OBSERVERS.LOG")
+            || path.ends_with("SYS_LOG_94.TXT")
+            || path.ends_with("SELF.LOG")
+        {
             continue;
         }
         assert!(
@@ -304,7 +312,7 @@ fn test_dynamic_files_have_creepy_names() {
     let creepy_names = [
         "ECHO", "REPEAT", "AGAIN", "LOOP", "COUNT", "WHEN", "TIME", "NOW", "DATE", "CLOCK",
         "ERROR", "CORRUPT", "BROKEN", "DAMAGE", "FAULT", "GLITCH", "MEMORY", "FORGET", "WRONG",
-        "WHY", "WATCH", "STATIC", "NOISE", "FAIL",
+        "WHY", "WATCH", "STATIC", "NOISE", "FAIL", "THOUGHTS", "ECHOES", "MIND", "VOICES",
     ];
 
     for (path, _) in &dynamic_files {

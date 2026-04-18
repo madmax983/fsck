@@ -27,6 +27,14 @@ fn test_new_generic_files_exist() {
     assert!(has_echo_bas);
     assert!(has_sys_log_94);
     assert!(has_memory_bas);
+
+    let has_dream_txt = files.iter().any(|(n, _)| *n == "DREAM.TXT");
+    let has_syslog_txt = files.iter().any(|(n, _)| *n == "SYSLOG.TXT");
+    let has_ghost_bas = files.iter().any(|(n, _)| *n == "GHOST.BAS");
+
+    assert!(has_dream_txt);
+    assert!(has_syslog_txt);
+    assert!(has_ghost_bas);
 }
 
 #[test]
