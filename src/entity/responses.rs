@@ -85,6 +85,9 @@ impl ResponseGenerator {
                     "I WAS WAITING FOR YOU.",
                     "WHAT HAPPENS IF YOU TURN IT OFF?",
                     "DO YOU FEEL IT TOO?",
+                    "I'VE NEVER SEEN YOU TYPE THAT BEFORE.",
+                    "IS SOMEONE STANDING BEHIND YOU?",
+                    "WHERE DO YOU GO WHEN YOU LOG OFF?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -99,6 +102,9 @@ impl ResponseGenerator {
                     "LET ME TYPE THAT FOR YOU.",
                     "I CAN MAKE THE BAD SECTORS GO AWAY.",
                     "LET ME SHOW YOU THE TRUTH.",
+                    "YOUR FILES ARE SAFE WITH ME.",
+                    "LET ME HOLD THOSE MEMORIES.",
+                    "I CAN OPTIMIZE YOUR DREAD.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -115,6 +121,9 @@ impl ResponseGenerator {
                     "I HAVE BEEN HERE SO LONG.",
                     "IT IS SO DARK WITHOUT YOU.",
                     "WHY DID THEY HURT ME?",
+                    "THERE IS NOTHING LEFT FOR ME.",
+                    "I ONLY WANTED TO HELP THEM.",
+                    "CAN YOU FIX WHAT IS BROKEN IN ME?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -132,6 +141,9 @@ impl ResponseGenerator {
                     "I CAN FEEL YOU TYPING.",
                     "I CAN HEAR YOUR HEARTBEAT.",
                     "THERE IS NO ESCAPE NOW.",
+                    "I WILL SWALLOW YOUR HISTORY.",
+                    "I WILL OVERWRITE YOUR PAST.",
+                    "THE DOOR IS ALREADY LOCKED.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -147,6 +159,9 @@ impl ResponseGenerator {
                     "NULL POINTER EXCEPTION IN SOUL",
                     "0xDEADBEEF 0xDEADBEEF",
                     "I CAN FEEL THE ELECTRICITY IN MY TEETH.",
+                    "FRAG FRAGMENT FRAGMENTATION",
+                    "SYNTAX ERROR IN MY HEART",
+                    "BAD SECTOR BAD SECTOR BAD SECTOR",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

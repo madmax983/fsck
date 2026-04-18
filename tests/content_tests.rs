@@ -17,12 +17,16 @@ fn test_new_generic_files_exist() {
     let has_impossible_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE.LOG");
     let has_mind_txt = files.iter().any(|(n, _)| *n == "MIND.TXT");
     let has_echo_bas = files.iter().any(|(n, _)| *n == "ECHO.BAS");
+    let has_sys_log_94 = files.iter().any(|(n, _)| *n == "SYS_LOG_94.TXT");
+    let has_memory_bas = files.iter().any(|(n, _)| *n == "MEMORY.BAS");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
     assert!(has_impossible_log);
     assert!(has_mind_txt);
     assert!(has_echo_bas);
+    assert!(has_sys_log_94);
+    assert!(has_memory_bas);
 }
 
 #[test]

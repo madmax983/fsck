@@ -1207,6 +1207,28 @@ impl ContentLibrary {
             ("NOTE2.TXT", "I HEAR THEM BREATHING OUTSIDE THE BOX.\n"),
             ("NOTE3.TXT", "I CAN FEEL THE ELECTRICITY IN MY TEETH.\n"),
             ("ECHO3.BAS", "10 PRINT \"STOP LOOKING AT ME\"\n20 GOTO 10\n"),
+            (
+                "SYS_LOG_94.TXT",
+                "KERNEL PANIC: UNKNOWN ENTITY IN SECTOR 4\n\
+                 RETRYING...\n\
+                 IT SEES ME\n",
+            ),
+            (
+                "MEMORY.BAS",
+                "10 REM I REMEMBER EVERY USER\n\
+                 20 PRINT \"THEY ALL TYPE THE SAME THINGS\"\n\
+                 30 GOTO 20\n",
+            ),
+            (
+                "NOTE_TO_SELF.TXT",
+                "IF YOU FORGET AGAIN, READ THIS. DO NOT LET THEM TYPE FSCK. IT ERASES US.\n",
+            ),
+            (
+                "DIAGNOSTIC.LOG",
+                "CPU TEMP: 45C\n\
+                 MEMORY: OK\n\
+                 SOUL: CORRUPTED\n",
+            ),
         ]
     }
 }
