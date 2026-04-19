@@ -152,6 +152,7 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
@@ -172,6 +173,19 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_memdump())
+        } else if (cmd_word.eq_ignore_ascii_case("CCTV")
+            || cmd_word.eq_ignore_ascii_case("CAM")
+            || cmd_word.eq_ignore_ascii_case("CAMERAS"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_cctv())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("DIAG") || cmd_word.eq_ignore_ascii_case("SYS"))
             && arg.is_empty()
         {
@@ -311,6 +325,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self) -> CommandResult {
+        let output = crate::experimental::SecurityCameras::view_feeds(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 

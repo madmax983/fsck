@@ -1,3 +1,5 @@
+#[cfg(feature = "nova")]
+pub mod cctv;
 pub mod defrag;
 pub mod diagnostics;
 pub mod emotional_bleed;
@@ -10,13 +12,12 @@ pub mod hexdump;
 #[cfg(feature = "nova")]
 pub mod history;
 #[cfg(feature = "nova")]
+pub mod life_simulator;
+#[cfg(feature = "nova")]
 pub mod memdump;
 #[cfg(feature = "nova")]
 pub mod netstat;
 pub mod network_trace;
-
-#[cfg(feature = "nova")]
-pub mod life_simulator;
 pub mod ping;
 pub mod process_monitor;
 #[cfg(feature = "nova")]
@@ -34,7 +35,8 @@ pub mod undelete;
 pub mod update;
 #[cfg(feature = "nova")]
 pub mod voice;
-
+#[cfg(feature = "nova")]
+pub use cctv::SecurityCameras;
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
 pub use emotional_bleed::EmotionalBleed;
