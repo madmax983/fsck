@@ -67,30 +67,35 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
-        let voice_output =
+        let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{voice_output}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        voice_output.push('\n');
+        CommandResult::success(voice_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_ps(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::ProcessMonitor::generate_process_list(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_diag(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
