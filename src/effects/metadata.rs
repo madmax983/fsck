@@ -1,4 +1,3 @@
-#![allow(clippy::collapsible_if)]
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -25,14 +24,18 @@ impl MetadataCorruptor {
             11..=30 => {
                 // Mild corruption - change a digit
                 // ⚡ Bolt Optimization: Removes intermediate .collect::<Vec<_>>() heap allocation when corrupting timestamps.
-                if let Some((idx, ch)) = original.char_indices().find(|(_, c)| c.is_ascii_digit()) {
-                    if let Some(digit) = char::from_digit(rng.r#gen_range(0..10), 10) {
-                        let mut result = String::with_capacity(original.len());
-                        result.push_str(&original[..idx]);
-                        result.push(digit);
-                        result.push_str(&original[idx + ch.len_utf8()..]);
-                        return result;
-                    }
+                if let Some((idx, ch, digit)) = original
+                    .char_indices()
+                    .find(|(_, c)| c.is_ascii_digit())
+                    .and_then(|(idx, ch)| {
+                        char::from_digit(rng.r#gen_range(0..10), 10).map(|d| (idx, ch, d))
+                    })
+                {
+                    let mut result = String::with_capacity(original.len());
+                    result.push_str(&original[..idx]);
+                    result.push(digit);
+                    result.push_str(&original[idx + ch.len_utf8()..]);
+                    return result;
                 }
                 original.to_string()
             }

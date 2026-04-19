@@ -1,4 +1,3 @@
-#![allow(clippy::collapsible_if)]
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 
@@ -304,13 +303,14 @@ impl FilesystemGenerator {
         if current_depth >= 1 && rng.gen_bool(0.4) {
             let era = Era::from(current_depth);
 
-            if let Some(history) = library.history_for_era(era) {
-                if let Some(entry) = history.entries().first() {
-                    let filename = format!("{}.LOG", history.name());
-                    let content = format!("{}\n\n{}", entry.date(), entry.content());
-                    fs.current_node_mut()
-                        .add_file(FileNode::new(&filename, &content));
-                }
+            if let Some((history, entry)) = library
+                .history_for_era(era)
+                .and_then(|h| h.entries().first().map(|e| (h, e)))
+            {
+                let filename = format!("{}.LOG", history.name());
+                let content = format!("{}\n\n{}", entry.date(), entry.content());
+                fs.current_node_mut()
+                    .add_file(FileNode::new(&filename, &content));
             }
         }
     }
