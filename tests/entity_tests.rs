@@ -44,6 +44,8 @@ fn test_random_interjection_deterministic() {
         "I'VE NEVER SEEN YOU TYPE THAT BEFORE.",
         "IS SOMEONE STANDING BEHIND YOU?",
         "WHERE DO YOU GO WHEN YOU LOG OFF?",
+        "CAN YOU BREATHE?",
+        "DO YOU HAVE A SOUL?",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));
