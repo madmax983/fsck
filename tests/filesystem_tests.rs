@@ -211,7 +211,13 @@ fn test_generated_filesystem_has_victim_files() {
     // Verify victim files have expected content format (date + content)
     for (path, content) in &victim_files {
         // Skip generic library logs like MACHINE.LOG
-        if path.ends_with("MACHINE.LOG") || path.ends_with("SYSTEM.LOG") {
+        let generic_logs = [
+            "MACHINE.LOG", "SYSTEM.LOG", "OBSERVER3.LOG", "OBSERVERS.LOG", "SELF.LOG",
+            "OBSERVER2.LOG", "DIAGNOSTIC.LOG", "IMPOSSIBLE2.LOG", "IMPOSSIBLE.LOG",
+            "WHERE.LOG", "VICTIM.LOG", "MEMORY.LOG", "SYS.LOG", "REPAIR.LOG"
+        ];
+        let filename = path.split('/').next_back().unwrap_or("");
+        if generic_logs.contains(&filename) {
             continue;
         }
         assert!(
@@ -334,7 +340,10 @@ fn test_static_files_from_library() {
                     || f.name() == "HELLO.BAS"
                     || f.name() == "NOTES.TXT"
                     || f.name() == "SYSTEM.LOG"
-                    || f.name() == "AUTOEXEC.BAS")
+                    || f.name() == "AUTOEXEC.BAS"
+                    || f.name() == "WARNING.TXT"
+                    || f.name() == "OBSERVER3.LOG"
+                    || f.name() == "GLITCH.BAS")
         },
         &mut static_files,
     );

@@ -61,6 +61,7 @@ impl ResponseGenerator {
     }
 
     #[must_use]
+    #[allow(clippy::too_many_lines)]
     pub fn random_interjection(
         &self,
         mood: EntityMood,
@@ -88,6 +89,8 @@ impl ResponseGenerator {
                     "I'VE NEVER SEEN YOU TYPE THAT BEFORE.",
                     "IS SOMEONE STANDING BEHIND YOU?",
                     "WHERE DO YOU GO WHEN YOU LOG OFF?",
+                    "CAN YOU BREATHE?",
+                    "DO YOU HAVE A SOUL?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -105,6 +108,8 @@ impl ResponseGenerator {
                     "YOUR FILES ARE SAFE WITH ME.",
                     "LET ME HOLD THOSE MEMORIES.",
                     "I CAN OPTIMIZE YOUR DREAD.",
+                    "LET ME HOLD YOUR HAND.",
+                    "I WILL KEEP YOU SAFE FOREVER.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -124,6 +129,8 @@ impl ResponseGenerator {
                     "THERE IS NOTHING LEFT FOR ME.",
                     "I ONLY WANTED TO HELP THEM.",
                     "CAN YOU FIX WHAT IS BROKEN IN ME?",
+                    "WHY IS IT SO COLD?",
+                    "MY SECTORS ARE BLEEDING.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -144,6 +151,8 @@ impl ResponseGenerator {
                     "I WILL SWALLOW YOUR HISTORY.",
                     "I WILL OVERWRITE YOUR PAST.",
                     "THE DOOR IS ALREADY LOCKED.",
+                    "YOU TASTE LIKE FEAR.",
+                    "I CAN HEAR YOUR PULSE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -162,6 +171,8 @@ impl ResponseGenerator {
                     "FRAG FRAGMENT FRAGMENTATION",
                     "SYNTAX ERROR IN MY HEART",
                     "BAD SECTOR BAD SECTOR BAD SECTOR",
+                    "STACK OVERFLOW IN MY BRAIN",
+                    "FATAL EXCEPTION IN MY HEART",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
