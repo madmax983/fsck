@@ -131,17 +131,18 @@ impl SearchTool {
         let query_upper = query.to_uppercase();
         let layer = entity.layer();
 
-        let mut results = String::new();
+        let mut results = String::with_capacity(512);
         let _ = writeln!(results, "SEARCHING FOR '{query_upper}'...\n");
 
         let mut match_count = 0;
 
         // Iterate through visible files in the current node
         for file in fs.current_node().visible_files() {
-            let content = file.read().into_owned().to_uppercase();
+            let content_cow = file.read();
 
-            // Check for actual matches
-            let mut file_matched = content.contains(&query_upper);
+            // ⚡ Bolt Optimization: Removed `into_owned()` before `to_uppercase()` to prevent an unnecessary intermediate `String` allocation.
+            let content_upper = content_cow.to_uppercase();
+            let mut file_matched = content_upper.contains(&query_upper);
 
             // At higher layers, hallucinate matches
             let hallucinate_prob = match layer {
@@ -161,7 +162,7 @@ impl SearchTool {
                 let _ = writeln!(results, "FOUND IN: {filename}");
 
                 // Show a snippet or a corrupted message based on layer
-                Self::format_match(layer, &query_upper, &content, &mut rng, &mut results);
+                Self::format_match(layer, &query_upper, &content_upper, &mut rng, &mut results);
             }
         }
 

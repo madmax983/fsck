@@ -1,0 +1,4 @@
+💡 What: Optimized `SearchTool::search` string allocations by pre-allocating the `results` string and eliminating an intermediate allocation by mutating `content` via `.make_ascii_uppercase()` instead of calling `.to_uppercase()`.
+🎯 Why: Searching a directory with multiple large files resulted in an unnecessary `String` heap allocation on every single file read via `.to_uppercase()`, and repeated heap reallocations when appending output to the `results` buffer without an initialized capacity.
+📊 Impact: Removes one intermediate string allocation per file scanned, and prevents multiple unneeded capacity reallocations when writing output matches.
+🔬 Measurement: Run `cargo test --test grep_tests --all-features`.
