@@ -1,4 +1,3 @@
-#![allow(clippy::collapsible_if)]
 use fsck::commands::{Command, CommandExecutor};
 use fsck::entity::Entity;
 use fsck::filesystem::{FileNode, FilesystemGenerator, FilesystemGraph};
@@ -273,19 +272,21 @@ fn test_generated_filesystem_has_hidden_content() {
     // Run fsck at root — may or may not find hidden content (depth 0 = no hidden)
     // Navigate deeper where hidden content lives
     let dirs: Vec<String> = fs.list_directories().map(String::from).collect();
-    if let Some(d1) = dirs.first() {
-        if fs.change_dir(d1, 0, 0.0).is_ok() {
-            let dirs: Vec<String> = fs.list_directories().map(String::from).collect();
-            if let Some(d2) = dirs.first() {
-                if fs.change_dir(d2, 0, 0.0).is_ok() {
-                    // At depth 2+, try revealing hidden content
-                    let mut revealed = Vec::new();
-                    fs.reveal_hidden_in_current(&mut revealed);
-                    // May or may not have hidden content (25% chance at depth 2)
-                    // Just verify the mechanism works without panicking
-                    let _ = revealed;
-                }
-            }
-        }
+    let Some(d1) = dirs.first() else { return };
+    if fs.change_dir(d1, 0, 0.0).is_err() {
+        return;
     }
+
+    let dirs: Vec<String> = fs.list_directories().map(String::from).collect();
+    let Some(d2) = dirs.first() else { return };
+    if fs.change_dir(d2, 0, 0.0).is_err() {
+        return;
+    }
+
+    // At depth 2+, try revealing hidden content
+    let mut revealed = Vec::new();
+    fs.reveal_hidden_in_current(&mut revealed);
+    // May or may not have hidden content (25% chance at depth 2)
+    // Just verify the mechanism works without panicking
+    let _ = revealed;
 }

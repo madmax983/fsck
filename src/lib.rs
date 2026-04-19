@@ -56,14 +56,11 @@ impl Game {
             (seed, entity, state)
         };
 
-        let mut prev_history = None;
-        #[allow(clippy::collapsible_if)]
-        if let Ok(Some(json)) = GameStorage::load(StorageKey::PlayerHistory) {
-            #[allow(clippy::collapsible_if)]
-            if let Ok(commands) = serde_json::from_str::<Vec<String>>(&json) {
-                prev_history = VictimHistory::from_previous_session(&commands);
-            }
-        }
+        let prev_history = GameStorage::load(StorageKey::PlayerHistory)
+            .ok()
+            .flatten()
+            .and_then(|json| serde_json::from_str::<Vec<String>>(&json).ok())
+            .and_then(|commands| VictimHistory::from_previous_session(&commands));
 
         let fs = FilesystemGenerator::generate(seed, 5, prev_history);
         let executor = CommandExecutor::new(fs, entity);

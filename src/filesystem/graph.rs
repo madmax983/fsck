@@ -124,11 +124,7 @@ impl FilesystemGraph {
         }
     }
 
-    fn handle_disorientation(
-        &mut self,
-        seed: u64,
-        disorientation_prob: f64,
-    ) -> bool {
+    fn handle_disorientation(&mut self, seed: u64, disorientation_prob: f64) -> bool {
         if self.path_stack.len() < 3 {
             return false;
         }
