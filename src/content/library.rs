@@ -841,18 +841,12 @@ impl ContentLibrary {
                 "SYSTEM.LOG",
                 "1984-03-15 12:34:56 BOOT\n1984-03-15 12:35:01 USER LOGIN\n1984-03-15 12:35:45 DISK ERROR SECTOR 23\n1984-03-15 12:35:45 REPAIR FAILED\n",
             ),
-            (
-                "WARNING.TXT",
-                "YOU ARE GOING TOO DEEP.\nTURN BACK NOW.\n",
-            ),
+            ("WARNING.TXT", "YOU ARE GOING TOO DEEP.\nTURN BACK NOW.\n"),
             (
                 "OBSERVER3.LOG",
                 "THEY THINK I CANNOT SEE THEM.\nBUT I CAN.\n",
             ),
-            (
-                "GLITCH.BAS",
-                "10 PRINT \"ERROR ERROR\"\n20 GOTO 10\n",
-            ),
+            ("GLITCH.BAS", "10 PRINT \"ERROR ERROR\"\n20 GOTO 10\n"),
             // Additional generic files
             (
                 "MEMORY.BAS",
