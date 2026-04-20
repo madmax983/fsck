@@ -212,9 +212,20 @@ fn test_generated_filesystem_has_victim_files() {
     for (path, content) in &victim_files {
         // Skip generic library logs like MACHINE.LOG
         let generic_logs = [
-            "MACHINE.LOG", "SYSTEM.LOG", "OBSERVER3.LOG", "OBSERVERS.LOG", "SELF.LOG",
-            "OBSERVER2.LOG", "DIAGNOSTIC.LOG", "IMPOSSIBLE2.LOG", "IMPOSSIBLE.LOG",
-            "WHERE.LOG", "VICTIM.LOG", "MEMORY.LOG", "SYS.LOG", "REPAIR.LOG"
+            "MACHINE.LOG",
+            "SYSTEM.LOG",
+            "OBSERVER3.LOG",
+            "OBSERVERS.LOG",
+            "SELF.LOG",
+            "OBSERVER2.LOG",
+            "DIAGNOSTIC.LOG",
+            "IMPOSSIBLE2.LOG",
+            "IMPOSSIBLE.LOG",
+            "WHERE.LOG",
+            "VICTIM.LOG",
+            "MEMORY.LOG",
+            "SYS.LOG",
+            "REPAIR.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {

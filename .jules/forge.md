@@ -33,3 +33,6 @@
 **[Extracted God Function logic in HardwareSensors::get_readings and ProcessMonitor::generate_process_list]**
 **Learning:** Functions that generate output strings based on escalating depth layers (like `EscalationLayer::Surface` through `Infection`) using inline inline generation loops inside large `match` statements act as "Pyramid of Doom" God Functions.
 **Action:** Extract the specific string-generation blocks for each distinct layer into small, private helper functions (e.g., `generate_surface_readings`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.
+**[Extract God Function logic in EnvVarsGenerator::generate_env]**
+**Learning:** `generate_env` inside `src/experimental/env.rs` was a God Function because it contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different environment generation layers.
+**Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_env`, `generate_corruption_env`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.

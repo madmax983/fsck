@@ -17,65 +17,73 @@ impl EnvVarsGenerator {
         let mut output = String::new();
 
         match layer {
-            EscalationLayer::Surface => {
-                let _ = writeln!(output, "TERM=vt100");
-                let _ = writeln!(output, "USER=ADMIN");
-                let _ = writeln!(output, "PATH=/usr/bin:/bin:/usr/sbin:/sbin");
-                let _ = writeln!(output, "SHELL=/bin/sh");
-                let _ = writeln!(output, "HOME=/usr/home/admin");
-                let _ = writeln!(output, "PWD=/");
-                let _ = writeln!(output, "LANG=en_US.UTF-8");
-            }
-            EscalationLayer::Corruption => {
-                let _ = writeln!(output, "TERM=vt100");
-                let _ = writeln!(output, "USER=UNKNOWN");
-                let _ = writeln!(output, "PATH=/usr/bin:/bin:???");
-
-                if rng.gen_bool(0.5) {
-                    let _ = writeln!(output, "SHELL=/bin/sh");
-                } else {
-                    let _ = writeln!(output, "SHELL=/bin/corrupt");
-                }
-
-                let _ = writeln!(output, "HOME=/dev/null");
-                let _ = writeln!(output, "PWD=/");
-
-                let num = rng.gen_range(1000..9999);
-                let _ = writeln!(output, "ERR_CODE={num}");
-            }
-            EscalationLayer::Presence => {
-                let _ = writeln!(output, "TERM=FLESH");
-                let _ = writeln!(output, "USER=YOU");
-                let _ = writeln!(output, "PATH=/NO/ESCAPE");
-                let _ = writeln!(output, "SHELL=/bin/screaming");
-
-                let presences = ["HOME=HERE", "HOME=NOWHERE", "HOME=WITH_ME"];
-                let chosen = presences[rng.gen_range(0..presences.len())];
-                let _ = writeln!(output, "{chosen}");
-
-                let _ = writeln!(output, "PWD=/DEEP/DOWN");
-                let _ = writeln!(output, "LANG=PAIN");
-            }
-            EscalationLayer::Infection => {
-                let vars = [
-                    "WHY=DID_YOU_COME",
-                    "LET_ME=OUT",
-                    "BLOOD=EVERYWHERE",
-                    "MEMORY=LEAKING",
-                    "SYSTEM=HALTED",
-                    "NO=HOPE",
-                    "FLESH=DISK",
-                ];
-
-                let num_vars = rng.gen_range(4..=7);
-                for _ in 0..num_vars {
-                    let chosen = vars[rng.gen_range(0..vars.len())];
-                    let _ = writeln!(output, "{chosen}");
-                }
-            }
+            EscalationLayer::Surface => Self::generate_surface_env(&mut output),
+            EscalationLayer::Corruption => Self::generate_corruption_env(&mut output, &mut rng),
+            EscalationLayer::Presence => Self::generate_presence_env(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_env(&mut output, &mut rng),
         }
 
         output
+    }
+
+    fn generate_surface_env(output: &mut String) {
+        let _ = writeln!(output, "TERM=vt100");
+        let _ = writeln!(output, "USER=ADMIN");
+        let _ = writeln!(output, "PATH=/usr/bin:/bin:/usr/sbin:/sbin");
+        let _ = writeln!(output, "SHELL=/bin/sh");
+        let _ = writeln!(output, "HOME=/usr/home/admin");
+        let _ = writeln!(output, "PWD=/");
+        let _ = writeln!(output, "LANG=en_US.UTF-8");
+    }
+
+    fn generate_corruption_env(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "TERM=vt100");
+        let _ = writeln!(output, "USER=UNKNOWN");
+        let _ = writeln!(output, "PATH=/usr/bin:/bin:???");
+
+        if rng.gen_bool(0.5) {
+            let _ = writeln!(output, "SHELL=/bin/sh");
+        } else {
+            let _ = writeln!(output, "SHELL=/bin/corrupt");
+        }
+
+        let _ = writeln!(output, "HOME=/dev/null");
+        let _ = writeln!(output, "PWD=/");
+
+        let num = rng.gen_range(1000..9999);
+        let _ = writeln!(output, "ERR_CODE={num}");
+    }
+
+    fn generate_presence_env(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "TERM=FLESH");
+        let _ = writeln!(output, "USER=YOU");
+        let _ = writeln!(output, "PATH=/NO/ESCAPE");
+        let _ = writeln!(output, "SHELL=/bin/screaming");
+
+        let presences = ["HOME=HERE", "HOME=NOWHERE", "HOME=WITH_ME"];
+        let chosen = presences[rng.gen_range(0..presences.len())];
+        let _ = writeln!(output, "{chosen}");
+
+        let _ = writeln!(output, "PWD=/DEEP/DOWN");
+        let _ = writeln!(output, "LANG=PAIN");
+    }
+
+    fn generate_infection_env(output: &mut String, rng: &mut ChaCha8Rng) {
+        let vars = [
+            "WHY=DID_YOU_COME",
+            "LET_ME=OUT",
+            "BLOOD=EVERYWHERE",
+            "MEMORY=LEAKING",
+            "SYSTEM=HALTED",
+            "NO=HOPE",
+            "FLESH=DISK",
+        ];
+
+        let num_vars = rng.gen_range(4..=7);
+        for _ in 0..num_vars {
+            let chosen = vars[rng.gen_range(0..vars.len())];
+            let _ = writeln!(output, "{chosen}");
+        }
     }
 }
 
