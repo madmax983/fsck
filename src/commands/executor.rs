@@ -125,6 +125,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_dial(&self, arg: &str) -> CommandResult {
+        let dial_output = crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(format!("{dial_output}\n"))
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_dump(&self, arg: &str) -> CommandResult {
         let Some(file) = self
             .fs
@@ -206,6 +212,10 @@ impl CommandExecutor {
             Some(self.handle_nova_undelete())
         } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
             Some(self.handle_nova_ping(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("DIAL") || cmd_word.eq_ignore_ascii_case("CALL"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_dial(arg))
         } else if (cmd_word.eq_ignore_ascii_case("DUMP")
             || cmd_word.eq_ignore_ascii_case("HEXDUMP"))
             && !arg.is_empty()
