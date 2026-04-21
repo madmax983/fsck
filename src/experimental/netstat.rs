@@ -100,14 +100,27 @@ impl NetStatGenerator {
             }
         }
 
-        let _ = writeln!(
-            output,
-            "{:<5}  {:<21}  {:<21}  {}",
-            proto,
-            format!("{}:{}", local_ip, local_port),
-            remote_addr,
-            state
-        );
+        // ⚡ Bolt Optimization: Use `write!` directly to the output buffer instead of allocating
+        // an intermediate String with `format!` for the combined IP and port. We handle padding manually.
+        let mut port_len = 1;
+        let mut temp_port = local_port;
+        while temp_port >= 10 {
+            port_len += 1;
+            temp_port /= 10;
+        }
+
+        // Calculate length: IP length + 1 (for ':') + port length
+        let local_addr_len = local_ip.len() + 1 + port_len;
+
+        // Target width is 21 characters. Calculate required spaces.
+        let padding = 21_usize.saturating_sub(local_addr_len);
+
+        // Write directly to output buffer without intermediate allocations
+        let _ = write!(output, "{proto:<5}  {local_ip}:{local_port}");
+        for _ in 0..padding {
+            let _ = write!(output, " ");
+        }
+        let _ = writeln!(output, "  {remote_addr:<21}  {state}");
     }
 }
 

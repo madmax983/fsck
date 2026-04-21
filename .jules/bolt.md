@@ -1,3 +1,3 @@
-**[Static References vs Const Functions]**
-**Learning:** A code review rejected a 'zero-cost abstraction' that simply added `const fn` to functions already returning `&'static str`. This does not avoid runtime heap allocations or make the application faster, as static references already avoid the heap natively.
-**Action:** When acting as 'Bolt', do not claim performance improvements for adding `const` to functions returning static references. Focus optimizations strictly on avoiding actual heap allocations (e.g., replacing `format!()` with `.push()` or avoiding intermediate `Vec` collections).
+**[Zero-Allocation Padding with Display]**
+**Learning:** Passing `format_args!()` to another macro (like `writeln!`) does not respect width/padding format specifiers (e.g., `{:<21}`) natively without intermediate allocation if multiple elements are being formatted together. It also produces `unused_format_specs` warnings in Clippy.
+**Action:** To apply padding to a dynamically constructed string without allocating an intermediate `String` (e.g., IP and Port), calculate the string length directly and apply manual padding using `write!` and a loop for spaces, or implement a custom `Display` struct.
