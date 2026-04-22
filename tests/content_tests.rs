@@ -309,6 +309,17 @@ fn test_alex_2019_reddit_format() {
 }
 
 #[test]
+fn test_sysadmin_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Sysadmin).unwrap();
+
+    assert_eq!(history.era(), Era::Sysadmin);
+    assert_eq!(history.name(), "DENNIS");
+    assert_eq!(history.year(), 1993);
+    assert!(!history.entries().is_empty());
+}
+
+#[test]
 fn test_sysop_history_exists() {
     let lib = ContentLibrary::new();
     let history = lib.history_for_era(Era::Sysop).unwrap();

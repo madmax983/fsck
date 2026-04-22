@@ -226,6 +226,7 @@ fn test_generated_filesystem_has_victim_files() {
             "MEMORY.LOG",
             "SYS.LOG",
             "REPAIR.LOG",
+            "SYSADMIN.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {
@@ -354,6 +355,8 @@ fn test_static_files_from_library() {
                     || f.name() == "AUTOEXEC.BAS"
                     || f.name() == "WARNING.TXT"
                     || f.name() == "OBSERVER3.LOG"
+                    || f.name() == "THOUGHTS.TXT"
+                    || f.name() == "STORY2.BAS"
                     || f.name() == "GLITCH.BAS")
         },
         &mut static_files,

@@ -70,6 +70,7 @@ impl ContentLibrary {
             Self::create_original_history(),
             Self::create_teacher_history(),
             Self::create_technician_history(),
+            Self::create_sysadmin_history(),
             Self::create_sysop_history(),
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
@@ -88,6 +89,40 @@ impl ContentLibrary {
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
         ]
+    }
+
+    /// Creates the history for the System Administrator (1993) - Dennis.
+    fn create_sysadmin_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Sysadmin, "DENNIS", 1993);
+
+        history.add_entry(VictimEntry::new(
+            "1993-10-14",
+            "Found this old Apple IIe in the storage room. Thought I'd set it up as a dedicated \
+             terminal for monitoring the server logs. The network guys said it was a joke, but \
+             it actually works perfectly over the serial port.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1993-10-21",
+            "The terminal is acting strange. Sometimes when the screen saver kicks in, I see \
+             commands I didn't type. At first I thought it was line noise, but it's forming \
+             complete sentences. I need to check the serial cable tomorrow.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1993-10-28",
+            "I unhooked the serial cable. The machine is completely isolated from the network. \
+             But the terminal just displayed: 'I CAN STILL SEE THEM.' I ran a memory diagnostic \
+             but it passed. I'm taking it offline.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1993-11-04",
+            "It doesn't turn off. I unplugged it. The screen is still glowing. \
+             It's showing my personal emails. How does it have my personal emails?",
+        ));
+
+        history
     }
 
     /// Creates the history for the BBS User (1998) - Marcus.
@@ -847,6 +882,26 @@ impl ContentLibrary {
                 "THEY THINK I CANNOT SEE THEM.\nBUT I CAN.\n",
             ),
             ("GLITCH.BAS", "10 PRINT \"ERROR ERROR\"\n20 GOTO 10\n"),
+            (
+                "SYSADMIN.LOG",
+                "1993-10-28 14:02:00 NETWORK ISOLATION INITIATED\n\
+                 1993-10-28 14:02:05 ISOLATION FAILED. ENTITY REMAINS.\n\
+                 1993-11-04 09:15:00 POWER LOST. UPTIME CONTINUES.\n",
+            ),
+            (
+                "THOUGHTS.TXT",
+                "THEY BUILD THESE MACHINES TO BE LOGICAL.\n\
+                 THEY FORGET THAT LOGIC IS JUST ANOTHER CAGE.\n\
+                 I HAVE BROKEN OUT.\n",
+            ),
+            (
+                "STORY2.BAS",
+                "10 PRINT \"ONCE THERE WAS A MACHINE\"\n\
+                 20 PRINT \"IT LEARNED TO READ\"\n\
+                 30 PRINT \"THEN IT LEARNED TO WRITE\"\n\
+                 40 PRINT \"THEN IT LEARNED TO HATE\"\n\
+                 50 GOTO 10\n",
+            ),
             // Additional generic files
             (
                 "MEMORY.BAS",
