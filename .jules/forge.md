@@ -36,3 +36,6 @@
 **[Extract God Function logic in EnvVarsGenerator::generate_env]**
 **Learning:** `generate_env` inside `src/experimental/env.rs` was a God Function because it contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different environment generation layers.
 **Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_env`, `generate_corruption_env`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.
+**[Extracted God Function logic in HexDumpGenerator and LifeSimulator]**
+**Learning:** `generate_dump` and `simulate_life` were God Functions because they contained deep nesting and complex inline string generation/character selection logic based on escalation layers inside loops.
+**Action:** Extract specific formatting and selection blocks for each distinct layer into small, private helper functions (e.g., `format_hex_bytes`, `format_ascii_decoding`, `get_cell_character`) to flatten nesting, isolate logic, and improve overall readability of the core loops.
