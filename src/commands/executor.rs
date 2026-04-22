@@ -163,6 +163,16 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_tune(&self, arg: &str) -> CommandResult {
+        let frequency = arg.parse::<f32>().unwrap_or(0.0);
+        if frequency == 0.0 {
+            return CommandResult::error("?INVALID FREQUENCY\n");
+        }
+        let output = crate::experimental::RadioTuner::tune(&self.entity, frequency, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
@@ -255,6 +265,8 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("TUNE") && !arg.is_empty() {
+            Some(self.handle_nova_tune(arg))
         } else {
             None
         }

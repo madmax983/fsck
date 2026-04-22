@@ -24,6 +24,8 @@ pub mod process_monitor;
 #[cfg(feature = "nova")]
 pub mod profile;
 #[cfg(feature = "nova")]
+pub mod radio;
+#[cfg(feature = "nova")]
 pub mod sensors;
 #[cfg(feature = "nova")]
 pub mod sleep_mode;
@@ -61,6 +63,8 @@ pub use ping::PingTool;
 pub use process_monitor::ProcessMonitor;
 #[cfg(feature = "nova")]
 pub use profile::UserProfiler;
+#[cfg(feature = "nova")]
+pub use radio::RadioTuner;
 #[cfg(feature = "nova")]
 pub use sensors::HardwareSensors;
 #[cfg(feature = "nova")]
