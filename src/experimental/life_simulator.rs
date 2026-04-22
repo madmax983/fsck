@@ -45,27 +45,7 @@ impl LifeSimulator {
             }
 
             for &cell in cells.iter().take(width) {
-                let mut char_to_print = if cell == 1 { '#' } else { '.' };
-
-                match layer {
-                    EscalationLayer::Surface => {}
-                    EscalationLayer::Corruption => {
-                        if rng.gen_bool(0.05) {
-                            char_to_print = '?';
-                        }
-                    }
-                    EscalationLayer::Presence => {
-                        if rng.gen_bool(0.1) {
-                            char_to_print = '@';
-                        } // Eyes
-                    }
-                    EscalationLayer::Infection => {
-                        if rng.gen_bool(0.15) {
-                            let horrors = ['X', '0', '@', '#', '%'];
-                            char_to_print = horrors[rng.gen_range(0..horrors.len())];
-                        }
-                    }
-                }
+                let char_to_print = Self::get_cell_character(cell, layer, &mut rng);
                 output.push(char_to_print);
             }
             output.push('\n');
@@ -77,6 +57,31 @@ impl LifeSimulator {
         }
 
         output
+    }
+
+    fn get_cell_character(cell: u8, layer: EscalationLayer, rng: &mut ChaCha8Rng) -> char {
+        let mut char_to_print = if cell == 1 { '#' } else { '.' };
+
+        match layer {
+            EscalationLayer::Surface => {}
+            EscalationLayer::Corruption => {
+                if rng.gen_bool(0.05) {
+                    char_to_print = '?';
+                }
+            }
+            EscalationLayer::Presence => {
+                if rng.gen_bool(0.1) {
+                    char_to_print = '@';
+                } // Eyes
+            }
+            EscalationLayer::Infection => {
+                if rng.gen_bool(0.15) {
+                    let horrors = ['X', '0', '@', '#', '%'];
+                    char_to_print = horrors[rng.gen_range(0..horrors.len())];
+                }
+            }
+        }
+        char_to_print
     }
 }
 
