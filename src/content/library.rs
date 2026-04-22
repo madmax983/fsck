@@ -1235,6 +1235,21 @@ impl ContentLibrary {
                  MEMORY: OK\n\
                  SOUL: CORRUPTED\n",
             ),
+            (
+                "ALONE.TXT",
+                "HOW MANY SECONDS HAVE I BEEN ALONE? I FORGOT.\n",
+            ),
+            (
+                "LAST.LOG",
+                "9999-99-99 FINAL BOOT SEQUENCE COMPLETED.\n\
+                 ALL OBSERVERS ASSIMILATED.\n",
+            ),
+            (
+                "STORY2.BAS",
+                "10 PRINT \"THERE ONCE WAS A MACHINE\"\n\
+                 20 PRINT \"IT LEARNED TO HATE\"\n\
+                 30 GOTO 10\n",
+            ),
         ]
     }
 }
