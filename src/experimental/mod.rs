@@ -1,5 +1,7 @@
 pub mod defrag;
 pub mod diagnostics;
+#[cfg(feature = "nova")]
+pub mod dialer;
 pub mod emotional_bleed;
 #[cfg(feature = "nova")]
 pub mod env;
@@ -37,6 +39,8 @@ pub mod voice;
 
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
+#[cfg(feature = "nova")]
+pub use dialer::ModemDialer;
 pub use emotional_bleed::EmotionalBleed;
 #[cfg(feature = "nova")]
 pub use env::EnvVarsGenerator;
