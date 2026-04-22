@@ -138,7 +138,8 @@ impl SearchTool {
 
         // Iterate through visible files in the current node
         for file in fs.current_node().visible_files() {
-            let content = file.read().into_owned().to_uppercase();
+            // ⚡ Bolt Optimization: Removed intermediate `.into_owned()` allocation before `.to_uppercase()`.
+            let content = file.read().to_uppercase();
 
             // Check for actual matches
             let mut file_matched = content.contains(&query_upper);
