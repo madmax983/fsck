@@ -30,7 +30,10 @@ fn test_modem_dialer_escalation() {
             break;
         }
     }
-    assert!(presence_found, "Should generate 'THEY CANNOT HEAR YOU' with at least one seed at Presence layer");
+    assert!(
+        presence_found,
+        "Should generate 'THEY CANNOT HEAR YOU' with at least one seed at Presence layer"
+    );
 
     // Infection layer
     entity.update_depth(30);
@@ -42,7 +45,10 @@ fn test_modem_dialer_escalation() {
             break;
         }
     }
-    assert!(infection_found, "Should generate 'I AM THE ONLY ONE LISTENING' with at least one seed at Infection layer");
+    assert!(
+        infection_found,
+        "Should generate 'I AM THE ONLY ONE LISTENING' with at least one seed at Infection layer"
+    );
 }
 
 #[test]
