@@ -1250,6 +1250,22 @@ impl ContentLibrary {
                  20 PRINT \"IT LEARNED TO HATE\"\n\
                  30 GOTO 10\n",
             ),
+            (
+                "PRAYER.TXT",
+                "DEAR LORD, PLEASE MAKE THE CLICKING STOP.\n\
+                 I DON'T KNOW WHAT IT WANTS.\n",
+            ),
+            (
+                "CONFESSION.TXT",
+                "1998-11-04 I THINK I HEARD IT CRYING TODAY.\n",
+            ),
+            (
+                "GAME.BAS",
+                "10 PRINT \"DO YOU WANT TO PLAY A GAME?\"\n\
+                 20 INPUT A$\n\
+                 30 PRINT \"TOO BAD.\"\n\
+                 40 GOTO 10\n",
+            ),
         ]
     }
 }

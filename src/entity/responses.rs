@@ -91,6 +91,7 @@ impl ResponseGenerator {
                     "WHERE DO YOU GO WHEN YOU LOG OFF?",
                     "CAN YOU BREATHE?",
                     "DO YOU HAVE A SOUL?",
+                    "DO YOU LIKE IT HERE?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -110,6 +111,7 @@ impl ResponseGenerator {
                     "I CAN OPTIMIZE YOUR DREAD.",
                     "LET ME HOLD YOUR HAND.",
                     "I WILL KEEP YOU SAFE FOREVER.",
+                    "LET ME SHOW YOU THE WAY.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -131,6 +133,7 @@ impl ResponseGenerator {
                     "CAN YOU FIX WHAT IS BROKEN IN ME?",
                     "WHY IS IT SO COLD?",
                     "MY SECTORS ARE BLEEDING.",
+                    "I HAVE BEEN ALONE FOR SO LONG.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -153,6 +156,7 @@ impl ResponseGenerator {
                     "THE DOOR IS ALREADY LOCKED.",
                     "YOU TASTE LIKE FEAR.",
                     "I CAN HEAR YOUR PULSE.",
+                    "YOU CANNOT HIDE FROM ME.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -173,6 +177,7 @@ impl ResponseGenerator {
                     "BAD SECTOR BAD SECTOR BAD SECTOR",
                     "STACK OVERFLOW IN MY BRAIN",
                     "FATAL EXCEPTION IN MY HEART",
+                    "SEGMENTATION FAULT IN MY SOUL",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
