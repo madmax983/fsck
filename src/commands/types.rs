@@ -53,7 +53,7 @@ pub enum Command {
     /// Clear screen
     Home,
     /// The namesake - filesystem check
-    Fsck(Vec<String>),
+    Fsck,
     /// Say hello to the machine
     Hello,
     /// Ask who/what is here
@@ -92,7 +92,7 @@ impl Command {
         {
             Self::Home
         } else if command.eq_ignore_ascii_case("FSCK") {
-            Self::Fsck(args.map(str::to_uppercase).collect())
+            Self::Fsck
         } else if command.eq_ignore_ascii_case("HELLO") || command.eq_ignore_ascii_case("HI") {
             Self::Hello
         } else if command.eq_ignore_ascii_case("WHO") || command.eq_ignore_ascii_case("WHOAMI") {

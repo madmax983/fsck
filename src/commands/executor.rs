@@ -41,7 +41,7 @@ impl CommandExecutor {
             Command::ChangeDir(path) => self.change_dir(&path),
             Command::Type(file) => self.type_file(&file),
             Command::Home => Self::home(),
-            Command::Fsck(args) => self.fsck(&args),
+            Command::Fsck => self.fsck(),
             Command::Hello => self.hello(),
             Command::Who => self.who(),
             Command::Help => self.help(),
@@ -510,8 +510,8 @@ impl CommandExecutor {
         }
     }
 
-    /// ⚡ Bolt Optimization: Eliminates 4 intermediate String allocations per FSCK command by using a single mutable String buffer.
-    fn fsck(&mut self, _args: &[String]) -> CommandResult {
+    /// ⚡ Bolt Optimization: Eliminates intermediate Vec allocations per FSCK command by removing ignored arguments from the Fsck enum variant.
+    fn fsck(&mut self) -> CommandResult {
         let layer = self.entity.layer();
         let fsck_count = self.entity.fsck_count();
         let mood = self.entity.current_mood();

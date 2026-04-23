@@ -37,7 +37,7 @@ fn make_executor_at_depth(raw_depth: u32) -> CommandExecutor {
 #[test]
 fn test_fsck_returns_checking_output() {
     let mut executor = make_executor();
-    let result = executor.execute(Command::Fsck(vec![]));
+    let result = executor.execute(Command::Fsck);
 
     assert!(!result.is_error());
     assert!(
@@ -50,7 +50,7 @@ fn test_fsck_returns_checking_output() {
 #[test]
 fn test_fsck_contains_sector_scan_lines() {
     let mut executor = make_executor();
-    let result = executor.execute(Command::Fsck(vec![]));
+    let result = executor.execute(Command::Fsck);
 
     assert!(
         result.output().contains("SECTOR"),
@@ -86,7 +86,7 @@ fn test_hidden_files_visible_after_fsck() {
     let mut executor = make_executor_with_hidden();
 
     // Run fsck to reveal hidden content
-    let fsck_result = executor.execute(Command::Fsck(vec![]));
+    let fsck_result = executor.execute(Command::Fsck);
     assert!(
         fsck_result.output().contains("RECOVERED"),
         "fsck should report recovered content, got: {}",
@@ -116,7 +116,7 @@ fn test_hidden_directories_invisible_before_fsck() {
 fn test_hidden_directories_visible_after_fsck() {
     let mut executor = make_executor_with_hidden();
 
-    executor.execute(Command::Fsck(vec![]));
+    executor.execute(Command::Fsck);
 
     let catalog = executor.execute(Command::Catalog);
     assert!(
@@ -134,7 +134,7 @@ fn test_revealed_content_is_typeable() {
     assert!(before.is_error());
 
     // Run fsck
-    executor.execute(Command::Fsck(vec![]));
+    executor.execute(Command::Fsck);
 
     // Can type after fsck
     let after = executor.execute(Command::Type("SECRET.TXT".to_string()));
@@ -153,11 +153,11 @@ fn test_fsck_count_increments() {
     let mut executor = make_executor();
 
     assert_eq!(executor.entity().fsck_count(), 0);
-    executor.execute(Command::Fsck(vec![]));
+    executor.execute(Command::Fsck);
     assert_eq!(executor.entity().fsck_count(), 1);
-    executor.execute(Command::Fsck(vec![]));
+    executor.execute(Command::Fsck);
     assert_eq!(executor.entity().fsck_count(), 2);
-    executor.execute(Command::Fsck(vec![]));
+    executor.execute(Command::Fsck);
     assert_eq!(executor.entity().fsck_count(), 3);
 }
 
@@ -186,7 +186,7 @@ fn test_three_fscks_trigger_depth_increase() {
 #[test]
 fn test_surface_layer_no_entity_voice() {
     let mut executor = make_executor();
-    let result = executor.execute(Command::Fsck(vec![]));
+    let result = executor.execute(Command::Fsck);
 
     // At Surface, entity is silent — no entity-specific phrases
     assert!(
@@ -203,7 +203,7 @@ fn test_surface_layer_no_entity_voice() {
 fn test_corruption_layer_clinical_warning() {
     // Effective layer = from_depth(2*4 = 8) = Corruption (6-15)
     let mut executor = make_executor_at_depth(4);
-    let result = executor.execute(Command::Fsck(vec![]));
+    let result = executor.execute(Command::Fsck);
 
     assert!(
         result.output().contains("DO NOT RUN FSCK AGAIN"),
@@ -216,7 +216,7 @@ fn test_corruption_layer_clinical_warning() {
 fn test_infection_layer_entity_resistance() {
     // Effective layer = from_depth(2*14 = 28) = Infection (26+)
     let mut executor = make_executor_at_depth(14);
-    let result = executor.execute(Command::Fsck(vec![]));
+    let result = executor.execute(Command::Fsck);
 
     // At Infection, entity text should be present (though possibly corrupted)
     // The output itself gets corrupted, so we check for scan markers that survive
@@ -233,8 +233,8 @@ fn test_fsck_deterministic_output() {
     let mut exec1 = make_executor();
     let mut exec2 = make_executor();
 
-    let result1 = exec1.execute(Command::Fsck(vec![]));
-    let result2 = exec2.execute(Command::Fsck(vec![]));
+    let result1 = exec1.execute(Command::Fsck);
+    let result2 = exec2.execute(Command::Fsck);
 
     assert_eq!(
         result1.output(),
@@ -250,11 +250,11 @@ fn test_second_fsck_same_dir_finds_nothing_new() {
     let mut executor = make_executor_with_hidden();
 
     // First fsck reveals content
-    let first = executor.execute(Command::Fsck(vec![]));
+    let first = executor.execute(Command::Fsck);
     assert!(first.output().contains("RECOVERED"));
 
     // Second fsck in same dir finds nothing new
-    let second = executor.execute(Command::Fsck(vec![]));
+    let second = executor.execute(Command::Fsck);
     assert!(
         second.output().contains("NO ERRORS FOUND"),
         "Second fsck should find nothing new, got: {}",
