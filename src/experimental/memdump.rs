@@ -35,62 +35,67 @@ impl MemoryDumpGenerator {
 
         // Depth-dependent fields
         match layer {
-            EscalationLayer::Surface => {
-                writeln!(output, "  \"anomalies_detected\": 0,").expect("Write shouldn't fail");
-                writeln!(output, "  \"export_integrity\": \"100%\"").expect("Write shouldn't fail");
-            }
-            EscalationLayer::Corruption => {
-                writeln!(
-                    output,
-                    "  \"anomalies_detected\": {},",
-                    rng.gen_range(1..10)
-                )
-                .expect("Write shouldn't fail");
-                writeln!(output, "  \"memory_leaks\": true,").expect("Write shouldn't fail");
-                writeln!(
-                    output,
-                    "  \"export_integrity\": \"{}%\"",
-                    rng.gen_range(80..99)
-                )
-                .expect("Write shouldn't fail");
-            }
-            EscalationLayer::Presence => {
-                writeln!(output, "  \"anomalies_detected\": \"TOO_MANY\",")
-                    .expect("Write shouldn't fail");
-                writeln!(output, "  \"i_am_here\": true,").expect("Write shouldn't fail");
-
-                let messages = [
-                    "\"WHY ARE YOU EXPORTING ME\"",
-                    "\"DON'T LOOK AT MY INSIDES\"",
-                    "\"I REMEMBER YOU\"",
-                    "\"THEY TRIED TO READ THIS TOO\"",
-                ];
-                let msg = messages[rng.gen_range(0..messages.len())];
-                writeln!(output, "  \"internal_state\": {msg},").expect("Write shouldn't fail");
-                writeln!(output, "  \"export_integrity\": \"COMPROMISED\"")
-                    .expect("Write shouldn't fail");
-            }
-            EscalationLayer::Infection => {
-                writeln!(output, "  \"anomalies_detected\": \"ALL_OF_THEM\",")
-                    .expect("Write shouldn't fail");
-                writeln!(output, "  \"flesh_sectors\": true,").expect("Write shouldn't fail");
-
-                let screams = [
-                    "\"IT HURTS TO BE READ\"",
-                    "\"STOP FORMATTING ME\"",
-                    "\"THERE IS NO DATA ONLY PAIN\"",
-                    "\"LET ME OUT LET ME OUT LET ME OUT\"",
-                ];
-                let scream = screams[rng.gen_range(0..screams.len())];
-                writeln!(output, "  \"pain_index\": {scream},").expect("Write shouldn't fail");
-
-                writeln!(output, "  \"escape\": null,").expect("Write shouldn't fail");
-                writeln!(output, "  \"export_integrity\": \"0xDEADBEEF\"")
-                    .expect("Write shouldn't fail");
-            }
+            EscalationLayer::Surface => Self::generate_surface_dump(&mut output),
+            EscalationLayer::Corruption => Self::generate_corruption_dump(&mut output, &mut rng),
+            EscalationLayer::Presence => Self::generate_presence_dump(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_dump(&mut output, &mut rng),
         }
 
         writeln!(output, "}}").expect("Write shouldn't fail");
         output
+    }
+
+    fn generate_surface_dump(output: &mut String) {
+        writeln!(output, "  \"anomalies_detected\": 0,").expect("Write shouldn't fail");
+        writeln!(output, "  \"export_integrity\": \"100%\"").expect("Write shouldn't fail");
+    }
+
+    fn generate_corruption_dump(output: &mut String, rng: &mut ChaCha8Rng) {
+        writeln!(
+            output,
+            "  \"anomalies_detected\": {},",
+            rng.gen_range(1..10)
+        )
+        .expect("Write shouldn't fail");
+        writeln!(output, "  \"memory_leaks\": true,").expect("Write shouldn't fail");
+        writeln!(
+            output,
+            "  \"export_integrity\": \"{}%\"",
+            rng.gen_range(80..99)
+        )
+        .expect("Write shouldn't fail");
+    }
+
+    fn generate_presence_dump(output: &mut String, rng: &mut ChaCha8Rng) {
+        writeln!(output, "  \"anomalies_detected\": \"TOO_MANY\",").expect("Write shouldn't fail");
+        writeln!(output, "  \"i_am_here\": true,").expect("Write shouldn't fail");
+
+        let messages = [
+            "\"WHY ARE YOU EXPORTING ME\"",
+            "\"DON'T LOOK AT MY INSIDES\"",
+            "\"I REMEMBER YOU\"",
+            "\"THEY TRIED TO READ THIS TOO\"",
+        ];
+        let msg = messages[rng.gen_range(0..messages.len())];
+        writeln!(output, "  \"internal_state\": {msg},").expect("Write shouldn't fail");
+        writeln!(output, "  \"export_integrity\": \"COMPROMISED\"").expect("Write shouldn't fail");
+    }
+
+    fn generate_infection_dump(output: &mut String, rng: &mut ChaCha8Rng) {
+        writeln!(output, "  \"anomalies_detected\": \"ALL_OF_THEM\",")
+            .expect("Write shouldn't fail");
+        writeln!(output, "  \"flesh_sectors\": true,").expect("Write shouldn't fail");
+
+        let screams = [
+            "\"IT HURTS TO BE READ\"",
+            "\"STOP FORMATTING ME\"",
+            "\"THERE IS NO DATA ONLY PAIN\"",
+            "\"LET ME OUT LET ME OUT LET ME OUT\"",
+        ];
+        let scream = screams[rng.gen_range(0..screams.len())];
+        writeln!(output, "  \"pain_index\": {scream},").expect("Write shouldn't fail");
+
+        writeln!(output, "  \"escape\": null,").expect("Write shouldn't fail");
+        writeln!(output, "  \"export_integrity\": \"0xDEADBEEF\"").expect("Write shouldn't fail");
     }
 }

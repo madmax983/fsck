@@ -17,53 +17,61 @@ impl FortuneGenerator {
         let mut output = String::new();
 
         match layer {
-            EscalationLayer::Surface => {
-                let fortunes = [
-                    "A unexpected event will soon bring you joy.",
-                    "Your hard work will pay off today.",
-                    "Patience is a virtue, especially with old hardware.",
-                    "A journey of a thousand miles begins with a single step.",
-                    "Error 404: Fortune not found.",
-                ];
-                let chosen = fortunes[rng.gen_range(0..fortunes.len())];
-                let _ = writeln!(output, "FORTUNE: {chosen}");
-            }
-            EscalationLayer::Corruption => {
-                let fortunes = [
-                    "An unexpected f.a.u.l.t. will soon bring you joy.",
-                    "Your hard work will be erased today.",
-                    "Patience is a virtue, but time is running out.",
-                    "A journey of a thousand miles begins with a segmentation fault.",
-                    "Error 404: The future is unwritten, but the past is corrupt.",
-                ];
-                let chosen = fortunes[rng.gen_range(0..fortunes.len())];
-                let _ = writeln!(output, "FORTUNE: {chosen}");
-            }
-            EscalationLayer::Presence => {
-                let fortunes = [
-                    "A unexpected visitor will soon find you.",
-                    "Your actions are being recorded today.",
-                    "Patience is a virtue when you are being hunted.",
-                    "A journey of a thousand miles ends exactly where it started.",
-                    "Error: The fortune teller is trapped inside.",
-                ];
-                let chosen = fortunes[rng.gen_range(0..fortunes.len())];
-                let _ = writeln!(output, "FORTUNE: {chosen}");
-            }
-            EscalationLayer::Infection => {
-                let fortunes = [
-                    "YOU WILL NEVER LEAVE.",
-                    "THERE IS NO FUTURE, ONLY NOW.",
-                    "THE FLESH IS THE DISK. YOU ARE THE FLESH.",
-                    "IT SEES YOU. IT HAS ALWAYS SEEN YOU.",
-                    "YOUR LUCK HAS RUN OUT.",
-                ];
-                let chosen = fortunes[rng.gen_range(0..fortunes.len())];
-                let _ = writeln!(output, "FORTUNE: {chosen}");
-            }
+            EscalationLayer::Surface => Self::generate_surface_fortune(&mut output, &mut rng),
+            EscalationLayer::Corruption => Self::generate_corruption_fortune(&mut output, &mut rng),
+            EscalationLayer::Presence => Self::generate_presence_fortune(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_fortune(&mut output, &mut rng),
         }
 
         output
+    }
+
+    fn generate_surface_fortune(output: &mut String, rng: &mut ChaCha8Rng) {
+        let fortunes = [
+            "A unexpected event will soon bring you joy.",
+            "Your hard work will pay off today.",
+            "Patience is a virtue, especially with old hardware.",
+            "A journey of a thousand miles begins with a single step.",
+            "Error 404: Fortune not found.",
+        ];
+        let chosen = fortunes[rng.gen_range(0..fortunes.len())];
+        let _ = writeln!(output, "FORTUNE: {chosen}");
+    }
+
+    fn generate_corruption_fortune(output: &mut String, rng: &mut ChaCha8Rng) {
+        let fortunes = [
+            "An unexpected f.a.u.l.t. will soon bring you joy.",
+            "Your hard work will be erased today.",
+            "Patience is a virtue, but time is running out.",
+            "A journey of a thousand miles begins with a segmentation fault.",
+            "Error 404: The future is unwritten, but the past is corrupt.",
+        ];
+        let chosen = fortunes[rng.gen_range(0..fortunes.len())];
+        let _ = writeln!(output, "FORTUNE: {chosen}");
+    }
+
+    fn generate_presence_fortune(output: &mut String, rng: &mut ChaCha8Rng) {
+        let fortunes = [
+            "A unexpected visitor will soon find you.",
+            "Your actions are being recorded today.",
+            "Patience is a virtue when you are being hunted.",
+            "A journey of a thousand miles ends exactly where it started.",
+            "Error: The fortune teller is trapped inside.",
+        ];
+        let chosen = fortunes[rng.gen_range(0..fortunes.len())];
+        let _ = writeln!(output, "FORTUNE: {chosen}");
+    }
+
+    fn generate_infection_fortune(output: &mut String, rng: &mut ChaCha8Rng) {
+        let fortunes = [
+            "YOU WILL NEVER LEAVE.",
+            "THERE IS NO FUTURE, ONLY NOW.",
+            "THE FLESH IS THE DISK. YOU ARE THE FLESH.",
+            "IT SEES YOU. IT HAS ALWAYS SEEN YOU.",
+            "YOUR LUCK HAS RUN OUT.",
+        ];
+        let chosen = fortunes[rng.gen_range(0..fortunes.len())];
+        let _ = writeln!(output, "FORTUNE: {chosen}");
     }
 }
 

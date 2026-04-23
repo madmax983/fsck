@@ -39,3 +39,9 @@
 **[Extracted God Function logic in HexDumpGenerator and LifeSimulator]**
 **Learning:** `generate_dump` and `simulate_life` were God Functions because they contained deep nesting and complex inline string generation/character selection logic based on escalation layers inside loops.
 **Action:** Extract specific formatting and selection blocks for each distinct layer into small, private helper functions (e.g., `format_hex_bytes`, `format_ascii_decoding`, `get_cell_character`) to flatten nesting, isolate logic, and improve overall readability of the core loops.
+**[Refactor Fortune and Memdump God Functions]**
+**Learning:** God Functions in  and  used massive  statements based on  to build strings sequentially, violating single-responsibility and creating a pyramid of doom.
+**Action:** Extract each layer's generation logic into specific helper functions (e.g. , ) to flatten the structure and encapsulate the logic.
+**[Refactor Fortune and Memdump God Functions]**
+**Learning:** God Functions in `fortune.rs` and `memdump.rs` used massive `match` statements based on `EscalationLayer` to build strings sequentially, violating single-responsibility and creating a pyramid of doom.
+**Action:** Extract each layer's generation logic into specific helper functions (e.g. `generate_surface_fortune`, `generate_corruption_dump`) to flatten the structure and encapsulate the logic.
