@@ -12,6 +12,8 @@ pub mod hexdump;
 #[cfg(feature = "nova")]
 pub mod history;
 #[cfg(feature = "nova")]
+pub mod manual;
+#[cfg(feature = "nova")]
 pub mod memdump;
 #[cfg(feature = "nova")]
 pub mod netstat;
@@ -52,6 +54,8 @@ pub use hexdump::HexDumpGenerator;
 pub use history::CommandHistory;
 #[cfg(feature = "nova")]
 pub use life_simulator::LifeSimulator;
+#[cfg(feature = "nova")]
+pub use manual::ManTool;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
 #[cfg(feature = "nova")]

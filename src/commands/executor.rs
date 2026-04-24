@@ -168,7 +168,9 @@ impl CommandExecutor {
         let arg = arg.trim();
 
         #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+        if cmd_word.eq_ignore_ascii_case("MAN") && !arg.is_empty() {
+            Some(self.handle_nova_man(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
@@ -258,6 +260,12 @@ impl CommandExecutor {
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_man(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::ManTool::generate_page(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
