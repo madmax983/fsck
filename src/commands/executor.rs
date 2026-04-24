@@ -100,34 +100,42 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_search(&self, arg: &str) -> CommandResult {
-        let results =
+        let mut results =
             crate::experimental::SearchTool::search(&self.fs, &self.entity, arg, 0xF5C0_0000);
-        CommandResult::success(format!("{results}\n"))
+        results.push('\n');
+        CommandResult::success(results)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_defrag(&self) -> CommandResult {
-        let defrag_output = crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{defrag_output}\n"))
+        let mut defrag_output =
+            crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+        defrag_output.push('\n');
+        CommandResult::success(defrag_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_undelete(&self) -> CommandResult {
-        let undelete_output =
+        let mut undelete_output =
             crate::experimental::UndeleteTool::run_undelete(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{undelete_output}\n"))
+        undelete_output.push('\n');
+        CommandResult::success(undelete_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_ping(&self, arg: &str) -> CommandResult {
-        let ping_output = crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{ping_output}\n"))
+        let mut ping_output =
+            crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
+        ping_output.push('\n');
+        CommandResult::success(ping_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_dial(&self, arg: &str) -> CommandResult {
-        let dial_output = crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{dial_output}\n"))
+        let mut dial_output =
+            crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
+        dial_output.push('\n');
+        CommandResult::success(dial_output)
     }
 
     #[cfg(feature = "nova")]
@@ -141,25 +149,29 @@ impl CommandExecutor {
             return CommandResult::error(format!("?FILE NOT FOUND: {}\n", arg.to_uppercase()));
         };
         let content = file.content();
-        let dump = crate::experimental::HexDumpGenerator::generate_dump(
+        let mut dump = crate::experimental::HexDumpGenerator::generate_dump(
             &content,
             &self.entity,
             0xF5C0_0000,
         );
-        CommandResult::success(format!("{dump}\n"))
+        dump.push('\n');
+        CommandResult::success(dump)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_trace(&self, arg: &str) -> CommandResult {
-        let trace_output =
+        let mut trace_output =
             crate::experimental::NetworkTrace::generate_trace(&self.entity, 0xF5C0_0000, arg);
-        CommandResult::success(format!("{trace_output}\n"))
+        trace_output.push('\n');
+        CommandResult::success(trace_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_sensors(&self) -> CommandResult {
-        let report = crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        let mut report =
+            crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
@@ -288,20 +300,22 @@ impl CommandExecutor {
             return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
         };
         let content = file.content();
-        let stat_output = crate::experimental::StatTool::generate_stat(
+        let mut stat_output = crate::experimental::StatTool::generate_stat(
             &filename,
             &content,
             &self.entity,
             0xF5C0_0000,
         );
-        CommandResult::success(format!("{stat_output}\n"))
+        stat_output.push('\n');
+        CommandResult::success(stat_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_fortune(&self) -> CommandResult {
-        let fortune_output =
+        let mut fortune_output =
             crate::experimental::FortuneGenerator::generate_fortune(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{fortune_output}\n"))
+        fortune_output.push('\n');
+        CommandResult::success(fortune_output)
     }
 
     #[cfg(feature = "nova")]
