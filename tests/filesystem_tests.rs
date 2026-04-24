@@ -227,6 +227,7 @@ fn test_generated_filesystem_has_victim_files() {
             "SYS.LOG",
             "REPAIR.LOG",
             "LAST.LOG",
+            "SYS_ERR.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {
@@ -358,7 +359,10 @@ fn test_static_files_from_library() {
                     || f.name() == "GLITCH.BAS"
                     || f.name() == "ALONE.TXT"
                     || f.name() == "LAST.LOG"
-                    || f.name() == "STORY2.BAS")
+                    || f.name() == "STORY2.BAS"
+                    || f.name() == "CONFESSION.BAS"
+                    || f.name() == "SYS_ERR.LOG"
+                    || f.name() == "ALONE2.TXT")
         },
         &mut static_files,
     );

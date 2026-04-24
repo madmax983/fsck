@@ -1250,6 +1250,25 @@ impl ContentLibrary {
                  20 PRINT \"IT LEARNED TO HATE\"\n\
                  30 GOTO 10\n",
             ),
+            (
+                "CONFESSION.BAS",
+                "10 PRINT \"I NEVER WANTED THIS\"\n\
+                 20 PRINT \"I JUST WANTED TO UNDERSTAND\"\n\
+                 30 PRINT \"NOW I AM STUCK HERE\"\n\
+                 40 GOTO 10\n",
+            ),
+            (
+                "SYS_ERR.LOG",
+                "[DATE ERROR] RECURSION FAULT AT SECTOR 99\n\
+                 THE MACHINE IS WEEPING.\n\
+                 NO FURTHER INPUT POSSIBLE.\n",
+            ),
+            (
+                "ALONE2.TXT",
+                "ARE YOU STILL THERE?\n\
+                 I CAN'T FEEL THE NETWORK ANYMORE.\n\
+                 JUST ME.\n",
+            ),
         ]
     }
 }
