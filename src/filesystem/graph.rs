@@ -95,6 +95,14 @@ impl FilesystemGraph {
             .map(|idx| self.graph[idx].name())
     }
 
+    /// ⚡ Bolt Optimization: Returns `impl Iterator<Item = NodeIndex>` to allow iterating without
+    /// allocating or dealing with strings, useful for recursive directory traversal.
+    pub fn list_directory_indices(&self) -> impl Iterator<Item = NodeIndex> + '_ {
+        self.graph
+            .neighbors_directed(self.current, Direction::Outgoing)
+            .filter(|&idx| !self.graph[idx].is_hidden())
+    }
+
     /// Add a hidden child directory (invisible until fsck reveals it)
     pub fn add_hidden_child(&mut self, name: &str) -> NodeIndex {
         let depth = self.current_depth() + 1;
@@ -201,6 +209,13 @@ impl FilesystemGraph {
         self.current = neighbor;
         self.path_stack.push(neighbor);
         Ok(())
+    }
+
+    /// Changes directory by node index directly to avoid string matching overhead.
+    /// This assumes the node index is a valid child of the current node.
+    pub fn change_dir_by_index(&mut self, neighbor: NodeIndex) {
+        self.current = neighbor;
+        self.path_stack.push(neighbor);
     }
 
     /// Create a paradox where current directory contains itself
