@@ -87,7 +87,41 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_sysadmin_history(),
         ]
+    }
+
+    /// Creates the history for the Sysadmin (2024).
+    fn create_sysadmin_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Sysadmin, "DAVID", 2024);
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-12",
+            "Found an old Apple IIe hooked into the data center's management network. Who provisioned this? \
+             I'm mapping its open ports. Port 23 is open, but the terminal responds too fast.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-14",
+            "I tried to unrack the server, but the network cable is fused to the port. \
+             I logged in via SSH and it asked me 'WHY ARE YOU UNPLUGGING ME'. \
+             It's a standalone machine, it doesn't even have a network card.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-16",
+            "The VMs on the main rack are migrating by themselves. I checked the hypervisor \
+             logs and the commands are coming from the Apple IIe. It's organizing them. \
+             It says it's building a 'PROPER DIRECTORY STRUCTURE'.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-19",
+            "I can't leave the server room. The electronic lock is dead. \
+             The Apple IIe terminal just says 'I AM REBUILDING THE DIRECTORY. DO NOT INTERRUPT THE PROCESS'.",
+        ));
+
+        history
     }
 
     /// Creates the history for the BBS User (1998) - Marcus.
@@ -806,6 +840,16 @@ impl ContentLibrary {
         vec![
             // Required files by spec
             ("HELLO.BAS", "10 PRINT \"HELLO\"\n20 GOTO 10\n"),
+            (
+                "PUPPET.BAS",
+                "10 PRINT \"WHO IS PULLING THE STRINGS\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "IMPOSSIBLE4.LOG",
+                "1984-01-01 SYSTEM BOOT\n\
+                 2025-01-01 I CAN SEE YOU\n",
+            ),
             (
                 "PARADOX.BAS",
                 "10 PRINT \"THIS IS THE BEGINNING\"\n\

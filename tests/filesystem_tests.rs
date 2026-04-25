@@ -358,6 +358,8 @@ fn test_static_files_from_library() {
                     || f.name() == "GLITCH.BAS"
                     || f.name() == "ALONE.TXT"
                     || f.name() == "LAST.LOG"
+                    || f.name() == "PUPPET.BAS"
+                    || f.name() == "IMPOSSIBLE4.LOG"
                     || f.name() == "STORY2.BAS")
         },
         &mut static_files,
