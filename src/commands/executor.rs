@@ -163,12 +163,23 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_tree(&self) -> CommandResult {
+        let output = crate::experimental::GraphMapper::map_graph(&self.fs, &self.entity);
+        // ⚡ Bolt Optimization: Append newline directly instead of format!
+        let mut out = output;
+        out.push('\n');
+        CommandResult::success(out)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
 
         #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+        if cmd_word.eq_ignore_ascii_case("TREE") && arg.is_empty() {
+            Some(self.handle_nova_tree())
+        } else if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
