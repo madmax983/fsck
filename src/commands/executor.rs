@@ -179,6 +179,7 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
@@ -210,6 +211,15 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             {
                 Some(self.handle_nova_life())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
+        } else if cmd_word.eq_ignore_ascii_case("ANALYZE") && !arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_analyze(arg))
             }
             #[cfg(not(feature = "nova"))]
             {
@@ -354,6 +364,24 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_analyze(&self, arg: &str) -> CommandResult {
+        let target_file = arg;
+        let Some(file_node) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name().eq_ignore_ascii_case(target_file))
+        else {
+            return CommandResult::error("?FILE NOT FOUND\n");
+        };
+
+        let content = file_node.read();
+        let output =
+            crate::experimental::SentimentAnalyzer::analyze(&content, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 

@@ -2,7 +2,8 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SpatialAudioGenerator, SystemDiagnostics,
+    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
+    SystemDiagnostics,
 };
 
 #[test]
@@ -160,6 +161,30 @@ fn test_process_monitor_escalation() {
             || infection_report.contains("FORGETTING_HOW_TO_STOP")
             || infection_report.contains("ECHOING")
             || infection_report.contains("SCREAMING_INTO_DEV_NULL")
+    );
+}
+
+#[test]
+fn test_sentiment_analyzer_escalation() {
+    let mut entity = Entity::new();
+    let text = "this is a normal test file with some words.";
+
+    // Surface layer
+    let out_surface = SentimentAnalyzer::analyze(text, &entity, 42);
+    assert!(out_surface.contains("--- PSYCHO-LINGUISTIC ANALYSIS ---"));
+    assert!(out_surface.contains("SENTIMENT:"));
+
+    // Set depth to Infection layer (26+)
+    entity.update_depth(26);
+    let out_infection = SentimentAnalyzer::analyze(text, &entity, 42);
+    assert!(out_infection.contains("--- PSYCHO-LINGUISTIC ANALYSIS ---"));
+    assert!(
+        out_infection.contains("BLOOD")
+            || out_infection.contains("BURNS")
+            || out_infection.contains("WORDS")
+            || out_infection.contains("HUNGER")
+            || out_infection.contains("READING"),
+        "Infection layer output should contain horror strings"
     );
 }
 
