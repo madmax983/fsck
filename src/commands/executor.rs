@@ -255,9 +255,17 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
+            Some(self.handle_nova_whoami())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_whoami(&self) -> CommandResult {
+        let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
