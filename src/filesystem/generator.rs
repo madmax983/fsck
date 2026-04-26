@@ -170,12 +170,12 @@ impl FilesystemGenerator {
         Self::add_hidden_content(fs, rng, current_depth);
 
         // Recursively populate children
-        let children: Vec<_> = fs.list_directories().map(String::from).collect();
-        for child_name in children {
-            if fs.change_dir(&child_name, 0, 0.0).is_ok() {
-                Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
-                let _ = fs.change_dir("..", 0, 0.0);
-            }
+        // ⚡ Bolt Optimization: Use node indices directly to avoid allocating strings for directory traversal
+        let children_indices: Vec<_> = fs.list_directory_indices().collect();
+        for child_idx in children_indices {
+            fs.change_dir_by_index(child_idx);
+            Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
+            let _ = fs.change_dir("..", 0, 0.0);
         }
     }
 
