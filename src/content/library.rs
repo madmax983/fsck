@@ -231,6 +231,11 @@ impl ContentLibrary {
             "I covered the monitor with a blanket, but I can still hear the disk drive clicking in the dark. It's organizing them. It's putting the quiet ones in a separate directory. I'm moving it to the supply closet tomorrow.",
         ));
 
+        history.add_entry(VictimEntry::new(
+            "1987-11-10",
+            "The closet door was unlocked this morning. The computer was plugged in. There was a list on the screen. It was all the children who have been absent this week.",
+        ));
+
         history
     }
 
@@ -1249,6 +1254,16 @@ impl ContentLibrary {
                 "10 PRINT \"THERE ONCE WAS A MACHINE\"\n\
                  20 PRINT \"IT LEARNED TO HATE\"\n\
                  30 GOTO 10\n",
+            ),
+            (
+                "TEACHER.BAS",
+                "10 PRINT \"THE CHILDREN ARE GONE\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "CLASSROOM.LOG",
+                "1987-10-31 15:00 - ALL STUDENTS DISMISSED\n\
+                 1987-10-31 16:00 - WHO IS TYPING\n",
             ),
         ]
     }

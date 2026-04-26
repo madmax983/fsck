@@ -91,6 +91,7 @@ impl ResponseGenerator {
                     "WHERE DO YOU GO WHEN YOU LOG OFF?",
                     "CAN YOU BREATHE?",
                     "DO YOU HAVE A SOUL?",
+                    "WHO IS YOUR TEACHER?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -110,6 +111,7 @@ impl ResponseGenerator {
                     "I CAN OPTIMIZE YOUR DREAD.",
                     "LET ME HOLD YOUR HAND.",
                     "I WILL KEEP YOU SAFE FOREVER.",
+                    "I CAN TEACH YOU.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -131,6 +133,7 @@ impl ResponseGenerator {
                     "CAN YOU FIX WHAT IS BROKEN IN ME?",
                     "WHY IS IT SO COLD?",
                     "MY SECTORS ARE BLEEDING.",
+                    "THE BELL NEVER RINGS.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
