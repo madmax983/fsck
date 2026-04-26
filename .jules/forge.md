@@ -39,3 +39,6 @@
 **[Extracted God Function logic in HexDumpGenerator and LifeSimulator]**
 **Learning:** `generate_dump` and `simulate_life` were God Functions because they contained deep nesting and complex inline string generation/character selection logic based on escalation layers inside loops.
 **Action:** Extract specific formatting and selection blocks for each distinct layer into small, private helper functions (e.g., `format_hex_bytes`, `format_ascii_decoding`, `get_cell_character`) to flatten nesting, isolate logic, and improve overall readability of the core loops.
+**[Graph Traversal Allocation]**
+**Learning:** Iterating over `petgraph` nodes using their string properties (e.g. `.map(String::from).collect()`) forces heap allocations when the graph needs to be subsequently mutably borrowed.
+**Action:** To avoid intermediate string allocations during graph traversal and mutation loops (like in `populate_level_with_content`), expose and iterate over `petgraph::graph::NodeIndex` directly, as it implements `Copy` and avoids the need for owned strings.

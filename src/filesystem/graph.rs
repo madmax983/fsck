@@ -95,6 +95,34 @@ impl FilesystemGraph {
             .map(|idx| self.graph[idx].name())
     }
 
+    /// ⚡ Bolt Optimization: Provides access to raw child node indices to prevent `String`
+    /// allocations during recursive graph traversal and mutation loops.
+    #[must_use]
+    pub fn list_child_nodes(&self) -> Vec<NodeIndex> {
+        self.graph
+            .neighbors_directed(self.current, Direction::Outgoing)
+            .filter(|&idx| !self.graph[idx].is_hidden())
+            .collect()
+    }
+
+    /// ⚡ Bolt Optimization: Fast-path entry into a known child node.
+    pub fn enter_node(&mut self, node: NodeIndex) {
+        self.current = node;
+        self.path_stack.push(node);
+    }
+
+    /// ⚡ Bolt Optimization: Fast-path exit to the parent node.
+    ///
+    /// # Panics
+    /// Panics if the `path_stack` is inexplicably empty, though this should never occur
+    /// if navigation invariants are maintained correctly.
+    pub fn exit_node(&mut self) {
+        if self.path_stack.len() > 1 {
+            self.path_stack.pop();
+            self.current = *self.path_stack.last().expect("path_stack is non-empty");
+        }
+    }
+
     /// Add a hidden child directory (invisible until fsck reveals it)
     pub fn add_hidden_child(&mut self, name: &str) -> NodeIndex {
         let depth = self.current_depth() + 1;

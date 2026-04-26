@@ -322,7 +322,7 @@ fn test_dynamic_files_have_creepy_names() {
     let creepy_names = [
         "ECHO", "REPEAT", "AGAIN", "LOOP", "COUNT", "WHEN", "TIME", "NOW", "DATE", "CLOCK",
         "ERROR", "CORRUPT", "BROKEN", "DAMAGE", "FAULT", "GLITCH", "MEMORY", "FORGET", "WRONG",
-        "WHY", "WATCH", "STATIC", "NOISE", "FAIL",
+        "WHY", "WATCH", "STATIC", "NOISE", "FAIL", "THOUGHTS", "ECHOES", "MIND", "VOICES",
     ];
 
     for (path, _) in &dynamic_files {
