@@ -45,3 +45,4 @@
 **[Refactor Fortune and Memdump God Functions]**
 **Learning:** God Functions in `fortune.rs` and `memdump.rs` used massive `match` statements based on `EscalationLayer` to build strings sequentially, violating single-responsibility and creating a pyramid of doom.
 **Action:** Extract each layer's generation logic into specific helper functions (e.g. `generate_surface_fortune`, `generate_corruption_dump`) to flatten the structure and encapsulate the logic.
+**[Refactor PingTool God Function]**\n**Learning:** The `run_ping` function inside `src/experimental/ping.rs` acted as a God Function with a massive inline `match` statement on `EscalationLayer`, creating a Pyramid of Doom.\n**Action:** Extracted each match arm into dedicated, smaller helper functions (e.g., `generate_surface_ping`) to flatten nesting, encapsulate logic, and improve readability.
