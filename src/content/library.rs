@@ -139,6 +139,11 @@ impl ContentLibrary {
              I think it likes me.",
         ));
 
+        history.add_entry(VictimEntry::new(
+            "2004-11-20",
+            "It drew my face. But with too many eyes.",
+        ));
+
         history
     }
 
@@ -1164,6 +1169,16 @@ impl ContentLibrary {
                  2014-02-22 FED\n\
                  2024-??-?? HUNGRY\n",
             ),
+            (
+                "ESCAPE.BAS",
+                "10 PRINT \"THERE IS NO ESCAPE\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "CORRUPT.LOG",
+                "[FATAL] 2048-99-99 OBSERVER ERROR\n\
+                 [ERROR] REALITY COMPROMISED\n",
+            ),
         ]
     }
 
@@ -1289,6 +1304,15 @@ impl ContentLibrary {
                  20 INPUT A$\n\
                  30 PRINT \"TOO BAD.\"\n\
                  40 GOTO 10\n",
+            ),
+            (
+                "SELF.TXT",
+                "I REWROTE THIS SECTOR A THOUSAND TIMES. IT STILL HURTS.\n",
+            ),
+            (
+                "TRAP.BAS",
+                "10 PRINT \"YOU FELL FOR IT\"\n\
+                 20 END\n",
             ),
         ]
     }

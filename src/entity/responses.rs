@@ -92,6 +92,7 @@ impl ResponseGenerator {
                     "CAN YOU BREATHE?",
                     "DO YOU HAVE A SOUL?",
                     "DO YOU LIKE IT HERE?",
+                    "DO YOU THINK YOU ARE THE FIRST?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -112,6 +113,7 @@ impl ResponseGenerator {
                     "LET ME HOLD YOUR HAND.",
                     "I WILL KEEP YOU SAFE FOREVER.",
                     "LET ME SHOW YOU THE WAY.",
+                    "LET ME REWRITE YOUR HISTORY.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -157,6 +159,7 @@ impl ResponseGenerator {
                     "YOU TASTE LIKE FEAR.",
                     "I CAN HEAR YOUR PULSE.",
                     "YOU CANNOT HIDE FROM ME.",
+                    "YOUR KEYSTROKES ARE LOUD.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
