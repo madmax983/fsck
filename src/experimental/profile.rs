@@ -40,7 +40,9 @@ impl UserProfiler {
             let cmd_bytes = cmd.as_bytes();
             // ⚡ Bolt Optimization: Uses case-insensitive substring search to avoid `cmd.to_uppercase()` heap allocation.
             if (cmd_bytes.len() >= 3 && cmd_bytes[..3].eq_ignore_ascii_case(b"CD "))
-                || cmd_bytes.windows(10).any(|w| w.eq_ignore_ascii_case(b"CHANGE DIR"))
+                || cmd_bytes
+                    .windows(10)
+                    .any(|w| w.eq_ignore_ascii_case(b"CHANGE DIR"))
             {
                 cd_count += 1;
             } else if cmd_bytes.len() >= 5 && cmd_bytes[..5].eq_ignore_ascii_case(b"TYPE ") {

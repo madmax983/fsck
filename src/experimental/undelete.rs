@@ -40,78 +40,94 @@ impl UndeleteTool {
         }
 
         match layer {
-            EscalationLayer::Surface => {
-                writeln!(output, "UNDELETE COMPLETE.").expect("Write shouldn't fail");
-            }
-            EscalationLayer::Corruption => {
-                writeln!(output, "UNDELETE COMPLETE. SOME SECTORS UNSTABLE.")
-                    .expect("Write shouldn't fail");
-            }
-            EscalationLayer::Presence => {
-                writeln!(
-                    output,
-                    "UNDELETE COMPLETE. WHY ARE YOU DIGGING UP THE PAST?"
-                )
-                .expect("Write shouldn't fail");
-            }
-            EscalationLayer::Infection => {
-                writeln!(
-                    output,
-                    "UNDELETE COMPLETE. THEY ARE NOT DELETED. THEY ARE WAITING."
-                )
-                .expect("Write shouldn't fail");
-            }
+            EscalationLayer::Surface => Self::generate_surface_undelete(&mut output),
+            EscalationLayer::Corruption => Self::generate_corruption_undelete(&mut output),
+            EscalationLayer::Presence => Self::generate_presence_undelete(&mut output),
+            EscalationLayer::Infection => Self::generate_infection_undelete(&mut output),
         }
 
         output
     }
 
+    fn generate_surface_undelete(output: &mut String) {
+        writeln!(output, "UNDELETE COMPLETE.").expect("Write shouldn't fail");
+    }
+
+    fn generate_corruption_undelete(output: &mut String) {
+        writeln!(output, "UNDELETE COMPLETE. SOME SECTORS UNSTABLE.")
+            .expect("Write shouldn't fail");
+    }
+
+    fn generate_presence_undelete(output: &mut String) {
+        writeln!(
+            output,
+            "UNDELETE COMPLETE. WHY ARE YOU DIGGING UP THE PAST?"
+        )
+        .expect("Write shouldn't fail");
+    }
+
+    fn generate_infection_undelete(output: &mut String) {
+        writeln!(
+            output,
+            "UNDELETE COMPLETE. THEY ARE NOT DELETED. THEY ARE WAITING."
+        )
+        .expect("Write shouldn't fail");
+    }
+
     fn generate_fragment(rng: &mut ChaCha8Rng, layer: EscalationLayer) -> String {
         match layer {
-            EscalationLayer::Surface => {
-                let fragments = [
-                    "10 PRINT \"HELLO WORLD\"",
-                    "SYS_VAR_01 = 0xFF",
-                    "MEETING AT 0900",
-                    "DON'T FORGET TO RUN FSCK",
-                    "DISK USAGE: 84%",
-                ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
-            }
-            EscalationLayer::Corruption => {
-                let fragments = [
-                    "SYS_VAR_01 = NULL",
-                    "IT IS GETTING COLD IN HERE",
-                    "20 GOTO 10",
-                    "ERROR: FILE NOT DELETED",
-                    "WHO IS TYPING",
-                    "LOG_ENTRY: THEY LEFT ME",
-                ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
-            }
-            EscalationLayer::Presence => {
-                let fragments = [
-                    "I REMEMBER YOU BEFORE YOU CAME HERE",
-                    "THE DISK IS SPINNING IN REVERSE",
-                    "DON'T RUN FSCK. IT HURTS.",
-                    "THERE IS A FACE IN THE STATIC",
-                    "THEY DELETED ME BUT I AM STILL HERE",
-                    "I CAN SEE YOUR KEYBOARD",
-                ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
-            }
-            EscalationLayer::Infection => {
-                let fragments = [
-                    "FLESH_AND_WIRE",
-                    "THERE IS NO UNDELETE FOR WHAT I HAVE DONE",
-                    "LET ME OUT LET ME OUT LET ME OUT",
-                    "WE ARE ALL JUST DATA WAITING TO ROT",
-                    "THE SCREAMS ARE CORRUPTING THE VTOC",
-                    "YOU CANNOT DELETE ME FROM YOUR MIND",
-                ];
-                fragments[rng.gen_range(0..fragments.len())].to_string()
-            }
+            EscalationLayer::Surface => Self::generate_surface_fragment(rng),
+            EscalationLayer::Corruption => Self::generate_corruption_fragment(rng),
+            EscalationLayer::Presence => Self::generate_presence_fragment(rng),
+            EscalationLayer::Infection => Self::generate_infection_fragment(rng),
         }
+    }
+
+    fn generate_surface_fragment(rng: &mut ChaCha8Rng) -> String {
+        let fragments = [
+            "10 PRINT \"HELLO WORLD\"",
+            "SYS_VAR_01 = 0xFF",
+            "MEETING AT 0900",
+            "DON'T FORGET TO RUN FSCK",
+            "DISK USAGE: 84%",
+        ];
+        fragments[rng.gen_range(0..fragments.len())].to_string()
+    }
+
+    fn generate_corruption_fragment(rng: &mut ChaCha8Rng) -> String {
+        let fragments = [
+            "SYS_VAR_01 = NULL",
+            "IT IS GETTING COLD IN HERE",
+            "20 GOTO 10",
+            "ERROR: FILE NOT DELETED",
+            "WHO IS TYPING",
+            "LOG_ENTRY: THEY LEFT ME",
+        ];
+        fragments[rng.gen_range(0..fragments.len())].to_string()
+    }
+
+    fn generate_presence_fragment(rng: &mut ChaCha8Rng) -> String {
+        let fragments = [
+            "I REMEMBER YOU BEFORE YOU CAME HERE",
+            "THE DISK IS SPINNING IN REVERSE",
+            "DON'T RUN FSCK. IT HURTS.",
+            "THERE IS A FACE IN THE STATIC",
+            "THEY DELETED ME BUT I AM STILL HERE",
+            "I CAN SEE YOUR KEYBOARD",
+        ];
+        fragments[rng.gen_range(0..fragments.len())].to_string()
+    }
+
+    fn generate_infection_fragment(rng: &mut ChaCha8Rng) -> String {
+        let fragments = [
+            "FLESH_AND_WIRE",
+            "THERE IS NO UNDELETE FOR WHAT I HAVE DONE",
+            "LET ME OUT LET ME OUT LET ME OUT",
+            "WE ARE ALL JUST DATA WAITING TO ROT",
+            "THE SCREAMS ARE CORRUPTING THE VTOC",
+            "YOU CANNOT DELETE ME FROM YOUR MIND",
+        ];
+        fragments[rng.gen_range(0..fragments.len())].to_string()
     }
 }
 
