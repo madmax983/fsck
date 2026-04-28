@@ -17,6 +17,7 @@ const PARADOX_NAMES: &[&str] = &["VOID", "LOOP", "STRANGE", "DARK", "ERROR", "NU
 
 /// Creepy names for counter files (things that repeat/grow)
 const COUNTER_NAMES: &[&str] = &[
+    "HELLO.TXT",
     "ECHO.TXT",
     "REPEAT.TXT",
     "AGAIN.TXT",
@@ -221,7 +222,12 @@ impl FilesystemGenerator {
             0 => {
                 // Counter file
                 let name = COUNTER_NAMES[rng.gen_range(0..COUNTER_NAMES.len())];
-                (name, DynamicContent::counter("█"))
+                let base = match name {
+                    "HELLO.TXT" | "ECHO.TXT" => "HELLO ",
+                    "REPEAT.TXT" => "PLEASE ",
+                    _ => "█",
+                };
+                (name, DynamicContent::counter(base))
             }
             1 => {
                 // Timestamp file
