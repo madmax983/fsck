@@ -6,6 +6,8 @@ pub mod diagnostics;
 pub mod dialer;
 pub mod emotional_bleed;
 #[cfg(feature = "nova")]
+pub mod entropy;
+#[cfg(feature = "nova")]
 pub mod env;
 #[cfg(feature = "nova")]
 pub mod fortune;
@@ -48,6 +50,8 @@ pub use diagnostics::SystemDiagnostics;
 #[cfg(feature = "nova")]
 pub use dialer::ModemDialer;
 pub use emotional_bleed::EmotionalBleed;
+#[cfg(feature = "nova")]
+pub use entropy::EntropyScanner;
 #[cfg(feature = "nova")]
 pub use env::EnvVarsGenerator;
 #[cfg(feature = "nova")]

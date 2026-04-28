@@ -224,3 +224,19 @@ fn test_hardware_sensors_escalation() {
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
 }
+
+#[cfg(feature = "nova")]
+#[test]
+fn test_entropy_command_integration() {
+    use fsck::commands::{Command, CommandExecutor};
+    use fsck::entity::Entity;
+    use fsck::filesystem::FilesystemGraph;
+
+    let fs = FilesystemGraph::new();
+    let entity = Entity::new();
+    let mut executor = CommandExecutor::new(fs, entity);
+
+    let result = executor.execute(Command::Unknown("ENTROPY".to_string()));
+    assert!(!result.is_error());
+    assert!(result.output().contains("ENTROPY LEVEL"));
+}
