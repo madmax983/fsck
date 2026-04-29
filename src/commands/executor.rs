@@ -265,6 +265,8 @@ impl CommandExecutor {
             Some(self.handle_nova_env())
         } else if cmd_word.eq_ignore_ascii_case("NETSTAT") && arg.is_empty() {
             Some(self.handle_nova_netstat())
+        } else if cmd_word.eq_ignore_ascii_case("RADIO") || cmd_word.eq_ignore_ascii_case("TUNE") {
+            Some(self.handle_nova_radio(arg))
         } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
             || cmd_word.eq_ignore_ascii_case("SENSE")
             || cmd_word.eq_ignore_ascii_case("TEMP"))
@@ -356,6 +358,18 @@ impl CommandExecutor {
     fn handle_nova_netstat(&self) -> CommandResult {
         let output =
             crate::experimental::NetStatGenerator::generate_netstat(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_radio(&self, arg: &str) -> CommandResult {
+        if arg.is_empty() {
+            return CommandResult::error(
+                "?SPECIFY FREQUENCY (E.G. RADIO 88.5)
+",
+            );
+        }
+        let output = crate::experimental::RadioTransceiver::tune(arg, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
