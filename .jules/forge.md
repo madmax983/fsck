@@ -46,3 +46,7 @@
 **Learning:** God Functions in `fortune.rs` and `memdump.rs` used massive `match` statements based on `EscalationLayer` to build strings sequentially, violating single-responsibility and creating a pyramid of doom.
 **Action:** Extract each layer's generation logic into specific helper functions (e.g. `generate_surface_fortune`, `generate_corruption_dump`) to flatten the structure and encapsulate the logic.
 **[Refactor PingTool God Function]**\n**Learning:** The `run_ping` function inside `src/experimental/ping.rs` acted as a God Function with a massive inline `match` statement on `EscalationLayer`, creating a Pyramid of Doom.\n**Action:** Extracted each match arm into dedicated, smaller helper functions (e.g., `generate_surface_ping`) to flatten nesting, encapsulate logic, and improve readability.
+
+**[Extract God Function in StatTool and UndeleteTool]**
+**Learning:** `StatTool::generate_stat`, `UndeleteTool::run_undelete`, and `UndeleteTool::generate_fragment` were God Functions because they contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different generation layers.
+**Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_stat`, `generate_corruption_undelete`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.

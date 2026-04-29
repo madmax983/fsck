@@ -109,7 +109,8 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_defrag(&self) -> CommandResult {
-        let mut defrag_output = crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+        let mut defrag_output =
+            crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         defrag_output.push('\n');
         CommandResult::success(defrag_output)
@@ -126,7 +127,8 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_ping(&self, arg: &str) -> CommandResult {
-        let mut ping_output = crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
+        let mut ping_output =
+            crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         ping_output.push('\n');
         CommandResult::success(ping_output)
@@ -134,7 +136,8 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_dial(&self, arg: &str) -> CommandResult {
-        let mut dial_output = crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
+        let mut dial_output =
+            crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         dial_output.push('\n');
         CommandResult::success(dial_output)
@@ -172,7 +175,8 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_sensors(&self) -> CommandResult {
-        let mut report = crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
+        let mut report =
+            crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         report.push('\n');
         CommandResult::success(report)
