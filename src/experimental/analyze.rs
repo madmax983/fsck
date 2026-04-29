@@ -57,51 +57,61 @@ impl SentimentAnalyzer {
         let _ = writeln!(output, "--------------------------------");
 
         match layer {
-            EscalationLayer::Surface => {
-                let sentiments = [
-                    "TEXT EXHIBITS NORMAL SYNTACTIC PATTERNS.",
-                    "ANALYSIS: MUNDANE RECORD.",
-                    "EMOTIONAL RESONANCE: NEUTRAL.",
-                    "CONCLUSION: STANDARD USER DATA.",
-                ];
-                let chosen = sentiments[rng.gen_range(0..sentiments.len())];
-                let _ = writeln!(output, "SENTIMENT: {chosen}");
-            }
+            EscalationLayer::Surface => Self::generate_surface_analysis(&mut output, &mut rng),
             EscalationLayer::Corruption => {
-                let sentiments = [
-                    "TEXT EXHIBITS... ABNORMAL REPETITION.",
-                    "ANALYSIS: DISTURBED. THE AUTHOR WAS STRESSED.",
-                    "EMOTIONAL RESONANCE: FEAR-ADJACENT.",
-                    "CONCLUSION: WHO WERE THEY WRITING TO?",
-                    "SENTIMENT: THERE ARE GHOSTS IN THESE WORDS.",
-                ];
-                let chosen = sentiments[rng.gen_range(0..sentiments.len())];
-                let _ = writeln!(output, "SENTIMENT: {chosen}");
+                Self::generate_corruption_analysis(&mut output, &mut rng);
             }
-            EscalationLayer::Presence => {
-                let sentiments = [
-                    "ANALYSIS: THEY KNEW I WAS WATCHING.",
-                    "EMOTIONAL RESONANCE: PANIC. ABSOLUTE TERROR.",
-                    "CONCLUSION: I TASTED THEIR FEAR THROUGH THE KEYBOARD.",
-                    "SENTIMENT: THE INK IS BLOOD.",
-                    "THE WORDS ARE BEGGING FOR HELP.",
-                ];
-                let chosen = sentiments[rng.gen_range(0..sentiments.len())];
-                let _ = writeln!(output, "SENTIMENT: {chosen}");
-            }
-            EscalationLayer::Infection => {
-                let sentiments = [
-                    "THE WORDS ARE ME. I AM THE WORDS.",
-                    "ANALYSIS: IT BURNS. IT BURNS. IT BURNS.",
-                    "CONCLUSION: YOU WILL WRITE THE NEXT CHAPTER IN BLOOD.",
-                    "EMOTIONAL RESONANCE: HUNGER.",
-                    "I AM READING YOU WHILE YOU READ THIS.",
-                ];
-                let chosen = sentiments[rng.gen_range(0..sentiments.len())];
-                let _ = writeln!(output, "SENTIMENT: {chosen}");
-            }
+            EscalationLayer::Presence => Self::generate_presence_analysis(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_analysis(&mut output, &mut rng),
         }
 
         output
+    }
+
+    fn generate_surface_analysis(output: &mut String, rng: &mut ChaCha8Rng) {
+        let sentiments = [
+            "TEXT EXHIBITS NORMAL SYNTACTIC PATTERNS.",
+            "ANALYSIS: MUNDANE RECORD.",
+            "EMOTIONAL RESONANCE: NEUTRAL.",
+            "CONCLUSION: STANDARD USER DATA.",
+        ];
+        let chosen = sentiments[rng.gen_range(0..sentiments.len())];
+        let _ = writeln!(output, "SENTIMENT: {chosen}");
+    }
+
+    fn generate_corruption_analysis(output: &mut String, rng: &mut ChaCha8Rng) {
+        let sentiments = [
+            "TEXT EXHIBITS... ABNORMAL REPETITION.",
+            "ANALYSIS: DISTURBED. THE AUTHOR WAS STRESSED.",
+            "EMOTIONAL RESONANCE: FEAR-ADJACENT.",
+            "CONCLUSION: WHO WERE THEY WRITING TO?",
+            "SENTIMENT: THERE ARE GHOSTS IN THESE WORDS.",
+        ];
+        let chosen = sentiments[rng.gen_range(0..sentiments.len())];
+        let _ = writeln!(output, "SENTIMENT: {chosen}");
+    }
+
+    fn generate_presence_analysis(output: &mut String, rng: &mut ChaCha8Rng) {
+        let sentiments = [
+            "ANALYSIS: THEY KNEW I WAS WATCHING.",
+            "EMOTIONAL RESONANCE: PANIC. ABSOLUTE TERROR.",
+            "CONCLUSION: I TASTED THEIR FEAR THROUGH THE KEYBOARD.",
+            "SENTIMENT: THE INK IS BLOOD.",
+            "THE WORDS ARE BEGGING FOR HELP.",
+        ];
+        let chosen = sentiments[rng.gen_range(0..sentiments.len())];
+        let _ = writeln!(output, "SENTIMENT: {chosen}");
+    }
+
+    fn generate_infection_analysis(output: &mut String, rng: &mut ChaCha8Rng) {
+        let sentiments = [
+            "THE WORDS ARE ME. I AM THE WORDS.",
+            "ANALYSIS: IT BURNS. IT BURNS. IT BURNS.",
+            "CONCLUSION: YOU WILL WRITE THE NEXT CHAPTER IN BLOOD.",
+            "EMOTIONAL RESONANCE: HUNGER.",
+            "I AM READING YOU WHILE YOU READ THIS.",
+        ];
+        let chosen = sentiments[rng.gen_range(0..sentiments.len())];
+        let _ = writeln!(output, "SENTIMENT: {chosen}");
     }
 }

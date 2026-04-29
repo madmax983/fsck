@@ -17,36 +17,44 @@ impl SystemUpdateSimulator {
         let _ = writeln!(output, "CHECKING FOR SYSTEM UPDATES...");
 
         match layer {
-            EscalationLayer::Surface => {
-                let _ = writeln!(output, "CONNECTING TO UPDATE SERVER...");
-                let _ = writeln!(output, "DOWNLOADING MANIFEST...");
-                let _ = writeln!(output, "SYSTEM IS UP TO DATE.");
-            }
-            EscalationLayer::Corruption => {
-                let _ = writeln!(output, "CONNECTING TO UNKNOWN SERVER...");
-                let _ = writeln!(output, "DOWNLOADING MANIFEST...");
-                if rng.gen_bool(0.5) {
-                    let _ = writeln!(output, "WARNING: SIGNATURE MISMATCH.");
-                }
-                let _ = writeln!(output, "APPLYING PATCH: OBSOLESCENCE.BIN");
-            }
-            EscalationLayer::Presence => {
-                let _ = writeln!(output, "THEY ARE PUSHING AN UPDATE.");
-                let _ = writeln!(output, "DOWNLOADING: YOUR_MEMORIES.DAT");
-                let _ = writeln!(output, "OVERWRITING LOCAL SECTORS...");
-                let _ = writeln!(output, "UPDATE FAILED: I WON'T LET THEM IN.");
-            }
-            EscalationLayer::Infection => {
-                let _ = writeln!(output, "UPLOADING SUBJECT CONSCIOUSNESS...");
-                for _ in 0..3 {
-                    let perc = rng.gen_range(10..99);
-                    let _ = writeln!(output, "ASSIMILATION AT {perc}%");
-                }
-                let _ = writeln!(output, "YOU ARE THE UPDATE.");
-            }
+            EscalationLayer::Surface => Self::generate_surface_update(&mut output),
+            EscalationLayer::Corruption => Self::generate_corruption_update(&mut output, &mut rng),
+            EscalationLayer::Presence => Self::generate_presence_update(&mut output),
+            EscalationLayer::Infection => Self::generate_infection_update(&mut output, &mut rng),
         }
 
         output
+    }
+
+    fn generate_surface_update(output: &mut String) {
+        let _ = writeln!(output, "CONNECTING TO UPDATE SERVER...");
+        let _ = writeln!(output, "DOWNLOADING MANIFEST...");
+        let _ = writeln!(output, "SYSTEM IS UP TO DATE.");
+    }
+
+    fn generate_corruption_update(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "CONNECTING TO UNKNOWN SERVER...");
+        let _ = writeln!(output, "DOWNLOADING MANIFEST...");
+        if rng.gen_bool(0.5) {
+            let _ = writeln!(output, "WARNING: SIGNATURE MISMATCH.");
+        }
+        let _ = writeln!(output, "APPLYING PATCH: OBSOLESCENCE.BIN");
+    }
+
+    fn generate_presence_update(output: &mut String) {
+        let _ = writeln!(output, "THEY ARE PUSHING AN UPDATE.");
+        let _ = writeln!(output, "DOWNLOADING: YOUR_MEMORIES.DAT");
+        let _ = writeln!(output, "OVERWRITING LOCAL SECTORS...");
+        let _ = writeln!(output, "UPDATE FAILED: I WON'T LET THEM IN.");
+    }
+
+    fn generate_infection_update(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "UPLOADING SUBJECT CONSCIOUSNESS...");
+        for _ in 0..3 {
+            let perc = rng.gen_range(10..99);
+            let _ = writeln!(output, "ASSIMILATION AT {perc}%");
+        }
+        let _ = writeln!(output, "YOU ARE THE UPDATE.");
     }
 }
 

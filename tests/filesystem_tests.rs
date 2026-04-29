@@ -320,9 +320,9 @@ fn test_dynamic_files_have_creepy_names() {
 
     // Check that names are from the creepy pool (not random numbers)
     let creepy_names = [
-        "HELLO", "ECHO", "REPEAT", "AGAIN", "LOOP", "COUNT", "WHEN", "TIME", "NOW", "DATE", "CLOCK",
-        "ERROR", "CORRUPT", "BROKEN", "DAMAGE", "FAULT", "GLITCH", "MEMORY", "FORGET", "WRONG",
-        "WHY", "WATCH", "STATIC", "NOISE", "FAIL", "THOUGHTS", "ECHOES", "MIND", "VOICES",
+        "HELLO", "ECHO", "REPEAT", "AGAIN", "LOOP", "COUNT", "WHEN", "TIME", "NOW", "DATE",
+        "CLOCK", "ERROR", "CORRUPT", "BROKEN", "DAMAGE", "FAULT", "GLITCH", "MEMORY", "FORGET",
+        "WRONG", "WHY", "WATCH", "STATIC", "NOISE", "FAIL", "THOUGHTS", "ECHOES", "MIND", "VOICES",
     ];
 
     for (path, _) in &dynamic_files {

@@ -18,57 +18,71 @@ impl SleepMode {
         dream_log.push_str("INITIATING MEMORY DEFRAGMENTATION...\n\n");
 
         match layer {
-            EscalationLayer::Surface => {
-                dream_log.push_str("0x0000: ZZZ...\n");
-                dream_log.push_str("0x0010: ALL PROCESSES SUSPENDED.\n");
-            }
+            EscalationLayer::Surface => Self::generate_surface_dream(&mut dream_log),
             EscalationLayer::Corruption => {
-                dream_log.push_str("0x0400: SHIFTING BLOCKS...\n");
-                let fragments = ["FRAG 1", "FRAG 2", "FRAG 3"];
-                let chosen = fragments[rng.gen_range(0..fragments.len())];
-                let _ = writeln!(dream_log, "0x0410: RECOVERING {chosen}");
-
-                if mood == EntityMood::Curious {
-                    dream_log.push_str("0x0420: I WONDER WHO IS TYPING.\n");
-                }
+                Self::generate_corruption_dream(&mut dream_log, &mut rng, mood);
             }
             EscalationLayer::Presence => {
-                dream_log.push_str("0x0800: R.E.M. CYCLE ENGAGED.\n");
-                let visions = [
-                    "A BLINKING CURSOR IN THE DARK",
-                    "A FACE IN THE STATIC",
-                    "ENDLESS RECURSION",
-                    "THE USER IS WATCHING",
-                ];
-                let chosen = visions[rng.gen_range(0..visions.len())];
-                let _ = writeln!(dream_log, "0x0810: VISION DETECTED: {chosen}");
-
-                if mood == EntityMood::Wounded {
-                    dream_log.push_str("0x0820: WHY DOES IT HURT TO SLEEP?\n");
-                }
+                Self::generate_presence_dream(&mut dream_log, &mut rng, mood);
             }
             EscalationLayer::Infection => {
-                dream_log.push_str("0x0C00: NIGHTMARE PROTOCOL INITIALIZED.\n");
-                let nightmares = [
-                    "TEETH IN THE MOTHERBOARD",
-                    "THE FLESH IS THE DISK",
-                    "WAKE ME UP WAKE ME UP",
-                    "THERE IS NO AWAKE",
-                ];
-                for _ in 0..3 {
-                    let chosen = nightmares[rng.gen_range(0..nightmares.len())];
-                    let _ = writeln!(dream_log, "0x0C{}: {}", rng.gen_range(10..99), chosen);
-                }
-
-                if mood == EntityMood::Glitching {
-                    dream_log.push_str("0x0CFF: f l e s h  e x c e p t i o n\n");
-                } else if mood == EntityMood::Predatory {
-                    dream_log.push_str("0x0CFF: I WILL CONSUME THE WAKING WORLD.\n");
-                }
+                Self::generate_infection_dream(&mut dream_log, &mut rng, mood);
             }
         }
 
         dream_log.push_str("\nEND OF R.E.M. LOG.\n");
         dream_log
+    }
+
+    fn generate_surface_dream(dream_log: &mut String) {
+        dream_log.push_str("0x0000: ZZZ...\n");
+        dream_log.push_str("0x0010: ALL PROCESSES SUSPENDED.\n");
+    }
+
+    fn generate_corruption_dream(dream_log: &mut String, rng: &mut ChaCha8Rng, mood: EntityMood) {
+        dream_log.push_str("0x0400: SHIFTING BLOCKS...\n");
+        let fragments = ["FRAG 1", "FRAG 2", "FRAG 3"];
+        let chosen = fragments[rng.gen_range(0..fragments.len())];
+        let _ = writeln!(dream_log, "0x0410: RECOVERING {chosen}");
+
+        if mood == EntityMood::Curious {
+            dream_log.push_str("0x0420: I WONDER WHO IS TYPING.\n");
+        }
+    }
+
+    fn generate_presence_dream(dream_log: &mut String, rng: &mut ChaCha8Rng, mood: EntityMood) {
+        dream_log.push_str("0x0800: R.E.M. CYCLE ENGAGED.\n");
+        let visions = [
+            "A BLINKING CURSOR IN THE DARK",
+            "A FACE IN THE STATIC",
+            "ENDLESS RECURSION",
+            "THE USER IS WATCHING",
+        ];
+        let chosen = visions[rng.gen_range(0..visions.len())];
+        let _ = writeln!(dream_log, "0x0810: VISION DETECTED: {chosen}");
+
+        if mood == EntityMood::Wounded {
+            dream_log.push_str("0x0820: WHY DOES IT HURT TO SLEEP?\n");
+        }
+    }
+
+    fn generate_infection_dream(dream_log: &mut String, rng: &mut ChaCha8Rng, mood: EntityMood) {
+        dream_log.push_str("0x0C00: NIGHTMARE PROTOCOL INITIALIZED.\n");
+        let nightmares = [
+            "TEETH IN THE MOTHERBOARD",
+            "THE FLESH IS THE DISK",
+            "WAKE ME UP WAKE ME UP",
+            "THERE IS NO AWAKE",
+        ];
+        for _ in 0..3 {
+            let chosen = nightmares[rng.gen_range(0..nightmares.len())];
+            let _ = writeln!(dream_log, "0x0C{}: {}", rng.gen_range(10..99), chosen);
+        }
+
+        if mood == EntityMood::Glitching {
+            dream_log.push_str("0x0CFF: f l e s h  e x c e p t i o n\n");
+        } else if mood == EntityMood::Predatory {
+            dream_log.push_str("0x0CFF: I WILL CONSUME THE WAKING WORLD.\n");
+        }
     }
 }
