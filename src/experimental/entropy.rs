@@ -33,31 +33,39 @@ impl EntropyScanner {
         let _ = writeln!(output, "STRUCTURAL INTEGRITY: {integrity:.2}%\n");
 
         match layer {
-            EscalationLayer::Surface => {
-                let _ = writeln!(output, "STATUS: NOMINAL");
-                let _ = writeln!(output, "MINOR FRAGMENTATION DETECTED.");
-            }
-            EscalationLayer::Corruption => {
-                let _ = writeln!(output, "STATUS: DEGRADING");
-                let _ = writeln!(output, "WARNING: DATA ROT DETECTED IN UPPER SECTORS.");
-                let _ = writeln!(output, "RECOMMEND RUNNING FSCK IMMEDIATELY.");
-            }
-            EscalationLayer::Presence => {
-                let _ = writeln!(output, "STATUS: COMPROMISED");
-                let _ = writeln!(output, "ANOMALY: THEY ARE BLEEDING THROUGH THE SECTORS.");
-                let _ = writeln!(output, "ERROR: CANNOT ISOLATE QUARANTINE ZONES.");
-            }
-            EscalationLayer::Infection => {
-                let _ = writeln!(output, "STATUS: ASSIMILATED");
-                for _ in 0..5 {
-                    let hex_noise: u32 = rng.r#gen();
-                    let _ = writeln!(output, "ERR: 0x{hex_noise:08X} - ALL IS LOST ALL IS LOST");
-                }
-            }
+            EscalationLayer::Surface => Self::generate_surface_entropy(&mut output),
+            EscalationLayer::Corruption => Self::generate_corruption_entropy(&mut output),
+            EscalationLayer::Presence => Self::generate_presence_entropy(&mut output),
+            EscalationLayer::Infection => Self::generate_infection_entropy(&mut output, &mut rng),
         }
 
         let _ = writeln!(output, "\nSCAN COMPLETE.");
         output
+    }
+
+    fn generate_surface_entropy(output: &mut String) {
+        let _ = writeln!(output, "STATUS: NOMINAL");
+        let _ = writeln!(output, "MINOR FRAGMENTATION DETECTED.");
+    }
+
+    fn generate_corruption_entropy(output: &mut String) {
+        let _ = writeln!(output, "STATUS: DEGRADING");
+        let _ = writeln!(output, "WARNING: DATA ROT DETECTED IN UPPER SECTORS.");
+        let _ = writeln!(output, "RECOMMEND RUNNING FSCK IMMEDIATELY.");
+    }
+
+    fn generate_presence_entropy(output: &mut String) {
+        let _ = writeln!(output, "STATUS: COMPROMISED");
+        let _ = writeln!(output, "ANOMALY: THEY ARE BLEEDING THROUGH THE SECTORS.");
+        let _ = writeln!(output, "ERROR: CANNOT ISOLATE QUARANTINE ZONES.");
+    }
+
+    fn generate_infection_entropy(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "STATUS: ASSIMILATED");
+        for _ in 0..5 {
+            let hex_noise: u32 = rng.r#gen();
+            let _ = writeln!(output, "ERR: 0x{hex_noise:08X} - ALL IS LOST ALL IS LOST");
+        }
     }
 }
 

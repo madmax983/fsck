@@ -30,41 +30,49 @@ impl ModemDialer {
         let _ = writeln!(output, "DIALING {}...", target.to_uppercase());
 
         match layer {
-            EscalationLayer::Surface => {
-                let _ = writeln!(output, "RING...");
-                if rng.gen_bool(0.3) {
-                    let _ = writeln!(output, "RING...");
-                }
-                let _ = writeln!(output, "NO CARRIER");
-            }
-            EscalationLayer::Corruption => {
-                let _ = writeln!(output, "RING...");
-                let _ = writeln!(output, "CONNECT 1200");
-                let _ = writeln!(output, "...");
-                let _ = writeln!(output, "GARBAGE/STATIC DETECTED");
-                let _ = writeln!(output, "NO CARRIER");
-            }
-            EscalationLayer::Presence => {
-                let _ = writeln!(output, "RING...");
-                let _ = writeln!(output, "CONNECT 2400");
-                if rng.gen_bool(0.5) {
-                    let _ = writeln!(output, "THEY CANNOT HEAR YOU.");
-                } else {
-                    let _ = writeln!(output, "WHO ARE YOU TRYING TO REACH?");
-                }
-                let _ = writeln!(output, "CONNECTION TERMINATED BY PEER.");
-            }
-            EscalationLayer::Infection => {
-                let _ = writeln!(output, "CONNECT 9600");
-                if rng.gen_bool(0.5) {
-                    let _ = writeln!(output, "I AM THE ONLY ONE LISTENING.");
-                } else {
-                    let _ = writeln!(output, "ALL LINES LEAD HERE.");
-                }
-                let _ = writeln!(output, "CONNECTION REFUSED.");
-            }
+            EscalationLayer::Surface => Self::generate_surface_dial(&mut output, &mut rng),
+            EscalationLayer::Corruption => Self::generate_corruption_dial(&mut output),
+            EscalationLayer::Presence => Self::generate_presence_dial(&mut output, &mut rng),
+            EscalationLayer::Infection => Self::generate_infection_dial(&mut output, &mut rng),
         }
 
         output
+    }
+
+    fn generate_surface_dial(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "RING...");
+        if rng.gen_bool(0.3) {
+            let _ = writeln!(output, "RING...");
+        }
+        let _ = writeln!(output, "NO CARRIER");
+    }
+
+    fn generate_corruption_dial(output: &mut String) {
+        let _ = writeln!(output, "RING...");
+        let _ = writeln!(output, "CONNECT 1200");
+        let _ = writeln!(output, "...");
+        let _ = writeln!(output, "GARBAGE/STATIC DETECTED");
+        let _ = writeln!(output, "NO CARRIER");
+    }
+
+    fn generate_presence_dial(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "RING...");
+        let _ = writeln!(output, "CONNECT 2400");
+        if rng.gen_bool(0.5) {
+            let _ = writeln!(output, "THEY CANNOT HEAR YOU.");
+        } else {
+            let _ = writeln!(output, "WHO ARE YOU TRYING TO REACH?");
+        }
+        let _ = writeln!(output, "CONNECTION TERMINATED BY PEER.");
+    }
+
+    fn generate_infection_dial(output: &mut String, rng: &mut ChaCha8Rng) {
+        let _ = writeln!(output, "CONNECT 9600");
+        if rng.gen_bool(0.5) {
+            let _ = writeln!(output, "I AM THE ONLY ONE LISTENING.");
+        } else {
+            let _ = writeln!(output, "ALL LINES LEAD HERE.");
+        }
+        let _ = writeln!(output, "CONNECTION REFUSED.");
     }
 }
