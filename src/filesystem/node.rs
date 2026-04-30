@@ -57,6 +57,7 @@ impl FileNode {
     }
 
     /// Read file content - generates dynamic content on each read
+    /// ⚡ Bolt Optimization: `read()` returns a `Cow` to avoid heap allocations for static content.
     pub fn read(&self) -> std::borrow::Cow<'_, str> {
         match &self.content {
             NodeContent::Static(s) => std::borrow::Cow::Borrowed(s.as_str()),
@@ -64,10 +65,6 @@ impl FileNode {
         }
     }
 
-    // Legacy method for static content - deprecated, use read() instead
-    pub fn content(&self) -> String {
-        self.read().into_owned()
-    }
 
     pub fn name(&self) -> &str {
         &self.name
