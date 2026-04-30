@@ -85,4 +85,8 @@ pub use whoami::WhoAmIGenerator;
 #[cfg(feature = "nova")]
 pub mod radio;
 #[cfg(feature = "nova")]
+pub mod rorschach;
+#[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub use rorschach::RorschachTest;
