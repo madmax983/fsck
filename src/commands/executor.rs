@@ -153,7 +153,7 @@ impl CommandExecutor {
         else {
             return CommandResult::error(format!("?FILE NOT FOUND: {}\n", arg.to_uppercase()));
         };
-        let content = file.content();
+        let content = file.read();
         let mut dump = crate::experimental::HexDumpGenerator::generate_dump(
             &content,
             &self.entity,
@@ -327,7 +327,7 @@ impl CommandExecutor {
         else {
             return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
         };
-        let content = file.content();
+        let content = file.read();
         let mut stat_output = crate::experimental::StatTool::generate_stat(
             &filename,
             &content,
@@ -497,7 +497,7 @@ impl CommandExecutor {
         };
 
         let file_actual_name = file.name().to_string();
-        let mut content = file.content();
+        let mut content = file.read().into_owned();
 
         self.inject_dynamic_file_content(&file_actual_name, &mut content);
 

@@ -21,7 +21,7 @@ fn test_directory_can_have_files() {
 fn test_file_node_content() {
     let file = FileNode::new("TEST.TXT", "Content here");
     assert_eq!(file.name(), "TEST.TXT");
-    assert_eq!(file.content(), "Content here");
+    assert_eq!(file.read(), "Content here");
 }
 
 #[test]
@@ -175,7 +175,7 @@ fn find_files_recursive_impl<F>(
     for file in fs.current_node().files() {
         if predicate(file) {
             let path = format!("{}/{}", fs.current_path(), file.name());
-            let content = file.content().clone();
+            let content = file.read().into_owned();
             found.push((path, content));
         }
     }
