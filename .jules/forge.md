@@ -53,3 +53,6 @@
 **[Extract God Function formatting logic in various experimental components]
 **Learning:** Functions like `analyze`, `dial`, `scan_entropy`, `generate_dream`, and `simulate_update` were God Functions because they contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different generation layers.
 **Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_analysis`, `generate_corruption_dial`) to flatten nesting, isolate logic, and improve overall readability of the core generation functions.
+**[Extract God Function in EmotionalBleed::inject_emotion]
+**Learning:** `inject_emotion` inside `src/experimental/emotional_bleed.rs` was a God Function because it mixed complex inline string generation logic inside a large `match mood` statement for multiple different generation layers.
+**Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `inject_helpful_bleed`, `inject_wounded_bleed`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.

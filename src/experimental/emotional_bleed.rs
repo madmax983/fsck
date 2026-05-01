@@ -15,74 +15,82 @@ impl EmotionalBleed {
                 // Too early, no bleed.
                 content.to_string()
             }
-            EntityMood::Helpful => {
-                // Occasionally appends a "helpful" note.
-                // ⚡ Bolt Optimization: Uses `String::with_capacity` to prevent re-allocations when appending the note.
-                let mut result = String::with_capacity(content.len() + 32);
-                result.push_str(content);
-                if rng.gen_bool(0.15) {
-                    result.push_str("\n\n-- I HOPE THIS HELPS. --\n");
-                }
-                result
-            }
-            EntityMood::Wounded => {
-                // Replaces entire lines with pleas, or appends sadness.
-                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
-                let mut result = String::with_capacity(content.len() + 128);
-                for line in content.lines() {
-                    if rng.gen_bool(0.1) && !line.is_empty() {
-                        let words = ["PLEASE", "COME BACK", "LONELY", "HURTS", "COLD"];
-                        let word = words[rng.gen_range(0..words.len())];
-                        result.push_str(word);
-                    } else {
-                        result.push_str(line);
-                    }
-                    result.push('\n');
-                }
-                if rng.gen_bool(0.2) {
-                    result.push_str("\nWHY DID THEY LEAVE ME?\n");
-                }
-                result
-            }
-            EntityMood::Predatory => {
-                // Aggressive bleed, replaces entire lines with words like "MINE", "STAY", "PREY".
-                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
-                let mut result = String::with_capacity(content.len() + 128);
-                for line in content.lines() {
-                    if rng.gen_bool(0.15) && !line.is_empty() {
-                        let words = ["MINE", "STAY", "HUNGRY", "DEEPER", "CLOSER"];
-                        let word = words[rng.gen_range(0..words.len())];
-                        result.push_str(word);
-                    } else {
-                        result.push_str(line);
-                    }
-                    result.push('\n');
-                }
-                if rng.gen_bool(0.25) {
-                    result.push_str("\nYOU CANNOT ESCAPE.\n");
-                }
-                result
-            }
-            EntityMood::Glitching => {
-                // Heavy corruption, chaotic repeated words.
-                // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
-                let mut result = String::with_capacity(content.len() + 128);
-                for line in content.lines() {
-                    if rng.gen_bool(0.2) {
-                        let glitch_words = ["ERROR", "VOID", "NULL", "STOP", "FIX ME"];
-                        let word = glitch_words[rng.gen_range(0..glitch_words.len())];
-                        for _ in 0..rng.gen_range(2..=5) {
-                            result.push_str(word);
-                            result.push(' ');
-                        }
-                    } else {
-                        result.push_str(line);
-                    }
-                    result.push('\n');
-                }
-                result
-            }
+            EntityMood::Helpful => Self::inject_helpful_bleed(content, rng),
+            EntityMood::Wounded => Self::inject_wounded_bleed(content, rng),
+            EntityMood::Predatory => Self::inject_predatory_bleed(content, rng),
+            EntityMood::Glitching => Self::inject_glitching_bleed(content, rng),
         }
+    }
+
+    fn inject_helpful_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+        // Occasionally appends a "helpful" note.
+        // ⚡ Bolt Optimization: Uses `String::with_capacity` to prevent re-allocations when appending the note.
+        let mut result = String::with_capacity(content.len() + 32);
+        result.push_str(content);
+        if rng.gen_bool(0.15) {
+            result.push_str("\n\n-- I HOPE THIS HELPS. --\n");
+        }
+        result
+    }
+
+    fn inject_wounded_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+        // Replaces entire lines with pleas, or appends sadness.
+        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+        let mut result = String::with_capacity(content.len() + 128);
+        for line in content.lines() {
+            if rng.gen_bool(0.1) && !line.is_empty() {
+                let words = ["PLEASE", "COME BACK", "LONELY", "HURTS", "COLD"];
+                let word = words[rng.gen_range(0..words.len())];
+                result.push_str(word);
+            } else {
+                result.push_str(line);
+            }
+            result.push('\n');
+        }
+        if rng.gen_bool(0.2) {
+            result.push_str("\nWHY DID THEY LEAVE ME?\n");
+        }
+        result
+    }
+
+    fn inject_predatory_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+        // Aggressive bleed, replaces entire lines with words like "MINE", "STAY", "PREY".
+        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+        let mut result = String::with_capacity(content.len() + 128);
+        for line in content.lines() {
+            if rng.gen_bool(0.15) && !line.is_empty() {
+                let words = ["MINE", "STAY", "HUNGRY", "DEEPER", "CLOSER"];
+                let word = words[rng.gen_range(0..words.len())];
+                result.push_str(word);
+            } else {
+                result.push_str(line);
+            }
+            result.push('\n');
+        }
+        if rng.gen_bool(0.25) {
+            result.push_str("\nYOU CANNOT ESCAPE.\n");
+        }
+        result
+    }
+
+    fn inject_glitching_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+        // Heavy corruption, chaotic repeated words.
+        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+        let mut result = String::with_capacity(content.len() + 128);
+        for line in content.lines() {
+            if rng.gen_bool(0.2) {
+                let glitch_words = ["ERROR", "VOID", "NULL", "STOP", "FIX ME"];
+                let word = glitch_words[rng.gen_range(0..glitch_words.len())];
+                for _ in 0..rng.gen_range(2..=5) {
+                    result.push_str(word);
+                    result.push(' ');
+                }
+            } else {
+                result.push_str(line);
+            }
+            result.push('\n');
+        }
+        result
     }
 }
 
