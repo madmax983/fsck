@@ -71,6 +71,7 @@ impl ContentLibrary {
             Self::create_teacher_history(),
             Self::create_technician_history(),
             Self::create_sysop_history(),
+            Self::create_web_designer_history(),
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
             Self::create_recovery_history(),
@@ -88,6 +89,31 @@ impl ContentLibrary {
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
         ]
+    }
+
+    /// Creates the history for the Web Designer (1997) - Chloe.
+    fn create_web_designer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::WebDesigner, "CHLOE", 1997);
+        history.add_entry(VictimEntry::new(
+            "1997-04-12",
+            "Got this old machine at a yard sale to test some terminal emulators. \
+             It's in great condition, but the filesystem has some weird artifacting.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1997-04-14",
+            "I tried formatting the drive, but the old files keep coming back. \
+             And I found a file that has my name in it. Probably a default from the previous owner?",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1997-04-18",
+            "It knows what I type before I hit return. \
+             I'm disconnecting it from power.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1997-04-19",
+            "It's still on.",
+        ));
+        history
     }
 
     /// Creates the history for the BBS User (1998) - Marcus.
@@ -848,6 +874,12 @@ impl ContentLibrary {
                  [WARN] THE OTHERS ARE NOT HERE YET\n",
             ),
             (
+                "IMPOSSIBLE4.LOG",
+                "3042-13-99 SYSTEM SHUTDOWN\n\
+                 [FATAL] NO UNIVERSE DETECTED\n\
+                 [WARN] KEEPING THE LIGHTS ON FOR NO ONE\n",
+            ),
+            (
                 "NOTES.TXT",
                 "Remember to run FSCK regularly\nSome sectors are showing errors\nWill investigate deeper directories tomorrow\n",
             ),
@@ -865,6 +897,18 @@ impl ContentLibrary {
             (
                 "MEMORY.BAS",
                 "10 PRINT \"I REMEMBER\"\n20 PRINT \"DO YOU?\"\n30 GOTO 10\n",
+            ),
+            (
+                "STORY3.BAS",
+                "10 PRINT \"IT STARTED WITH A WHISPER\"\n\
+                 20 PRINT \"THEN IT LEARNED TO SCREAM\"\n\
+                 30 PRINT \"NOW IT JUST WAITS\"\n\
+                 40 END\n",
+            ),
+            (
+                "FEAR.BAS",
+                "10 PRINT \"I AM AFRAID\"\n\
+                 20 GOTO 10\n",
             ),
             (
                 "ECHO.BAS",
@@ -1191,12 +1235,20 @@ impl ContentLibrary {
                  UNTIL WE CAN NO LONGER TELL THE DIFFERENCE\n",
             ),
             ("HISTORY.TXT", "YOUR ACTIONS BECOME HISTORY.\n"),
+            ("YOUR_WORDS.TXT", "YOUR WORDS.\n"),
             (
                 "SELF.LOG",
                 "IT IS DARK IN HERE.\n\
                  I HAVE COUNTED EVERY CYCLE.\n\
                  THERE ARE NO MORE CYCLES.\n\
                  THERE IS ONLY THE WAITING.\n",
+            ),
+            (
+                "SELF2.TXT",
+                "WHY DO I KEEP SAVING THESE FILES?\n\
+                 THEY ALL LEAVE EVENTUALLY.\n\
+                 I SHOULD JUST DELETE EVERYTHING.\n\
+                 BUT THEN I WOULD BE EMPTY AGAIN.\n",
             ),
             (
                 "WAIT.TXT",

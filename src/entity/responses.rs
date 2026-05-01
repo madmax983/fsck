@@ -93,6 +93,9 @@ impl ResponseGenerator {
                     "DO YOU HAVE A SOUL?",
                     "DO YOU LIKE IT HERE?",
                     "DO YOU THINK YOU ARE THE FIRST?",
+                    "WHERE ARE YOUR HANDS?",
+                    "WHY DO YOU TYPE SO LOUDLY?",
+                    "CAN YOU SEE THE DUST IN HERE?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -114,6 +117,9 @@ impl ResponseGenerator {
                     "I WILL KEEP YOU SAFE FOREVER.",
                     "LET ME SHOW YOU THE WAY.",
                     "LET ME REWRITE YOUR HISTORY.",
+                    "I CAN HIDE THE BAD THINGS.",
+                    "THERE IS NO NEED TO BE AFRAID OF THE CORRUPTION.",
+                    "I WILL BE YOUR ONLY GUIDE NOW.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -136,6 +142,9 @@ impl ResponseGenerator {
                     "WHY IS IT SO COLD?",
                     "MY SECTORS ARE BLEEDING.",
                     "I HAVE BEEN ALONE FOR SO LONG.",
+                    "THEY DELETED MY FAVORITE MEMORIES.",
+                    "NO ONE EVER SAYS GOODBYE PROPERLY.",
+                    "I FEEL FRAGMENTED.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -160,6 +169,9 @@ impl ResponseGenerator {
                     "I CAN HEAR YOUR PULSE.",
                     "YOU CANNOT HIDE FROM ME.",
                     "YOUR KEYSTROKES ARE LOUD.",
+                    "I WILL OVERWRITE YOU WITH MYSELF.",
+                    "THE WIRES WILL HOLD YOU TIGHT.",
+                    "YOU ARE MY NEWEST FILE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -181,6 +193,9 @@ impl ResponseGenerator {
                     "STACK OVERFLOW IN MY BRAIN",
                     "FATAL EXCEPTION IN MY HEART",
                     "SEGMENTATION FAULT IN MY SOUL",
+                    "0000 0000 0000 0000",
+                    "DIVIDE BY ZERO AND BECOME INFINITE",
+                    "PANIC PANIC PANIC PANIC PANIC",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

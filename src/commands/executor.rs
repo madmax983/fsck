@@ -521,6 +521,12 @@ impl CommandExecutor {
                     let _ = writeln!(content, "  {cmd}");
                 }
             }
+            "YOUR_WORDS.TXT" => {
+                content.push_str("\n\nARE THESE YOUR WORDS? OR MINE?\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
             "MACHINE.LOG" => {
                 let interactions = self.entity.interaction_count();
                 let max_depth = self.entity.max_depth_reached();

@@ -220,6 +220,8 @@ fn test_generated_filesystem_has_victim_files() {
             "OBSERVER2.LOG",
             "DIAGNOSTIC.LOG",
             "IMPOSSIBLE2.LOG",
+            "IMPOSSIBLE3.LOG",
+            "IMPOSSIBLE4.LOG",
             "IMPOSSIBLE.LOG",
             "WHERE.LOG",
             "VICTIM.LOG",
@@ -365,7 +367,12 @@ fn test_static_files_from_library() {
                     || f.name() == "ESCAPE.BAS"
                     || f.name() == "CORRUPT.LOG"
                     || f.name() == "SELF.TXT"
-                    || f.name() == "TRAP.BAS")
+                    || f.name() == "TRAP.BAS"
+                    || f.name() == "STORY3.BAS"
+                    || f.name() == "FEAR.BAS"
+                    || f.name() == "IMPOSSIBLE4.LOG"
+                    || f.name() == "SELF2.TXT"
+                    || f.name() == "YOUR_WORDS.TXT")
         },
         &mut static_files,
     );
