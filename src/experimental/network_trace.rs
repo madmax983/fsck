@@ -68,6 +68,35 @@ impl NetworkTrace {
             return;
         }
 
+        let ip_0 = rng.gen_range(10..192);
+        let ip_1 = rng.gen_range(0..255);
+        let ip_2 = rng.gen_range(0..255);
+        let ip_3 = rng.gen_range(1..254);
+
+        match layer {
+            EscalationLayer::Surface => {
+                Self::generate_surface_host(output, rng, ip_0, ip_1, ip_2, ip_3);
+            }
+            EscalationLayer::Corruption => {
+                Self::generate_corruption_host(output, rng, ip_0, ip_1, ip_2, ip_3);
+            }
+            EscalationLayer::Presence => {
+                Self::generate_presence_host(output, rng, ip_0, ip_1, ip_2, ip_3);
+            }
+            EscalationLayer::Infection => {
+                Self::generate_infection_host(output, rng);
+            }
+        }
+    }
+
+    fn generate_surface_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        ip_0: u32,
+        ip_1: u32,
+        ip_2: u32,
+        ip_3: u32,
+    ) {
         let normal_hosts = [
             "gateway.local",
             "router.local",
@@ -79,78 +108,98 @@ impl NetworkTrace {
             "node-beta",
             "core-router",
         ];
+        let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
+        let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
+    }
 
-        let corrupted_hosts = [
-            "unknown-host",
-            "loopback_anomaly",
-            "dead_end",
-            "sector_null",
-            "orphaned_node",
-            "time_out_of_sync",
-            "missing_link",
-        ];
+    fn generate_corruption_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        ip_0: u32,
+        ip_1: u32,
+        ip_2: u32,
+        ip_3: u32,
+    ) {
+        if rng.gen_bool(0.3) {
+            let corrupted_hosts = [
+                "unknown-host",
+                "loopback_anomaly",
+                "dead_end",
+                "sector_null",
+                "orphaned_node",
+                "time_out_of_sync",
+                "missing_link",
+            ];
+            let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
+            let _ = write!(output, "{host} [???.???.???.???]");
+        } else {
+            Self::generate_surface_host(output, rng, ip_0, ip_1, ip_2, ip_3);
+        }
+    }
 
-        let presence_hosts = [
-            "i_see_you",
-            "they_went_this_way",
-            "watching_node",
-            "breathing_port",
-            "listener_active",
-            "you_are_close",
-            "dont_stop",
-        ];
+    fn generate_presence_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        ip_0: u32,
+        ip_1: u32,
+        ip_2: u32,
+        ip_3: u32,
+    ) {
+        if rng.gen_bool(0.4) {
+            let presence_hosts = [
+                "i_see_you",
+                "they_went_this_way",
+                "watching_node",
+                "breathing_port",
+                "listener_active",
+                "you_are_close",
+                "dont_stop",
+            ];
+            let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
+            let _ = write!(output, "{host}");
+        } else if rng.gen_bool(0.5) {
+            let corrupted_hosts = [
+                "unknown-host",
+                "loopback_anomaly",
+                "dead_end",
+                "sector_null",
+                "orphaned_node",
+                "time_out_of_sync",
+                "missing_link",
+            ];
+            let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
+            let _ = write!(output, "{host} [???.???.???.???]");
+        } else {
+            Self::generate_surface_host(output, rng, ip_0, ip_1, ip_2, ip_3);
+        }
+    }
 
-        let infection_hosts = [
-            "YOU_CANNOT_LEAVE",
-            "IT_HURTS",
-            "FLESH_AND_WIRE",
-            "CONSUME_CONNECTION",
-            "WE_ARE_ONE",
-            "NO_WAY_OUT",
-            "SYSTEM_FAILURE",
-            "BLEEDING_SOCKET",
-        ];
-
-        let ip_0 = rng.gen_range(10..192);
-        let ip_1 = rng.gen_range(0..255);
-        let ip_2 = rng.gen_range(0..255);
-        let ip_3 = rng.gen_range(1..254);
-
-        match layer {
-            EscalationLayer::Surface => {
-                let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
-            }
-            EscalationLayer::Corruption => {
-                if rng.gen_bool(0.3) {
-                    let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
-                    let _ = write!(output, "{host} [???.???.???.???]");
-                } else {
-                    let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                    let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
-                }
-            }
-            EscalationLayer::Presence => {
-                if rng.gen_bool(0.4) {
-                    let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
-                    let _ = write!(output, "{host}");
-                } else if rng.gen_bool(0.5) {
-                    let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
-                    let _ = write!(output, "{host} [???.???.???.???]");
-                } else {
-                    let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                    let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
-                }
-            }
-            EscalationLayer::Infection => {
-                if rng.gen_bool(0.6) {
-                    let host = infection_hosts[rng.gen_range(0..infection_hosts.len())];
-                    let _ = write!(output, "{host} [0.0.0.0]");
-                } else {
-                    let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
-                    let _ = write!(output, "{host}");
-                }
-            }
+    fn generate_infection_host(output: &mut String, rng: &mut ChaCha8Rng) {
+        if rng.gen_bool(0.6) {
+            let infection_hosts = [
+                "YOU_CANNOT_LEAVE",
+                "IT_HURTS",
+                "FLESH_AND_WIRE",
+                "CONSUME_CONNECTION",
+                "WE_ARE_ONE",
+                "NO_WAY_OUT",
+                "SYSTEM_FAILURE",
+                "BLEEDING_SOCKET",
+            ];
+            let host = infection_hosts[rng.gen_range(0..infection_hosts.len())];
+            let _ = write!(output, "{host} [0.0.0.0]");
+        } else {
+            let presence_hosts = [
+                "i_see_you",
+                "they_went_this_way",
+                "watching_node",
+                "breathing_port",
+                "listener_active",
+                "you_are_close",
+                "dont_stop",
+            ];
+            let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
+            let _ = write!(output, "{host}");
         }
     }
 }

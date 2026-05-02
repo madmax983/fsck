@@ -35,70 +35,17 @@ impl NetStatGenerator {
     }
 
     fn generate_connection(output: &mut String, rng: &mut ChaCha8Rng, layer: EscalationLayer) {
-        let normal_states = ["ESTABLISHED", "TIME_WAIT", "LISTEN", "CLOSE_WAIT"];
-        let corrupted_states = ["ORPHANED", "TIMEOUT", "SYNC_ERR", "UNREACHABLE"];
-        let presence_states = ["WATCHING", "LISTENING", "BREATHING", "WAITING"];
-        let infection_states = ["BLEEDING", "CONSUMED", "NO_ESCAPE", "FLESH_BOUND", "DEAD"];
-
         let proto = if rng.gen_bool(0.8) { "TCP" } else { "UDP" };
         let local_port = rng.gen_range(1024..65535);
         let remote_port = rng.gen_range(80..443);
         let local_ip = format!("192.168.1.{}", rng.gen_range(10..20));
 
-        let state;
-        let remote_addr;
-
-        match layer {
-            EscalationLayer::Surface => {
-                state = normal_states[rng.gen_range(0..normal_states.len())];
-                remote_addr = format!(
-                    "{}.{}.{}.{}:{}",
-                    rng.gen_range(10..192),
-                    rng.gen_range(0..255),
-                    rng.gen_range(0..255),
-                    rng.gen_range(1..254),
-                    remote_port
-                );
-            }
-            EscalationLayer::Corruption => {
-                if rng.gen_bool(0.4) {
-                    state = corrupted_states[rng.gen_range(0..corrupted_states.len())];
-                    remote_addr = format!("???.???.???.???:{remote_port}");
-                } else {
-                    state = normal_states[rng.gen_range(0..normal_states.len())];
-                    remote_addr = format!(
-                        "{}.{}.{}.{}:{}",
-                        rng.gen_range(10..192),
-                        rng.gen_range(0..255),
-                        rng.gen_range(0..255),
-                        rng.gen_range(1..254),
-                        remote_port
-                    );
-                }
-            }
-            EscalationLayer::Presence => {
-                let presence_roll = rng.gen_range(0..100);
-                if presence_roll < 40 {
-                    state = presence_states[rng.gen_range(0..presence_states.len())];
-                    remote_addr = String::from("SOMEWHERE_CLOSE");
-                } else if presence_roll < 80 {
-                    state = corrupted_states[rng.gen_range(0..corrupted_states.len())];
-                    remote_addr = String::from("UNKNOWN_HOST");
-                } else {
-                    state = normal_states[rng.gen_range(0..normal_states.len())];
-                    remote_addr = format!("10.0.0.{}:{remote_port}", rng.gen_range(1..254));
-                }
-            }
-            EscalationLayer::Infection => {
-                if rng.gen_bool(0.7) {
-                    state = infection_states[rng.gen_range(0..infection_states.len())];
-                    remote_addr = String::from("INSIDE_YOUR_WALLS");
-                } else {
-                    state = presence_states[rng.gen_range(0..presence_states.len())];
-                    remote_addr = String::from("RIGHT_BEHIND_YOU");
-                }
-            }
-        }
+        let (state, remote_addr) = match layer {
+            EscalationLayer::Surface => Self::get_surface_connection(rng, remote_port),
+            EscalationLayer::Corruption => Self::get_corruption_connection(rng, remote_port),
+            EscalationLayer::Presence => Self::get_presence_connection(rng, remote_port),
+            EscalationLayer::Infection => Self::get_infection_connection(rng),
+        };
 
         // ⚡ Bolt Optimization: Use `write!` directly to the output buffer instead of allocating
         // an intermediate String with `format!` for the combined IP and port. We handle padding manually.
@@ -121,6 +68,65 @@ impl NetStatGenerator {
             let _ = write!(output, " ");
         }
         let _ = writeln!(output, "  {remote_addr:<21}  {state}");
+    }
+
+    fn get_surface_connection(rng: &mut ChaCha8Rng, remote_port: u16) -> (&'static str, String) {
+        let normal_states = ["ESTABLISHED", "TIME_WAIT", "LISTEN", "CLOSE_WAIT"];
+        let state = normal_states[rng.gen_range(0..normal_states.len())];
+        let remote_addr = format!(
+            "{}.{}.{}.{}:{}",
+            rng.gen_range(10..192),
+            rng.gen_range(0..255),
+            rng.gen_range(0..255),
+            rng.gen_range(1..254),
+            remote_port
+        );
+        (state, remote_addr)
+    }
+
+    fn get_corruption_connection(rng: &mut ChaCha8Rng, remote_port: u16) -> (&'static str, String) {
+        if rng.gen_bool(0.4) {
+            let corrupted_states = ["ORPHANED", "TIMEOUT", "SYNC_ERR", "UNREACHABLE"];
+            let state = corrupted_states[rng.gen_range(0..corrupted_states.len())];
+            let remote_addr = format!("???.???.???.???:{remote_port}");
+            (state, remote_addr)
+        } else {
+            Self::get_surface_connection(rng, remote_port)
+        }
+    }
+
+    fn get_presence_connection(rng: &mut ChaCha8Rng, remote_port: u16) -> (&'static str, String) {
+        let presence_roll = rng.gen_range(0..100);
+        if presence_roll < 40 {
+            let presence_states = ["WATCHING", "LISTENING", "BREATHING", "WAITING"];
+            let state = presence_states[rng.gen_range(0..presence_states.len())];
+            let remote_addr = String::from("SOMEWHERE_CLOSE");
+            (state, remote_addr)
+        } else if presence_roll < 80 {
+            let corrupted_states = ["ORPHANED", "TIMEOUT", "SYNC_ERR", "UNREACHABLE"];
+            let state = corrupted_states[rng.gen_range(0..corrupted_states.len())];
+            let remote_addr = String::from("UNKNOWN_HOST");
+            (state, remote_addr)
+        } else {
+            let normal_states = ["ESTABLISHED", "TIME_WAIT", "LISTEN", "CLOSE_WAIT"];
+            let state = normal_states[rng.gen_range(0..normal_states.len())];
+            let remote_addr = format!("10.0.0.{}:{remote_port}", rng.gen_range(1..254));
+            (state, remote_addr)
+        }
+    }
+
+    fn get_infection_connection(rng: &mut ChaCha8Rng) -> (&'static str, String) {
+        if rng.gen_bool(0.7) {
+            let infection_states = ["BLEEDING", "CONSUMED", "NO_ESCAPE", "FLESH_BOUND", "DEAD"];
+            let state = infection_states[rng.gen_range(0..infection_states.len())];
+            let remote_addr = String::from("INSIDE_YOUR_WALLS");
+            (state, remote_addr)
+        } else {
+            let presence_states = ["WATCHING", "LISTENING", "BREATHING", "WAITING"];
+            let state = presence_states[rng.gen_range(0..presence_states.len())];
+            let remote_addr = String::from("RIGHT_BEHIND_YOU");
+            (state, remote_addr)
+        }
     }
 }
 

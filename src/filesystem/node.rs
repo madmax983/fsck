@@ -65,7 +65,6 @@ impl FileNode {
         }
     }
 
-
     pub fn name(&self) -> &str {
         &self.name
     }
