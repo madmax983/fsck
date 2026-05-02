@@ -40,6 +40,8 @@ pub mod update;
 pub mod voice;
 #[cfg(feature = "nova")]
 pub mod whoami;
+#[cfg(feature = "nova")]
+pub mod weather;
 
 #[cfg(feature = "nova")]
 pub use analyze::SentimentAnalyzer;
@@ -82,6 +84,8 @@ pub use update::SystemUpdateSimulator;
 pub use voice::VoiceSynthesizer;
 #[cfg(feature = "nova")]
 pub use whoami::WhoAmIGenerator;
+#[cfg(feature = "nova")]
+pub use weather::WeatherSimulator;
 #[cfg(feature = "nova")]
 pub mod radio;
 #[cfg(feature = "nova")]

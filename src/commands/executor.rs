@@ -108,6 +108,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_weather(&self) -> CommandResult {
+        let results = crate::experimental::WeatherSimulator::generate_forecast(&self.entity, 0xF5C0_0000);
+        CommandResult::success(results)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_defrag(&self) -> CommandResult {
         let mut defrag_output =
             crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
@@ -233,6 +239,8 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_search(arg))
+        } else if cmd_word.eq_ignore_ascii_case("WEATHER") && arg.is_empty() {
+            Some(self.handle_nova_weather())
         } else if cmd_word.eq_ignore_ascii_case("DEFRAG") && arg.is_empty() {
             Some(self.handle_nova_defrag())
         } else if (cmd_word.eq_ignore_ascii_case("UNDELETE")

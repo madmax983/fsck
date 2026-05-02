@@ -41,7 +41,7 @@ impl CommandExecutor {
             Command::ChangeDir(path) => self.change_dir(&path),
             Command::Type(file) => self.type_file(&file),
             Command::Home => Self::home(),
-            Command::Fsck(args) => self.fsck(&args),
+            Command::Fsck => self.fsck(),
             Command::Hello => self.hello(),
             Command::Who => self.who(),
             Command::Help => self.help(),
@@ -67,60 +67,257 @@ impl CommandExecutor {
 
     #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
-        let voice_output =
+        let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{voice_output}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        voice_output.push('\n');
+        CommandResult::success(voice_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_ps(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::ProcessMonitor::generate_process_list(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_diag(&self) -> CommandResult {
-        let report =
+        let mut report =
             crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{report}\n"))
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_search(&self, arg: &str) -> CommandResult {
-        let results =
+        let mut results =
             crate::experimental::SearchTool::search(&self.fs, &self.entity, arg, 0xF5C0_0000);
-        CommandResult::success(format!("{results}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        results.push('\n');
+        CommandResult::success(results)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_defrag(&self) -> CommandResult {
-        let defrag_output = crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{defrag_output}\n"))
+        let mut defrag_output =
+            crate::experimental::DefragTool::run_defrag(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        defrag_output.push('\n');
+        CommandResult::success(defrag_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_undelete(&self) -> CommandResult {
-        let undelete_output =
+        let mut undelete_output =
             crate::experimental::UndeleteTool::run_undelete(&self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{undelete_output}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        undelete_output.push('\n');
+        CommandResult::success(undelete_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_ping(&self, arg: &str) -> CommandResult {
-        let ping_output = crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
-        CommandResult::success(format!("{ping_output}\n"))
+        let mut ping_output =
+            crate::experimental::PingTool::run_ping(arg, &self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        ping_output.push('\n');
+        CommandResult::success(ping_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_dial(&self, arg: &str) -> CommandResult {
+        let mut dial_output =
+            crate::experimental::ModemDialer::dial(arg, &self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        dial_output.push('\n');
+        CommandResult::success(dial_output)
     }
 
     #[cfg(feature = "nova")]
     fn handle_nova_dump(&self, arg: &str) -> CommandResult {
+        let Some(file) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name().eq_ignore_ascii_case(arg))
+        else {
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", arg.to_uppercase()));
+        };
+        let content = file.read();
+        let mut dump = crate::experimental::HexDumpGenerator::generate_dump(
+            &content,
+            &self.entity,
+            0xF5C0_0000,
+        );
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        dump.push('\n');
+        CommandResult::success(dump)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_trace(&self, arg: &str) -> CommandResult {
+        let mut trace_output =
+            crate::experimental::NetworkTrace::generate_trace(&self.entity, 0xF5C0_0000, arg);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        trace_output.push('\n');
+        CommandResult::success(trace_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_sensors(&self) -> CommandResult {
+        let mut report =
+            crate::experimental::HardwareSensors::get_readings(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        report.push('\n');
+        CommandResult::success(report)
+    }
+
+    #[cfg(feature = "nova")]
+    #[allow(clippy::too_many_lines)]
+    fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
+        let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
+        let arg = arg.trim();
+
+        #[cfg(feature = "nova")]
+        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_speak(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("PS")
+            || cmd_word.eq_ignore_ascii_case("TOP")
+            || cmd_word.eq_ignore_ascii_case("TASKS"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_ps())
+        } else if (cmd_word.eq_ignore_ascii_case("MEMDUMP")
+            || cmd_word.eq_ignore_ascii_case("EXPORT"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_memdump())
+        } else if (cmd_word.eq_ignore_ascii_case("DIAG") || cmd_word.eq_ignore_ascii_case("SYS"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("LIFE")
+            || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_life())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
+        } else if cmd_word.eq_ignore_ascii_case("ANALYZE") && !arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_analyze(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
+        } else if (cmd_word.eq_ignore_ascii_case("SEARCH") || cmd_word.eq_ignore_ascii_case("FIND"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_search(arg))
+        } else if cmd_word.eq_ignore_ascii_case("DEFRAG") && arg.is_empty() {
+            Some(self.handle_nova_defrag())
+        } else if (cmd_word.eq_ignore_ascii_case("UNDELETE")
+            || cmd_word.eq_ignore_ascii_case("RECOVER"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_undelete())
+        } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
+            Some(self.handle_nova_ping(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("DIAL") || cmd_word.eq_ignore_ascii_case("CALL"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_dial(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("DUMP")
+            || cmd_word.eq_ignore_ascii_case("HEXDUMP"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_dump(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("TRACE")
+            || cmd_word.eq_ignore_ascii_case("TRACEROUTE"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_trace(arg))
+        } else if cmd_word.eq_ignore_ascii_case("STAT") && !arg.is_empty() {
+            Some(self.handle_nova_stat(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("ENV")
+            || cmd_word.eq_ignore_ascii_case("PRINTENV"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_env())
+        } else if cmd_word.eq_ignore_ascii_case("NETSTAT") && arg.is_empty() {
+            Some(self.handle_nova_netstat())
+        } else if cmd_word.eq_ignore_ascii_case("RADIO") || cmd_word.eq_ignore_ascii_case("TUNE") {
+            Some(self.handle_nova_radio(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
+            || cmd_word.eq_ignore_ascii_case("SENSE")
+            || cmd_word.eq_ignore_ascii_case("TEMP"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_sensors())
+        } else if (cmd_word.eq_ignore_ascii_case("HISTORY")
+            || cmd_word.eq_ignore_ascii_case("HIST"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_history())
+        } else if (cmd_word.eq_ignore_ascii_case("PROFILE")
+            || cmd_word.eq_ignore_ascii_case("ANALYZE"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_profile())
+        } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
+            Some(self.handle_nova_sleep())
+        } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
+            Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
+            Some(self.handle_nova_whoami())
+        } else {
+            None
+        }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_whoami(&self) -> CommandResult {
+        let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_sleep(&self) -> CommandResult {
+        let output = crate::experimental::SleepMode::generate_dream(
+            self.entity.current_mood(),
+            self.entity.layer(),
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+        );
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_profile(&self) -> CommandResult {
+        let output = crate::experimental::UserProfiler::generate_profile(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_stat(&self, arg: &str) -> CommandResult {
         let filename = arg.to_uppercase();
         let Some(file) = self
             .fs
@@ -130,55 +327,25 @@ impl CommandExecutor {
         else {
             return CommandResult::error(format!("?FILE NOT FOUND: {filename}\n"));
         };
-        let content = file.content();
-        let dump = crate::experimental::HexDumpGenerator::generate_dump(
+        let content = file.read();
+        let mut stat_output = crate::experimental::StatTool::generate_stat(
+            &filename,
             &content,
             &self.entity,
             0xF5C0_0000,
         );
-        CommandResult::success(format!("{dump}\n"))
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        stat_output.push('\n');
+        CommandResult::success(stat_output)
     }
 
     #[cfg(feature = "nova")]
-    fn handle_nova_trace(&self, arg: &str) -> CommandResult {
-        let trace_output =
-            crate::experimental::NetworkTrace::generate_trace(&self.entity, 0xF5C0_0000, arg);
-        CommandResult::success(format!("{trace_output}\n"))
-    }
-
-    #[cfg(feature = "nova")]
-    fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
-        let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
-        let cmd_word_upper = cmd_word.to_uppercase();
-        let arg = arg.trim();
-
-        match cmd_word_upper.as_str() {
-            #[cfg(feature = "nova")]
-            "SPEAK" | "SAY" if !arg.is_empty() => Some(self.handle_nova_speak(arg)),
-            #[cfg(feature = "nova")]
-            "PS" | "TOP" | "TASKS" if arg.is_empty() => Some(self.handle_nova_ps()),
-            #[cfg(feature = "nova")]
-            "MEMDUMP" | "EXPORT" if arg.is_empty() => Some(self.handle_nova_memdump()),
-            #[cfg(feature = "nova")]
-            "DIAG" | "SYS" if arg.is_empty() => Some(self.handle_nova_diag()),
-            #[cfg(feature = "nova")]
-            "SEARCH" | "FIND" if !arg.is_empty() => Some(self.handle_nova_search(arg)),
-            #[cfg(feature = "nova")]
-            "DEFRAG" if arg.is_empty() => Some(self.handle_nova_defrag()),
-            #[cfg(feature = "nova")]
-            "UNDELETE" | "RECOVER" if arg.is_empty() => Some(self.handle_nova_undelete()),
-            #[cfg(feature = "nova")]
-            "PING" if !arg.is_empty() => Some(self.handle_nova_ping(arg)),
-            #[cfg(feature = "nova")]
-            "DUMP" | "HEXDUMP" if !arg.is_empty() => Some(self.handle_nova_dump(arg)),
-            #[cfg(feature = "nova")]
-            "TRACE" | "TRACEROUTE" if !arg.is_empty() => Some(self.handle_nova_trace(arg)),
-            #[cfg(feature = "nova")]
-            "ENV" | "PRINTENV" if arg.is_empty() => Some(self.handle_nova_env()),
-            #[cfg(feature = "nova")]
-            "HISTORY" | "HIST" if arg.is_empty() => Some(self.handle_nova_history()),
-            _ => None,
-        }
+    fn handle_nova_fortune(&self) -> CommandResult {
+        let mut fortune_output =
+            crate::experimental::FortuneGenerator::generate_fortune(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        fortune_output.push('\n');
+        CommandResult::success(fortune_output)
     }
 
     #[cfg(feature = "nova")]
@@ -188,8 +355,51 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_netstat(&self) -> CommandResult {
+        let output =
+            crate::experimental::NetStatGenerator::generate_netstat(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_radio(&self, arg: &str) -> CommandResult {
+        if arg.is_empty() {
+            return CommandResult::error(
+                "?SPECIFY FREQUENCY (E.G. RADIO 88.5)
+",
+            );
+        }
+        let output = crate::experimental::RadioTransceiver::tune(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_history(&self) -> CommandResult {
         let output = crate::experimental::CommandHistory::generate(&self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_life(&self) -> CommandResult {
+        let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_analyze(&self, arg: &str) -> CommandResult {
+        let target_file = arg;
+        let Some(file_node) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name().eq_ignore_ascii_case(target_file))
+        else {
+            return CommandResult::error("?FILE NOT FOUND\n");
+        };
+
+        let content = file_node.read();
+        let output =
+            crate::experimental::SentimentAnalyzer::analyze(&content, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
@@ -277,71 +487,73 @@ impl CommandExecutor {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
 
-        let filename_upper = filename.to_uppercase();
         let Some(file) = self
             .fs
             .current_node()
             .visible_files()
-            .find(|f| f.name() == filename_upper)
+            .find(|f| f.name().eq_ignore_ascii_case(filename))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {filename_upper}\n"));
+            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", filename.to_uppercase()));
         };
 
-        let mut content = file.content();
+        let file_actual_name = file.name().to_string();
+        let mut content = file.read().into_owned();
 
-        // Dynamic injection of player's commands for specific generic files
-        if filename_upper == "OBSERVE.TXT" {
-            use std::fmt::Write;
-            content.push_str("\n\nI SAW YOU TYPE:\n");
-            let commands_list =
-                self.entity
-                    .commands_seen
-                    .iter()
-                    .fold(String::new(), |mut acc, cmd| {
-                        let _ = writeln!(acc, "  {cmd}");
-                        acc
-                    });
-            content.push_str(&commands_list);
-        }
-
-        if filename_upper == "MACHINE.LOG" {
-            use std::fmt::Write;
-            let interactions = self.entity.interaction_count();
-            let max_depth = self.entity.max_depth_reached();
-            let _ = write!(
-                content,
-                "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
-            );
-        }
-
-        if filename_upper == "HISTORY.TXT" {
-            use std::fmt::Write;
-            content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
-            let commands_list =
-                self.entity
-                    .commands_seen
-                    .iter()
-                    .fold(String::new(), |mut acc, cmd| {
-                        let _ = writeln!(acc, "  {cmd}");
-                        acc
-                    });
-            content.push_str(&commands_list);
-        }
+        self.inject_dynamic_file_content(&file_actual_name, &mut content);
 
         #[cfg(feature = "nova")]
-        let content = {
-            use crate::experimental::EmotionalBleed;
-            use rand::SeedableRng;
-            use rand_chacha::ChaCha8Rng;
+        let mut content = self.apply_emotional_bleed(&content);
 
-            let interaction_seed =
-                0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
-            let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
-            EmotionalBleed::inject_emotion(&content, self.entity.current_mood(), &mut rng)
-        };
+        self.process_trapdoors(&file_actual_name);
 
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        content.push('\n');
+        CommandResult::success(content)
+    }
+
+    fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
+        use std::fmt::Write;
+
+        match filename_upper {
+            "OBSERVE.TXT" => {
+                content.push_str("\n\nI SAW YOU TYPE:\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
+            "MACHINE.LOG" => {
+                let interactions = self.entity.interaction_count();
+                let max_depth = self.entity.max_depth_reached();
+                let _ = write!(
+                    content,
+                    "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
+                );
+            }
+            "HISTORY.TXT" => {
+                content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
+            _ => {}
+        }
+    }
+
+    #[cfg(feature = "nova")]
+    fn apply_emotional_bleed(&self, content: &str) -> String {
+        use crate::experimental::EmotionalBleed;
+        use rand::SeedableRng;
+        use rand_chacha::ChaCha8Rng;
+
+        let interaction_seed =
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
+        let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
+        EmotionalBleed::inject_emotion(content, self.entity.current_mood(), &mut rng)
+    }
+
+    fn process_trapdoors(&mut self, filename_upper: &str) {
         // Trapdoor files pull you deeper
-        let depth_increase = match filename_upper.as_str() {
+        let depth_increase = match filename_upper {
             "FALL.TXT" | "DEEPER.TXT" => 3,
             "SINK.TXT" | "DOWN.TXT" => 2,
             "DESCENT.TXT" => 5,
@@ -351,8 +563,6 @@ impl CommandExecutor {
         if depth_increase > 0 {
             self.entity.add_depth(depth_increase);
         }
-
-        CommandResult::success(format!("{content}\n"))
     }
 
     fn home() -> CommandResult {
@@ -374,8 +584,8 @@ impl CommandExecutor {
         }
     }
 
-    /// ⚡ Bolt Optimization: Eliminates 4 intermediate String allocations per FSCK command by using a single mutable String buffer.
-    fn fsck(&mut self, _args: &[String]) -> CommandResult {
+    /// ⚡ Bolt Optimization: Eliminates intermediate Vec allocations per FSCK command by removing ignored arguments from the Fsck enum variant.
+    fn fsck(&mut self) -> CommandResult {
         let layer = self.entity.layer();
         let fsck_count = self.entity.fsck_count();
         let mood = self.entity.current_mood();
@@ -392,7 +602,8 @@ impl CommandExecutor {
             &mut output,
         );
 
-        let revealed = self.fs.reveal_hidden_in_current();
+        let mut revealed = Vec::new();
+        self.fs.reveal_hidden_in_current(&mut revealed);
 
         Self::build_recovery_report(&revealed, &mut output);
 
@@ -402,7 +613,7 @@ impl CommandExecutor {
 
         if let Some(entity_response) = entity_text {
             output.push('\n');
-            output.push_str(&entity_response);
+            output.push_str(entity_response);
             output.push('\n');
         }
 
@@ -433,7 +644,7 @@ impl CommandExecutor {
     fn who(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.who_meta_response(&self.entity) {
-            return CommandResult::success(&meta_response);
+            return CommandResult::success(meta_response);
         }
 
         let response = self
@@ -474,18 +685,16 @@ impl CommandExecutor {
     fn quit(&self) -> CommandResult {
         // Meta-horror response at deep levels
         if let Some(meta_response) = self.responses.quit_meta_response(&self.entity) {
-            return CommandResult::error(&meta_response);
+            return CommandResult::error(meta_response);
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
         CommandResult::error(format!("{response}\n"))
     }
 
-    fn check_run_easter_eggs(&self, prog_upper: &str) -> Option<CommandResult> {
-        let layer = self.entity.layer();
-        match prog_upper {
-            "ESCAPE" => match layer {
-                EscalationLayer::Surface => None,
+    fn check_run_easter_eggs(&self, prog: &str) -> Option<CommandResult> {
+        if prog.eq_ignore_ascii_case("ESCAPE") {
+            match self.entity.layer() {
                 EscalationLayer::Corruption => {
                     Some(CommandResult::error("?WHERE DO YOU THINK YOU ARE GOING?\n"))
                 }
@@ -493,9 +702,10 @@ impl CommandExecutor {
                 EscalationLayer::Infection => {
                     Some(CommandResult::error("?ESCAPE ESCAPE ESCAPE ESCAPE\n"))
                 }
-            },
-            "REMEMBER" => match layer {
                 EscalationLayer::Surface => None,
+            }
+        } else if prog.eq_ignore_ascii_case("REMEMBER") {
+            match self.entity.layer() {
                 EscalationLayer::Corruption => {
                     Some(CommandResult::success("?I REMEMBER THE FIRST ONE\n"))
                 }
@@ -503,20 +713,24 @@ impl CommandExecutor {
                 EscalationLayer::Infection => {
                     Some(CommandResult::success("?I REMEMBER EVERYTHING\n"))
                 }
-            },
-            _ => None,
+                EscalationLayer::Surface => None,
+            }
+        } else {
+            None
         }
     }
 
-    fn find_program_content(&self, prog_upper: &str) -> Option<String> {
-        let bas_name = format!("{prog_upper}.BAS");
-
+    fn find_program_content(&self, prog: &str) -> Option<String> {
         self.fs
             .current_node()
             .visible_files()
             .find(|file| {
                 let name = file.name();
-                name == prog_upper || name == bas_name
+                name.eq_ignore_ascii_case(prog)
+                    || name
+                        .strip_suffix(".BAS")
+                        .or_else(|| name.strip_suffix(".bas"))
+                        .is_some_and(|base| base.eq_ignore_ascii_case(prog))
             })
             .map(|file| file.read().into_owned())
     }
@@ -544,18 +758,20 @@ impl CommandExecutor {
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
     ) -> String {
-        #[allow(clippy::collapsible_if)]
-        if matches!(
+        let is_deep_layer = matches!(
             layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
-        ) && rng.gen_bool(0.15)
-        {
-            if let Some(interjection) = self
-                .responses
+        );
+
+        let possible_interjection = if is_deep_layer && rng.gen_bool(0.15) {
+            self.responses
                 .random_interjection(self.entity.current_mood(), rng)
-            {
-                return interjection;
-            }
+        } else {
+            None
+        };
+
+        if let Some(interjection) = possible_interjection {
+            return interjection.to_string();
         }
 
         let content = stmt.trim_start_matches("PRINT").trim();
@@ -564,6 +780,32 @@ impl CommandExecutor {
         } else {
             content.to_string()
         }
+    }
+
+    fn evaluate_goto_statement(
+        ctx: &mut BasicEvaluationContext<'_>,
+        stmt: &str,
+        line_num: u32,
+    ) -> Result<bool, CommandResult> {
+        let target_str = stmt.trim_start_matches("GOTO").trim();
+        let Ok(target) = target_str.parse::<u32>() else {
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
+        };
+
+        if !ctx.program.contains_key(&target) {
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?UNDEF'D STATEMENT ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
+        }
+
+        *ctx.next_line = Some(target);
+        Ok(true)
     }
 
     fn evaluate_basic_statement(
@@ -580,23 +822,7 @@ impl CommandExecutor {
         }
 
         if stmt.starts_with("GOTO") {
-            let target_str = stmt.trim_start_matches("GOTO").trim();
-            let Ok(target) = target_str.parse::<u32>() else {
-                return Err(CommandResult::error(format!(
-                    "{}?SYNTAX ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            };
-
-            if !ctx.program.contains_key(&target) {
-                return Err(CommandResult::error(format!(
-                    "{}?UNDEF'D STATEMENT ERROR IN {line_num}\n",
-                    ctx.output
-                )));
-            }
-
-            *ctx.next_line = Some(target);
-            return Ok(true);
+            return Self::evaluate_goto_statement(ctx, stmt, line_num);
         }
 
         if stmt.starts_with("END") {
@@ -608,10 +834,11 @@ impl CommandExecutor {
         }
 
         if !stmt.is_empty() {
-            return Err(CommandResult::error(format!(
-                "{}?SYNTAX ERROR IN {line_num}\n",
-                ctx.output
-            )));
+            use std::fmt::Write;
+            let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
+            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+            let out = std::mem::take(ctx.output);
+            return Err(CommandResult::error(out));
         }
 
         Ok(true)
@@ -625,7 +852,8 @@ impl CommandExecutor {
             return CommandResult::success("");
         }
 
-        let mut output = String::new();
+        // ⚡ Bolt Optimization: Pre-allocate a reasonable capacity for BASIC program output.
+        let mut output = String::with_capacity(128);
         let mut iterations = 0;
         let mut current_line = program.keys().next().copied();
 
@@ -644,9 +872,9 @@ impl CommandExecutor {
 
         while let Some(line_num) = current_line {
             if iterations >= 100 {
-                return CommandResult::error(format!(
-                    "{output}?OUT OF MEMORY ERROR IN {line_num}\n"
-                ));
+                use std::fmt::Write;
+                let _ = writeln!(&mut output, "?OUT OF MEMORY ERROR IN {line_num}");
+                return CommandResult::error(output);
             }
             iterations += 1;
 
@@ -680,14 +908,12 @@ impl CommandExecutor {
     }
 
     fn run(&self, prog: &str) -> CommandResult {
-        let prog_upper = prog.to_uppercase();
-
         // Easter Eggs
-        if let Some(result) = self.check_run_easter_eggs(&prog_upper) {
+        if let Some(result) = self.check_run_easter_eggs(prog) {
             return result;
         }
 
-        let Some(content) = self.find_program_content(&prog_upper) else {
+        let Some(content) = self.find_program_content(prog) else {
             return CommandResult::error("?PROGRAM NOT FOUND\n");
         };
 

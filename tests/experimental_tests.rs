@@ -224,3 +224,24 @@ fn test_hardware_sensors_escalation() {
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
 }
+
+#[test]
+fn test_weather_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = fsck::experimental::WeatherSimulator::generate_forecast(&entity, seed);
+    assert!(surface_report.contains("F, CLEAR SKIES") || surface_report.contains("F, PARTLY CLOUDY") || surface_report.contains("F, LIGHT RAIN"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = fsck::experimental::WeatherSimulator::generate_forecast(&entity, seed);
+    assert!(
+        infection_report.contains("BLOOD RAIN")
+            || infection_report.contains("THE WINDOWS ARE BREATHING")
+            || infection_report.contains("ACID FOG")
+            || infection_report.contains("TEETH FALLING LIKE HAIL")
+    );
+}
