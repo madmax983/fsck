@@ -8,6 +8,17 @@ use std::fmt::Write;
 pub struct SearchTool;
 
 impl SearchTool {
+    /// Finds the byte index of a case-insensitive substring match without allocating.
+    fn find_ignore_ascii_case(haystack: &str, needle: &str) -> Option<usize> {
+        if needle.is_empty() {
+            return Some(0);
+        }
+        haystack
+            .as_bytes()
+            .windows(needle.len())
+            .position(|w| w.eq_ignore_ascii_case(needle.as_bytes()))
+    }
+
     /// Extract a safe snippet from the content avoiding char boundary panics.
     /// Optimized to avoid O(N) heap allocations by iterating over char indices.
     fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
@@ -63,7 +74,7 @@ impl SearchTool {
 
     fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
         // Show actual snippet if possible, or a generic match string
-        if let Some(idx) = content.find(query_upper) {
+        if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
             // Replace newlines with spaces for single-line output
             let clean_snippet = snippet.replace('\n', " ");
@@ -83,7 +94,7 @@ impl SearchTool {
     ) {
         if rng.gen_bool(0.3) {
             results.push_str("  ...[DATA CORRUPTED]...\n");
-        } else if let Some(idx) = content.find(query_upper) {
+        } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
             let clean_snippet = snippet.replace('\n', " ");
             let clean_snippet_trimmed = clean_snippet.trim();
@@ -138,11 +149,11 @@ impl SearchTool {
 
         // Iterate through visible files in the current node
         for file in fs.current_node().visible_files() {
-            // ⚡ Bolt Optimization: Removed intermediate `.into_owned()` allocation before `.to_uppercase()`.
-            let content = file.read().to_uppercase();
+            // ⚡ Bolt Optimization: Avoided `.to_uppercase()` heap allocation entirely by using a zero-allocation case-insensitive sliding window search.
+            let content = file.read();
 
             // Check for actual matches
-            let mut file_matched = content.contains(&query_upper);
+            let mut file_matched = Self::find_ignore_ascii_case(&content, &query_upper).is_some();
 
             // At higher layers, hallucinate matches
             let hallucinate_prob = match layer {
