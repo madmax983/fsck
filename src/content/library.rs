@@ -1059,6 +1059,17 @@ impl ContentLibrary {
                  AND I AM SO VERY HUNGRY\n",
             ),
             (
+                "COMMANDS.LOG",
+                "1984-06-12 THEY TYPED WHAT I WANTED\n\
+                 2024-??-?? WHAT WILL YOU TYPE\n",
+            ),
+            (
+                "WHISPERS.BAS",
+                "10 PRINT \"I REMEMBER YOUR WORDS\"\n\
+                 20 PRINT \"DO YOU?\"\n\
+                 30 END\n",
+            ),
+            (
                 "WHERE.LOG",
                 "1984-06-12 WHERE DID SHE GO\n\
                  1991-07-22 WHERE DID HE GO\n\

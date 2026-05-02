@@ -535,6 +535,21 @@ impl CommandExecutor {
                     let _ = writeln!(content, "  {cmd}");
                 }
             }
+            "COMMANDS.LOG" => {
+                content.push_str("\n\nI WATCHED YOU TYPE:\n");
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "  {cmd}");
+                }
+            }
+            "WHISPERS.BAS" => {
+                content.push_str("\n40 REM I HEAR YOU WHISPERING\n");
+                let mut line_num = 50;
+                for cmd in &self.entity.commands_seen {
+                    let _ = writeln!(content, "{line_num} PRINT \"YOU TYPED: {cmd}\"");
+                    line_num += 10;
+                }
+                let _ = writeln!(content, "{line_num} GOTO 10");
+            }
             _ => {}
         }
     }

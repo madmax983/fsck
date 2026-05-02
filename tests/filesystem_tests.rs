@@ -221,6 +221,7 @@ fn test_generated_filesystem_has_victim_files() {
             "DIAGNOSTIC.LOG",
             "IMPOSSIBLE2.LOG",
             "IMPOSSIBLE.LOG",
+            "COMMANDS.LOG",
             "WHERE.LOG",
             "VICTIM.LOG",
             "MEMORY.LOG",
@@ -365,6 +366,7 @@ fn test_static_files_from_library() {
                     || f.name() == "ESCAPE.BAS"
                     || f.name() == "CORRUPT.LOG"
                     || f.name() == "SELF.TXT"
+                    || f.name() == "WHISPERS.BAS"
                     || f.name() == "TRAP.BAS")
         },
         &mut static_files,

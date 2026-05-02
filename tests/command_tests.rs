@@ -314,3 +314,41 @@ fn test_type_history_txt() {
     assert!(output.contains("CATALOG"));
     assert!(output.contains("RUN ESCAPE"));
 }
+
+#[test]
+fn test_type_commands_log_and_whispers() {
+    let mut fs = FilesystemGraph::new();
+    fs.current_node_mut()
+        .add_file(fsck::filesystem::FileNode::new(
+            "COMMANDS.LOG",
+            "1984-06-12 THEY TYPED WHAT I WANTED\n2024-??-?? WHAT WILL YOU TYPE\n",
+        ));
+    fs.current_node_mut()
+        .add_file(fsck::filesystem::FileNode::new(
+            "WHISPERS.BAS",
+            "10 PRINT \"I REMEMBER YOUR WORDS\"\n20 PRINT \"DO YOU?\"\n30 END\n",
+        ));
+
+    let mut entity = Entity::new();
+    entity.record_command("CATALOG");
+    entity.record_command("RUN ESCAPE");
+
+    let mut executor = CommandExecutor::new(fs, entity);
+
+    let _ = executor.execute(Command::Catalog);
+    let result1 = executor.execute(Command::Type("COMMANDS.LOG".to_string()));
+    assert!(!result1.is_error());
+    let output1 = result1.output();
+    assert!(output1.contains("1984-06-12 THEY TYPED WHAT I WANTED"));
+    assert!(output1.contains("I WATCHED YOU TYPE:"));
+    assert!(output1.contains("CATALOG"));
+    assert!(output1.contains("RUN ESCAPE"));
+
+    let result2 = executor.execute(Command::Type("WHISPERS.BAS".to_string()));
+    assert!(!result2.is_error());
+    let output2 = result2.output();
+    assert!(output2.contains("40 REM I HEAR YOU WHISPERING"));
+    assert!(output2.contains("50 PRINT \"YOU TYPED: CATALOG\""));
+    assert!(output2.contains("60 PRINT \"YOU TYPED: RUN ESCAPE\""));
+    assert!(output2.contains("GOTO 10"));
+}
