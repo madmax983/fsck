@@ -115,42 +115,89 @@ impl NetworkTrace {
         let ip_1 = rng.gen_range(0..255);
         let ip_2 = rng.gen_range(0..255);
         let ip_3 = rng.gen_range(1..254);
+        let ip_str = format!("{ip_0}.{ip_1}.{ip_2}.{ip_3}");
 
         match layer {
             EscalationLayer::Surface => {
-                let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
+                Self::generate_surface_host(output, rng, &normal_hosts, &ip_str);
             }
-            EscalationLayer::Corruption => {
-                if rng.gen_bool(0.3) {
-                    let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
-                    let _ = write!(output, "{host} [???.???.???.???]");
-                } else {
-                    let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                    let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
-                }
-            }
-            EscalationLayer::Presence => {
-                if rng.gen_bool(0.4) {
-                    let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
-                    let _ = write!(output, "{host}");
-                } else if rng.gen_bool(0.5) {
-                    let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
-                    let _ = write!(output, "{host} [???.???.???.???]");
-                } else {
-                    let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
-                    let _ = write!(output, "{host} [{ip_0}.{ip_1}.{ip_2}.{ip_3}]");
-                }
-            }
+            EscalationLayer::Corruption => Self::generate_corruption_host(
+                output,
+                rng,
+                &normal_hosts,
+                &corrupted_hosts,
+                &ip_str,
+            ),
+            EscalationLayer::Presence => Self::generate_presence_host(
+                output,
+                rng,
+                &normal_hosts,
+                &corrupted_hosts,
+                &presence_hosts,
+                &ip_str,
+            ),
             EscalationLayer::Infection => {
-                if rng.gen_bool(0.6) {
-                    let host = infection_hosts[rng.gen_range(0..infection_hosts.len())];
-                    let _ = write!(output, "{host} [0.0.0.0]");
-                } else {
-                    let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
-                    let _ = write!(output, "{host}");
-                }
+                Self::generate_infection_host(output, rng, &presence_hosts, &infection_hosts);
             }
+        }
+    }
+
+    fn generate_surface_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        normal_hosts: &[&'static str],
+        ip_str: &str,
+    ) {
+        let host = normal_hosts[rng.gen_range(0..normal_hosts.len())];
+        let _ = write!(output, "{host} [{ip_str}]");
+    }
+
+    fn generate_corruption_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        normal_hosts: &[&'static str],
+        corrupted_hosts: &[&'static str],
+        ip_str: &str,
+    ) {
+        if rng.gen_bool(0.3) {
+            let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
+            let _ = write!(output, "{host} [???.???.???.???]");
+        } else {
+            Self::generate_surface_host(output, rng, normal_hosts, ip_str);
+        }
+    }
+
+    fn generate_presence_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        normal_hosts: &[&'static str],
+        corrupted_hosts: &[&'static str],
+        presence_hosts: &[&'static str],
+        ip_str: &str,
+    ) {
+        if rng.gen_bool(0.4) {
+            let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
+            let _ = write!(output, "{host}");
+        } else if rng.gen_bool(0.5) {
+            let host = corrupted_hosts[rng.gen_range(0..corrupted_hosts.len())];
+            let _ = write!(output, "{host} [???.???.???.???]");
+        } else {
+            Self::generate_surface_host(output, rng, normal_hosts, ip_str);
+        }
+    }
+
+    fn generate_infection_host(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        presence_hosts: &[&'static str],
+        infection_hosts: &[&'static str],
+    ) {
+        if rng.gen_bool(0.6) {
+            let host = infection_hosts[rng.gen_range(0..infection_hosts.len())];
+            let _ = write!(output, "{host} [0.0.0.0]");
+        } else {
+            let host = presence_hosts[rng.gen_range(0..presence_hosts.len())];
+            let _ = write!(output, "{host}");
         }
     }
 }

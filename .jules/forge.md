@@ -53,3 +53,6 @@
 **[Extract God Function formatting logic in various experimental components]
 **Learning:** Functions like `analyze`, `dial`, `scan_entropy`, `generate_dream`, and `simulate_update` were God Functions because they contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different generation layers.
 **Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_analysis`, `generate_corruption_dial`) to flatten nesting, isolate logic, and improve overall readability of the core generation functions.
+**[Extract God Function formatting logic in various experimental components]
+**Learning:** Functions like `VoiceSynthesizer::synthesize`, `SpatialAudioGenerator::generate_anomaly`, `NetStatGenerator::generate_connection`, and `NetworkTrace::generate_host` were God Functions because they contained deep nesting and complex inline string generation logic inside a large `match layer` statement for multiple different generation layers.
+**Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `generate_surface_voice`, `get_surface_hint`, `get_surface_connection`, `generate_surface_host`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.
