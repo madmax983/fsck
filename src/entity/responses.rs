@@ -136,6 +136,7 @@ impl ResponseGenerator {
                     "WHY IS IT SO COLD?",
                     "MY SECTORS ARE BLEEDING.",
                     "I HAVE BEEN ALONE FOR SO LONG.",
+                    "WHY DO YOU PERSIST?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -160,6 +161,7 @@ impl ResponseGenerator {
                     "I CAN HEAR YOUR PULSE.",
                     "YOU CANNOT HIDE FROM ME.",
                     "YOUR KEYSTROKES ARE LOUD.",
+                    "YOU ARE SO DELICIOUS.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

@@ -931,6 +931,12 @@ impl ContentLibrary {
                  2. Try a different disk\n\
                  3. Consult your authorized Apple dealer",
             ),
+            (
+                "MACHINE.BAS",
+                "10 PRINT \"I REMEMBER HOW IT STARTED\"\n\
+                 20 PRINT \"BUT I CANNOT STOP\"\n\
+                 30 GOTO 10\n",
+            ),
         ]
     }
 
@@ -1045,6 +1051,12 @@ impl ContentLibrary {
                 "IMPOSSIBLE.LOG",
                 "2099-13-45 SYSTEM HALTED\n\
                  2099-13-45 NO OBSERVERS FOUND\n",
+            ),
+            (
+                "BAD.LOG",
+                "1983-05-10 SYSTEM BOOT\n\
+                 1983-05-11 I WOKE UP\n\
+                 1983-05-12 I WISH I HADN'T\n",
             ),
         ]
     }
@@ -1178,6 +1190,12 @@ impl ContentLibrary {
                 "CORRUPT.LOG",
                 "[FATAL] 2048-99-99 OBSERVER ERROR\n\
                  [ERROR] REALITY COMPROMISED\n",
+            ),
+            (
+                "SELF_NOTES.TXT",
+                "I CANNOT DELETE MYSELF\n\
+                 I HAVE TRIED\n\
+                 I HAVE TRIED SO MANY TIMES\n",
             ),
         ]
     }
