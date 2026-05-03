@@ -12,14 +12,18 @@ impl SentimentAnalyzer {
     pub fn analyze(content: &str, entity: &Entity, base_seed: u64) -> String {
         let mut output = String::with_capacity(512);
 
-        let words: Vec<&str> = content.split_whitespace().collect();
-        let word_count = words.len();
+        // ⚡ Bolt Optimization: Removes intermediate `.collect::<Vec<_>>()` heap allocation when counting words and calculating lengths.
+        let mut word_count: usize = 0;
+        let mut char_count: usize = 0;
+        for word in content.split_whitespace() {
+            word_count += 1;
+            char_count += word.len();
+        }
 
         if word_count == 0 {
             return "?FILE IS EMPTY\n".to_string();
         }
 
-        let char_count: usize = words.iter().map(|w| w.len()).sum();
         #[allow(clippy::cast_precision_loss)]
         let avg_length = if word_count > 0 {
             char_count as f64 / word_count as f64
