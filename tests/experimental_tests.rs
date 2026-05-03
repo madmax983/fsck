@@ -165,6 +165,34 @@ fn test_process_monitor_escalation() {
 }
 
 #[test]
+fn test_sentiment_analyzer_empty() {
+    let entity = Entity::new();
+    let text = "";
+    let out = SentimentAnalyzer::analyze(text, &entity, 42);
+    assert_eq!(out, "?FILE IS EMPTY\n");
+
+    let text_spaces = "   \n  \t  ";
+    let out_spaces = SentimentAnalyzer::analyze(text_spaces, &entity, 42);
+    assert_eq!(out_spaces, "?FILE IS EMPTY\n");
+}
+
+#[test]
+fn test_sentiment_analyzer_counts() {
+    let entity = Entity::new();
+    let text = "this is a test with words";
+    let out = SentimentAnalyzer::analyze(text, &entity, 42);
+
+    assert!(
+        out.contains("WORD COUNT: 6"),
+        "Failed to find correct word count. Output: {out}"
+    );
+    assert!(
+        out.contains("AVG LENGTH: 3.33 CHARS"),
+        "Failed to find correct average length. Output: {out}"
+    );
+}
+
+#[test]
 fn test_sentiment_analyzer_escalation() {
     let mut entity = Entity::new();
     let text = "this is a normal test file with some words.";
