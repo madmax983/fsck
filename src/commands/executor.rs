@@ -183,6 +183,15 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_mail(&self) -> CommandResult {
+        let mut mail_output =
+            crate::experimental::EmailReader::read_mail(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        mail_output.push('\n');
+        CommandResult::success(mail_output)
+    }
+
+    #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
@@ -224,6 +233,15 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             {
                 Some(self.handle_nova_analyze(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
+        } else if cmd_word.eq_ignore_ascii_case("MAIL") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_mail())
             }
             #[cfg(not(feature = "nova"))]
             {

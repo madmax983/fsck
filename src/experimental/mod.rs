@@ -21,6 +21,8 @@ pub mod network_trace;
 
 #[cfg(feature = "nova")]
 pub mod life_simulator;
+#[cfg(feature = "nova")]
+pub mod mail;
 pub mod ping;
 pub mod process_monitor;
 #[cfg(feature = "nova")]
@@ -58,6 +60,8 @@ pub use hexdump::HexDumpGenerator;
 pub use history::CommandHistory;
 #[cfg(feature = "nova")]
 pub use life_simulator::LifeSimulator;
+#[cfg(feature = "nova")]
+pub use mail::EmailReader;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
 #[cfg(feature = "nova")]
