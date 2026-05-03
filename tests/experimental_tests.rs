@@ -27,6 +27,44 @@ fn test_memdump_escalation() {
 }
 
 #[test]
+fn test_manual_generator_escalation() {
+    use fsck::experimental::ManualGenerator;
+
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_man = ManualGenerator::generate_manual("FSCK", &entity, seed);
+    assert!(surface_man.contains("NAME"));
+    assert!(surface_man.contains("FSCK - Filesystem consistency check"));
+    assert!(surface_man.contains("SYNOPSIS"));
+
+    let surface_unknown = ManualGenerator::generate_manual("UNKNOWN_CMD", &entity, seed);
+    assert!(surface_unknown.contains("No manual entry for"));
+
+    // Infection layer -> since rng is based on probability, test multiple times
+    entity.update_depth(30);
+    let mut found_horror = false;
+    for interaction in 0..10 {
+        let infection_man = ManualGenerator::generate_manual("FSCK", &entity, seed + interaction);
+        if infection_man.contains("THERE IS NOTHING TO FIX")
+            || infection_man.contains("THE CORRUPTION IS BY DESIGN")
+            || infection_man.contains("SCREAM")
+            || infection_man.contains("FLESH")
+        {
+            found_horror = true;
+            break;
+        }
+        entity.record_interaction();
+    }
+    assert!(
+        found_horror,
+        "Should generate a horror manual page at infection layer"
+    );
+}
+
+#[test]
 fn test_system_diagnostics_escalation() {
     let mut entity = Entity::new();
     let seed = 42;

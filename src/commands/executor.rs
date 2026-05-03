@@ -91,6 +91,15 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_man(&self, arg: &str) -> CommandResult {
+        let mut man_output =
+            crate::experimental::ManualGenerator::generate_manual(arg, &self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        man_output.push('\n');
+        CommandResult::success(man_output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_diag(&self) -> CommandResult {
         let mut report =
             crate::experimental::SystemDiagnostics::generate_report(&self.entity, 0xF5C0_0000);
@@ -189,7 +198,9 @@ impl CommandExecutor {
         let arg = arg.trim();
 
         #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+        if cmd_word.eq_ignore_ascii_case("MAN") && !arg.is_empty() {
+            Some(self.handle_nova_man(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
