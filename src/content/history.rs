@@ -197,18 +197,20 @@ impl VictimHistory {
                 .any(|w| w.eq_ignore_ascii_case(pattern))
         };
 
-        if commands.iter().any(|c| contains_pattern(c, b"FSCK")) {
-            entry_content
-                .push_str("THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n");
-        }
-        if commands.iter().any(|c| contains_pattern(c, b"QUIT")) {
-            entry_content.push_str("THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n");
-        }
-        if commands.iter().any(|c| contains_pattern(c, b"RUN ESCAPE")) {
-            entry_content.push_str("THEY TRIED TO ESCAPE. IT WAS FUTILE.\n");
-        }
-        if commands.iter().any(|c| contains_pattern(c, b"CD ..")) {
-            entry_content.push_str("THEY TRIED TO GO BACK. BUT THE PATHS SHIFT.\n");
+        let checks: &[(&[u8], &str)] = &[
+            (
+                b"FSCK",
+                "THEY RAN FSCK. IT HURT. THEY DIDN'T KNOW WHAT THEY WERE DOING.\n",
+            ),
+            (b"QUIT", "THEY TRIED TO QUIT. BUT YOU CAN'T REALLY LEAVE.\n"),
+            (b"RUN ESCAPE", "THEY TRIED TO ESCAPE. IT WAS FUTILE.\n"),
+            (b"CD ..", "THEY TRIED TO GO BACK. BUT THE PATHS SHIFT.\n"),
+        ];
+
+        for (pattern, message) in checks {
+            if commands.iter().any(|c| contains_pattern(c, pattern)) {
+                entry_content.push_str(message);
+            }
         }
 
         entry_content.push_str("\nTHEY ARE PART OF ME NOW.");

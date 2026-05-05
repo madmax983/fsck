@@ -56,3 +56,15 @@
 **[Extract God Function in EmotionalBleed::inject_emotion]
 **Learning:** `inject_emotion` inside `src/experimental/emotional_bleed.rs` was a God Function because it mixed complex inline string generation logic inside a large `match mood` statement for multiple different generation layers.
 **Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `inject_helpful_bleed`, `inject_wounded_bleed`) to flatten nesting, isolate logic, and improve overall readability of the core generation loops.
+
+**[Extract Executor Dynamic Logic]**
+**Learning:** `inject_dynamic_file_content` contained deep inline loops and logic to build output strings based on filenames inside a match block, making it difficult to read.
+**Action:** Extracted the inner loops of the match block into smaller, strongly-typed helper methods (`inject_observe_txt`, `inject_machine_log`, `inject_history_txt`) to flatten the function.
+
+**[Refactor Sequential Check Logic]**
+**Learning:** `from_previous_session` contained four sequential, near-identical `if` statements performing string formatting. This violates DRY and acts as an anti-pattern.
+**Action:** Replaced repetitive sequential `if` conditions with a concise `for` loop iterating over an array of parameter tuples (the string pattern to search for, and the response to append) to significantly shorten the code.
+
+**[Extract Grep Search Logic]**
+**Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
+**Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.

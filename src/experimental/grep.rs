@@ -132,6 +132,42 @@ impl SearchTool {
         let _ = writeln!(results, "  ...{scream}...");
     }
 
+    fn check_and_format_match(
+        file: &crate::filesystem::FileNode,
+        query_upper: &str,
+        layer: EscalationLayer,
+        rng: &mut ChaCha8Rng,
+        results: &mut String,
+        match_count: &mut usize,
+    ) {
+        // ⚡ Bolt Optimization: Avoided `.to_uppercase()` heap allocation entirely by using a zero-allocation case-insensitive sliding window search.
+        let content = file.read();
+
+        // Check for actual matches
+        let mut file_matched = Self::find_ignore_ascii_case(&content, query_upper).is_some();
+
+        // At higher layers, hallucinate matches
+        let hallucinate_prob = match layer {
+            EscalationLayer::Surface => 0.0,
+            EscalationLayer::Corruption => 0.05,
+            EscalationLayer::Presence => 0.20,
+            EscalationLayer::Infection => 0.40,
+        };
+
+        if !file_matched && rng.gen_bool(hallucinate_prob) {
+            file_matched = true;
+        }
+
+        if file_matched {
+            *match_count += 1;
+            let filename = file.name();
+            let _ = writeln!(results, "FOUND IN: {filename}");
+
+            // Show a snippet or a corrupted message based on layer
+            Self::format_match(layer, query_upper, &content, rng, results);
+        }
+    }
+
     /// Searches for a query string within the current directory.
     /// The output degrades based on the entity's current layer and mood.
     #[must_use]
@@ -149,32 +185,14 @@ impl SearchTool {
 
         // Iterate through visible files in the current node
         for file in fs.current_node().visible_files() {
-            // ⚡ Bolt Optimization: Avoided `.to_uppercase()` heap allocation entirely by using a zero-allocation case-insensitive sliding window search.
-            let content = file.read();
-
-            // Check for actual matches
-            let mut file_matched = Self::find_ignore_ascii_case(&content, &query_upper).is_some();
-
-            // At higher layers, hallucinate matches
-            let hallucinate_prob = match layer {
-                EscalationLayer::Surface => 0.0,
-                EscalationLayer::Corruption => 0.05,
-                EscalationLayer::Presence => 0.20,
-                EscalationLayer::Infection => 0.40,
-            };
-
-            if !file_matched && rng.gen_bool(hallucinate_prob) {
-                file_matched = true;
-            }
-
-            if file_matched {
-                match_count += 1;
-                let filename = file.name();
-                let _ = writeln!(results, "FOUND IN: {filename}");
-
-                // Show a snippet or a corrupted message based on layer
-                Self::format_match(layer, &query_upper, &content, &mut rng, &mut results);
-            }
+            Self::check_and_format_match(
+                file,
+                &query_upper,
+                layer,
+                &mut rng,
+                &mut results,
+                &mut match_count,
+            );
         }
 
         if match_count == 0 {

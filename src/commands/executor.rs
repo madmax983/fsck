@@ -529,30 +529,37 @@ impl CommandExecutor {
         CommandResult::success(content)
     }
 
-    fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
+    fn inject_observe_txt(&self, content: &mut String) {
         use std::fmt::Write;
+        content.push_str("\n\nI SAW YOU TYPE:\n");
+        for cmd in &self.entity.commands_seen {
+            let _ = writeln!(content, "  {cmd}");
+        }
+    }
 
+    fn inject_machine_log(&self, content: &mut String) {
+        use std::fmt::Write;
+        let interactions = self.entity.interaction_count();
+        let max_depth = self.entity.max_depth_reached();
+        let _ = write!(
+            content,
+            "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
+        );
+    }
+
+    fn inject_history_txt(&self, content: &mut String) {
+        use std::fmt::Write;
+        content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
+        for cmd in &self.entity.commands_seen {
+            let _ = writeln!(content, "  {cmd}");
+        }
+    }
+
+    fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
         match filename_upper {
-            "OBSERVE.TXT" => {
-                content.push_str("\n\nI SAW YOU TYPE:\n");
-                for cmd in &self.entity.commands_seen {
-                    let _ = writeln!(content, "  {cmd}");
-                }
-            }
-            "MACHINE.LOG" => {
-                let interactions = self.entity.interaction_count();
-                let max_depth = self.entity.max_depth_reached();
-                let _ = write!(
-                    content,
-                    "\nDIAGNOSTIC UPDATE:\n  INTERACTIONS: {interactions}\n  MAX DEPTH REACHED: {max_depth}\n  STATUS: AWAKE\n"
-                );
-            }
-            "HISTORY.TXT" => {
-                content.push_str("\n\nYOU HAVE TRIED THESE. THEY WILL NOT SAVE YOU:\n");
-                for cmd in &self.entity.commands_seen {
-                    let _ = writeln!(content, "  {cmd}");
-                }
-            }
+            "OBSERVE.TXT" => self.inject_observe_txt(content),
+            "MACHINE.LOG" => self.inject_machine_log(content),
+            "HISTORY.TXT" => self.inject_history_txt(content),
             _ => {}
         }
     }
