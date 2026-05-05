@@ -96,9 +96,19 @@ impl DynamicContent {
     pub fn generate(&mut self) -> String {
         match self {
             Self::Counter { base, count } => {
+                use std::fmt::Write;
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                format!("{}{}\n", base.repeat(repeat_count), count)
+
+                // estimate string capacity to prevent re-allocations
+                // assume base is ascii usually. count max is 10 digits
+                let capacity = base.len() * repeat_count + 10 + 1;
+                let mut result = String::with_capacity(capacity);
+                for _ in 0..repeat_count {
+                    result.push_str(base);
+                }
+                let _ = writeln!(result, "{count}");
+                result
             }
             Self::Timestamp => {
                 // In real impl, would use js_sys::Date via web-sys
