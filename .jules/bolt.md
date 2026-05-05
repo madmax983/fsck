@@ -9,3 +9,6 @@
 **[Intermediate Vec Allocations]**
 **Learning:** Collecting an iterator into a `Vec` solely to calculate derived metrics (like string lengths or word counts) introduces an unnecessary heap allocation.
 **Action:** Use iterator combinators like `.fold()`, `.sum()`, or `.count()` directly on the iterator to compute metrics in a single pass without allocating intermediate collections.
+**[Clippy items_after_statements]
+**Learning:** Placing a `use` statement (e.g., `use std::fmt::Write;`) in the middle of a block after other statements triggers the `clippy::items_after_statements` lint.
+**Action:** Always declare `use` imports at the very beginning of the function or local scope block to satisfy Clippy.
