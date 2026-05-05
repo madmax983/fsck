@@ -192,6 +192,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_market(&self) -> CommandResult {
+        let mut ticker = crate::experimental::MarketTicker::generate_ticker(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        ticker.push('\n');
+        CommandResult::success(ticker)
+    }
+
+    #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
@@ -296,6 +304,12 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_history())
+        } else if (cmd_word.eq_ignore_ascii_case("MARKET")
+            || cmd_word.eq_ignore_ascii_case("STOCK")
+            || cmd_word.eq_ignore_ascii_case("TICKER"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_market())
         } else if (cmd_word.eq_ignore_ascii_case("PROFILE")
             || cmd_word.eq_ignore_ascii_case("ANALYZE"))
             && arg.is_empty()

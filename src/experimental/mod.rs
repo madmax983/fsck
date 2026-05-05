@@ -39,6 +39,8 @@ pub mod undelete;
 #[cfg(feature = "nova")]
 pub mod update;
 #[cfg(feature = "nova")]
+pub mod market;
+#[cfg(feature = "nova")]
 pub mod voice;
 #[cfg(feature = "nova")]
 pub mod whoami;
@@ -80,6 +82,8 @@ pub use spatial_audio::SpatialAudioGenerator;
 pub use stat::StatTool;
 #[cfg(feature = "nova")]
 pub use undelete::UndeleteTool;
+#[cfg(feature = "nova")]
+pub use market::MarketTicker;
 #[cfg(feature = "nova")]
 pub use update::SystemUpdateSimulator;
 #[cfg(feature = "nova")]
