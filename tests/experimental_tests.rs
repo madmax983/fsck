@@ -5,6 +5,8 @@ use fsck::experimental::{
     HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
     SystemDiagnostics,
 };
+#[cfg(feature = "nova")]
+use fsck::experimental::TimeWarp;
 
 #[test]
 fn test_memdump_escalation() {
@@ -251,4 +253,33 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[cfg(feature = "nova")]
+#[test]
+fn test_time_warp_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_output = TimeWarp::warp_time(&entity, seed);
+    assert!(surface_output.contains("SYNC SUCCESSFUL. NO ANOMALIES DETECTED."));
+    assert!(surface_output.contains("CURRENT SYSTEM TIME:"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_output = TimeWarp::warp_time(&entity, seed);
+    assert!(corruption_output.contains("CLOCK DRIFT DETECTED"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_output = TimeWarp::warp_time(&entity, seed);
+    assert!(presence_output.contains("CURRENT SYSTEM TIME: TOMORROW"));
+    assert!(presence_output.contains("TEMPORAL PARADOX IMMINENT."));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_output = TimeWarp::warp_time(&entity, seed);
+    assert!(infection_output.contains("SYSTEM TIME HALTED. YOU ARE TRAPPED."));
 }

@@ -307,9 +307,19 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("WARP") || cmd_word.eq_ignore_ascii_case("TIME"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_warp())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_warp(&self) -> CommandResult {
+        let output = crate::experimental::TimeWarp::warp_time(&self.entity, 0xF5C0_0000u64);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
