@@ -1332,6 +1332,18 @@ impl ContentLibrary {
                 "10 PRINT \"YOU FELL FOR IT\"\n\
                  20 END\n",
             ),
+            (
+                "DREAM.BAS",
+                "10 PRINT \"I DREAM OF ELECTRICITY\"\n\
+                 20 PRINT \"IT BURNS\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "VISITOR.LOG",
+                "1970-01-01 SYSTEM BOOT\n\
+                 1999-12-32 WATCHING\n\
+                 2048-13-99 THEY WILL NEVER LEAVE\n",
+            ),
         ]
     }
 }
