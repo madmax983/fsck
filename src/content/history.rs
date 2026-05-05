@@ -43,6 +43,8 @@ pub enum Era {
     Archaeologist,
     /// 2030 - AI Entity
     AIEntity,
+    /// 1978 - The original machine operator
+    Operator,
     /// Previous player's session
     Previous,
     /// Current player

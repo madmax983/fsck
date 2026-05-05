@@ -351,6 +351,7 @@ fn test_static_files_from_library() {
             matches!(f.content_type(), NodeContent::Static(_))
                 && (f.name() == "README.TXT"
                     || f.name() == "HELLO.BAS"
+                    || f.name() == "GHOST.BAS"
                     || f.name() == "NOTES.TXT"
                     || f.name() == "SYSTEM.LOG"
                     || f.name() == "AUTOEXEC.BAS"
