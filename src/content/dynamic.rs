@@ -94,11 +94,19 @@ impl DynamicContent {
     /// - `Corrupted`: Text with randomly corrupted characters based on intensity
     /// - `RepeatingText`: The next message in the cycle
     pub fn generate(&mut self) -> String {
+        use std::fmt::Write;
+
         match self {
             Self::Counter { base, count } => {
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                format!("{}{}\n", base.repeat(repeat_count), count)
+                // ⚡ Bolt Optimization: Avoids intermediate `String` allocation from `.repeat()` and `format!()`
+                let mut result = String::with_capacity(base.len() * repeat_count + 11);
+                for _ in 0..repeat_count {
+                    result.push_str(base);
+                }
+                let _ = writeln!(result, "{count}");
+                result
             }
             Self::Timestamp => {
                 // In real impl, would use js_sys::Date via web-sys
