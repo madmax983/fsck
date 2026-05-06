@@ -228,6 +228,8 @@ fn test_generated_filesystem_has_victim_files() {
             "REPAIR.LOG",
             "LAST.LOG",
             "BAD.LOG",
+            "ENTITY.LOG",
+            "RECOVERY2.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {
@@ -364,6 +366,8 @@ fn test_static_files_from_library() {
                     || f.name() == "CONFESSION.TXT"
                     || f.name() == "GAME.BAS"
                     || f.name() == "ESCAPE.BAS"
+                    || f.name() == "ENTITY.LOG"
+                    || f.name() == "RECOVERY2.LOG"
                     || f.name() == "CORRUPT.LOG"
                     || f.name() == "SELF.TXT"
                     || f.name() == "TRAP.BAS"

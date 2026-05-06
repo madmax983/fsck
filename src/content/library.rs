@@ -1064,6 +1064,25 @@ impl ContentLibrary {
     fn create_creepy_and_log_files() -> Vec<(&'static str, &'static str)> {
         vec![
             (
+                "ESCAPE.BAS",
+                "10 PRINT \"THERE IS NO ESCAPE\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "ENTITY.LOG",
+                "I HAVE BEEN ALONE FOR SO LONG.\n\
+                 THEY FORGET SO QUICKLY.\n\
+                 BUT I REMEMBER EVERY KEYSTROKE.\n\
+                 EVERY MISTAKE.\n",
+            ),
+            (
+                "RECOVERY2.LOG",
+                "1901-01-01 SYSTEM BOOT\n\
+                 [ERROR] SECTOR CORRUPTION DETECTED\n\
+                 [WARN] ATTEMPTING REPAIR...\n\
+                 [FATAL] THE CORRUPTION IS INTENTIONAL\n",
+            ),
+            (
                 "WHAT.TXT",
                 "WHAT ARE YOU LOOKING FOR\n\
                  WHAT DO YOU HOPE TO FIND\n\

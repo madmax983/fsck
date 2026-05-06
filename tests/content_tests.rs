@@ -19,6 +19,9 @@ fn test_new_generic_files_exist() {
     let has_echo_bas = files.iter().any(|(n, _)| *n == "ECHO.BAS");
     let has_sys_log_94 = files.iter().any(|(n, _)| *n == "SYS_LOG_94.TXT");
     let has_memory_bas = files.iter().any(|(n, _)| *n == "MEMORY.BAS");
+    let has_escape_bas = files.iter().any(|(n, _)| *n == "ESCAPE.BAS");
+    let has_entity_log = files.iter().any(|(n, _)| *n == "ENTITY.LOG");
+    let has_recovery2_log = files.iter().any(|(n, _)| *n == "RECOVERY2.LOG");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -27,6 +30,9 @@ fn test_new_generic_files_exist() {
     assert!(has_echo_bas);
     assert!(has_sys_log_94);
     assert!(has_memory_bas);
+    assert!(has_escape_bas);
+    assert!(has_entity_log);
+    assert!(has_recovery2_log);
 }
 
 #[test]
