@@ -1,5 +1,6 @@
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
+use std::fmt::Write;
 
 /// Dynamic content generators for files that change on read
 #[derive(Debug, Clone)]
@@ -84,6 +85,7 @@ impl DynamicContent {
     /// ⚡ Bolt Optimization: Uses `.with_capacity(text.len() + 1)` in `Corrupted` to prevent
     /// repeated allocations during generation.
     /// ⚡ Bolt Optimization: Switched `RepeatingText.messages` from `Vec<String>` to `Vec<&'static str>` to eliminate heap allocations when initializing and cycling through static predefined repeating messages.
+    /// ⚡ Bolt Optimization: Computes total capacity and uses `String::with_capacity()` with `.push_str()` and `writeln!()` for `Counter` to avoid intermediate `.repeat()` and `format!` heap allocations.
     ///
     /// This method mutates internal state (counters, seeds) to produce
     /// different output on each call.
@@ -98,7 +100,15 @@ impl DynamicContent {
             Self::Counter { base, count } => {
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                format!("{}{}\n", base.repeat(repeat_count), count)
+
+                // Max length of u32 is 10 digits + 1 for newline
+                let capacity = base.len() * repeat_count + 11;
+                let mut result = String::with_capacity(capacity);
+                for _ in 0..repeat_count {
+                    result.push_str(base);
+                }
+                let _ = writeln!(&mut result, "{count}");
+                result
             }
             Self::Timestamp => {
                 // In real impl, would use js_sys::Date via web-sys

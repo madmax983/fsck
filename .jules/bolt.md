@@ -9,3 +9,6 @@
 **[Intermediate Vec Allocations]**
 **Learning:** Collecting an iterator into a `Vec` solely to calculate derived metrics (like string lengths or word counts) introduces an unnecessary heap allocation.
 **Action:** Use iterator combinators like `.fold()`, `.sum()`, or `.count()` directly on the iterator to compute metrics in a single pass without allocating intermediate collections.
+**[Avoid Intermediate Allocations with repeat and format]**
+**Learning:** When constructing strings that require both repeating a substring and appending other variables, using `format!("{}{}\n", base.repeat(n), count)` triggers multiple heap allocations (one for `.repeat()` and one for `format!`).
+**Action:** Pre-calculate the required capacity, instantiate a string with `String::with_capacity()`, use `.push_str()` in a loop for repetitions, and use `writeln!()` to append variables. This eliminates intermediate allocations.
