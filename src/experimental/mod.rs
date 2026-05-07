@@ -16,6 +16,8 @@ pub mod history;
 #[cfg(feature = "nova")]
 pub mod memdump;
 #[cfg(feature = "nova")]
+pub mod metrics;
+#[cfg(feature = "nova")]
 pub mod netstat;
 pub mod network_trace;
 
@@ -64,6 +66,8 @@ pub use life_simulator::LifeSimulator;
 pub use mail::EmailReader;
 #[cfg(feature = "nova")]
 pub use memdump::MemoryDumpGenerator;
+#[cfg(feature = "nova")]
+pub use metrics::PrometheusExporter;
 #[cfg(feature = "nova")]
 pub use netstat::NetStatGenerator;
 pub use network_trace::NetworkTrace;

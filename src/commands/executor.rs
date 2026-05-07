@@ -83,6 +83,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_metrics(&self) -> CommandResult {
+        let mut report = crate::experimental::PrometheusExporter::export(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
+    }
+
+
+    #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
         let mut report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
@@ -213,6 +221,18 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_memdump())
+        } else if (cmd_word.eq_ignore_ascii_case("METRICS")
+            || cmd_word.eq_ignore_ascii_case("PROMETHEUS"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_metrics())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("DIAG") || cmd_word.eq_ignore_ascii_case("SYS"))
             && arg.is_empty()
         {
