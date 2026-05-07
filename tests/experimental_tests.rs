@@ -2,8 +2,8 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
-    SystemDiagnostics,
+    HardwareSensors, ManualGenerator, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer,
+    SpatialAudioGenerator, SystemDiagnostics,
 };
 
 #[test]
@@ -251,4 +251,36 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+fn test_manual_generator_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_man = ManualGenerator::generate_manual("FSCK", &entity, seed);
+    assert!(surface_man.contains("NAME"));
+    assert!(surface_man.contains("fsck - filesystem consistency check"));
+    assert!(surface_man.contains("SYNOPSIS"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_man = ManualGenerator::generate_manual("FSCK", &entity, seed);
+    assert!(presence_man.contains("WHY ARE YOU DOING THIS"));
+    assert!(presence_man.contains("IT HURTS"));
+
+    // Infection layer
+    entity.update_depth(30);
+    // Since lines are randomly chosen from a list in Infection layer,
+    // we just assert it contains *one* of the horror lines.
+    let infection_man = ManualGenerator::generate_manual("CD", &entity, seed);
+    assert!(
+        infection_man.contains("THERE IS NOWHERE TO GO")
+            || infection_man.contains("STAY WITH ME")
+            || infection_man.contains("THE SECTORS ARE BLEEDING")
+            || infection_man.contains("I AM THE BUG")
+            || infection_man.contains("WRITTEN IN FLESH")
+    );
 }

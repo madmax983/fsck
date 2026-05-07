@@ -307,9 +307,21 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("MAN") || cmd_word.eq_ignore_ascii_case("MANUAL"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_man(arg))
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_man(&self, arg: &str) -> CommandResult {
+        let mut manual_output =
+            crate::experimental::ManualGenerator::generate_manual(arg, &self.entity, 0xF5C0_0000);
+        manual_output.push('\n');
+        CommandResult::success(manual_output)
     }
 
     #[cfg(feature = "nova")]
