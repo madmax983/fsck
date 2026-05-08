@@ -217,6 +217,18 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("CCTV")
+            || cmd_word.eq_ignore_ascii_case("CAMERAS"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_cctv())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("LIFE")
             || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
             && arg.is_empty()
@@ -400,6 +412,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self) -> CommandResult {
+        let output = crate::experimental::CctvSystem::get_feed(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
