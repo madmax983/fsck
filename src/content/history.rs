@@ -9,6 +9,8 @@ pub enum Era {
     Teacher,
     /// 1991 - The repair technician
     Technician,
+    /// 1994 - Bulletin Board Lurker
+    BBSLurker,
     /// 1995 - BBS Sysop
     Sysop,
     /// 1998 - BBS User
@@ -55,7 +57,8 @@ impl From<u32> for Era {
             1..=2 => Self::Previous,
             3..=5 => Self::Original,
             6..=8 => Self::Teacher,
-            9..=14 => Self::Technician,
+            9..=13 => Self::Technician,
+            14 => Self::BBSLurker,
             15..=16 => Self::Sysop,
             17..=19 => Self::BBSUser,
             20..=22 => Self::Recovery,

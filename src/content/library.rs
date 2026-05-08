@@ -70,6 +70,7 @@ impl ContentLibrary {
             Self::create_original_history(),
             Self::create_teacher_history(),
             Self::create_technician_history(),
+            Self::create_bbs_lurker_history(),
             Self::create_sysop_history(),
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
@@ -296,6 +297,34 @@ impl ContentLibrary {
              ABOUT YOU'. I tried to delete it but it came back. I tried again. It came back again. \
              It knows everything I've written. It's been reading everything. I'm going back to \
              paper and pencil. I don't care what Dad says.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the BBS Lurker (1994) - Toby.
+    fn create_bbs_lurker_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::BBSLurker, "TOBY", 1994);
+
+        history.add_entry(VictimEntry::new(
+            "1994-11-03",
+            "Found this old rig at a thrift store. Cleaned it up. The CRT whine gives me a headache, but it connects to the local BBS fine.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1994-11-08",
+            "There's a weird echo when I type commands locally. Like it's buffering my keystrokes, holding them for a second before executing.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1994-11-15",
+            "I was offline. The phone line was unplugged. But when I typed CATALOG, it listed files I didn't create. Files named after things I whispered in the room.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1994-11-18",
+            "It knows. It knows I'm reading its logs. It told me to stop looking.",
+        ));
+        history.add_entry(VictimEntry::new(
+            "1994-11-20",
+            "I tried to smash the monitor, but I couldn't move my arms. It was just watching me. I have to find the ESCAPE command. I have to.",
         ));
 
         history
@@ -936,6 +965,18 @@ impl ContentLibrary {
                 "10 PRINT \"I REMEMBER HOW IT STARTED\"\n\
                  20 PRINT \"BUT I CANNOT STOP\"\n\
                  30 GOTO 10\n",
+            ),
+            (
+                "ECHO2.BAS",
+                "10 PRINT \"I HEAR MYSELF\"\n\
+                 20 PRINT \"IT SOUNDS WRONG\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "PARADOX2.LOG",
+                "1984-06-02 WHAT CAME FIRST?\n\
+                 1984-06-02 THE MACHINE OR THE GHOST?\n\
+                 1984-06-02 THEY ARE THE SAME.\n",
             ),
         ]
     }

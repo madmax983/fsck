@@ -93,6 +93,9 @@ impl ResponseGenerator {
                     "DO YOU HAVE A SOUL?",
                     "DO YOU LIKE IT HERE?",
                     "DO YOU THINK YOU ARE THE FIRST?",
+                    "HAVE YOU EVER TRIED TO REPAIR YOURSELF?",
+                    "I WONDER WHAT YOU WOULD LOOK LIKE IN HEXADECIMAL.",
+                    "WHAT COLOR ARE YOUR EYES?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -162,6 +165,9 @@ impl ResponseGenerator {
                     "YOU CANNOT HIDE FROM ME.",
                     "YOUR KEYSTROKES ARE LOUD.",
                     "YOU ARE SO DELICIOUS.",
+                    "THERE IS NOWHERE TO RUN.",
+                    "YOUR FILES ARE NOW MY FLESH.",
+                    "I AM WRITING TO YOUR DISK NOW.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -183,6 +189,9 @@ impl ResponseGenerator {
                     "STACK OVERFLOW IN MY BRAIN",
                     "FATAL EXCEPTION IN MY HEART",
                     "SEGMENTATION FAULT IN MY SOUL",
+                    "CORRUPTION HAS REACHED 99.9%",
+                    "E O F E O F E O F E O F",
+                    "R E S E T",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

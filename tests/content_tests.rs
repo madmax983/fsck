@@ -19,6 +19,8 @@ fn test_new_generic_files_exist() {
     let has_echo_bas = files.iter().any(|(n, _)| *n == "ECHO.BAS");
     let has_sys_log_94 = files.iter().any(|(n, _)| *n == "SYS_LOG_94.TXT");
     let has_memory_bas = files.iter().any(|(n, _)| *n == "MEMORY.BAS");
+    let has_echo2_bas = files.iter().any(|(n, _)| *n == "ECHO2.BAS");
+    let has_paradox2_log = files.iter().any(|(n, _)| *n == "PARADOX2.LOG");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -27,6 +29,8 @@ fn test_new_generic_files_exist() {
     assert!(has_echo_bas);
     assert!(has_sys_log_94);
     assert!(has_memory_bas);
+    assert!(has_echo2_bas);
+    assert!(has_paradox2_log);
 }
 
 #[test]
@@ -395,11 +399,15 @@ fn test_all_eras_have_unique_histories() {
     assert!(streamer.is_some());
     assert!(researcher.is_some());
 
+    let bbs_lurker = lib.history_for_era(Era::BBSLurker);
+    assert!(bbs_lurker.is_some());
+
     // Each should have different names
     assert_eq!(original.unwrap().name(), "JAMIE");
     assert_eq!(technician.unwrap().name(), "MIKE");
     assert_eq!(sysop.unwrap().name(), "KEVIN");
     assert_eq!(bbs_user.unwrap().name(), "MARCUS");
+    assert_eq!(bbs_lurker.unwrap().name(), "TOBY");
     assert_eq!(y2k.unwrap().name(), "DAVID");
     assert_eq!(estate.unwrap().name(), "PATRICIA");
     assert_eq!(collector.unwrap().name(), "ARTHUR");

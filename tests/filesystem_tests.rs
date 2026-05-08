@@ -369,7 +369,9 @@ fn test_static_files_from_library() {
                     || f.name() == "TRAP.BAS"
                     || f.name() == "MACHINE.BAS"
                     || f.name() == "BAD.LOG"
-                    || f.name() == "SELF_NOTES.TXT")
+                    || f.name() == "SELF_NOTES.TXT"
+                    || f.name() == "ECHO2.BAS"
+                    || f.name() == "PARADOX2.LOG")
         },
         &mut static_files,
     );
