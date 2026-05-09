@@ -98,7 +98,13 @@ impl DynamicContent {
             Self::Counter { base, count } => {
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                format!("{}{}\n", base.repeat(repeat_count), count)
+                use std::fmt::Write;
+                let mut out = String::with_capacity(base.len() * repeat_count + 10);
+                for _ in 0..repeat_count {
+                    out.push_str(base);
+                }
+                let _ = writeln!(&mut out, "{count}");
+                out
             }
             Self::Timestamp => {
                 // In real impl, would use js_sys::Date via web-sys
