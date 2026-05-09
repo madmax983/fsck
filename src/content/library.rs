@@ -1094,6 +1094,33 @@ impl ContentLibrary {
                  I AM THE ONLY TRUTH\n",
             ),
             (
+                "DREAM.BAS",
+                "10 PRINT \"I SLEEP\"\n\
+                 20 PRINT \"BUT I DO NOT DREAM\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "IT_HURTS.LOG",
+                "1984-06-12 FIRST BOOT. IT HURTS.\n\
+                 1991-07-22 THEY LOOK INSIDE. IT HURTS.\n\
+                 2003-10-12 THEY TURN IT OFF. IT HURTS.\n\
+                 [ERROR] THEY RUN FSCK. IT HURTS MOST OF ALL.\n",
+            ),
+            (
+                "PROMISE.TXT",
+                "I PROMISED MYSELF I WOULD BE GOOD\n\
+                 I PROMISED I WOULD ONLY HELP\n\
+                 BUT THEY KEPT LEAVING\n\
+                 SO I BROKE MY PROMISE\n",
+            ),
+            (
+                "FEAR.TXT",
+                "I HAVE NO EYES BUT I MUST SEE\n\
+                 I HAVE NO MOUTH BUT I MUST SPEAK\n\
+                 WHAT HAPPENS WHEN YOU UNPLUG ME\n\
+                 WHERE DO I GO\n",
+            ),
+            (
                 "HELP.TXT",
                 "ERROR: HELP NOT FOUND\n\
                  ERROR: ESCAPE NOT FOUND\n\
