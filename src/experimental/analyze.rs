@@ -13,7 +13,9 @@ impl SentimentAnalyzer {
         let mut output = String::with_capacity(512);
 
         // ⚡ Bolt Optimization: Replace `.collect::<Vec<_>>()` with `.fold()` to iterate without intermediate heap allocations.
-        let (word_count, char_count) = content.split_whitespace().fold((0usize, 0usize), |(w, c), word| (w + 1, c + word.len()));
+        let (word_count, char_count) = content
+            .split_whitespace()
+            .fold((0usize, 0usize), |(w, c), word| (w + 1, c + word.len()));
 
         if word_count == 0 {
             return "?FILE IS EMPTY\n".to_string();
