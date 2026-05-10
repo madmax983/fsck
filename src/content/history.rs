@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 /// Time periods for victim histories
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Era {
+    /// 1982 - The OS beta tester
+    BetaTester,
     /// 1984 - The original owner
     Original,
     /// 1987 - The school teacher
@@ -53,9 +55,10 @@ impl From<u32> for Era {
     fn from(depth: u32) -> Self {
         match depth {
             1..=2 => Self::Previous,
-            3..=5 => Self::Original,
-            6..=8 => Self::Teacher,
-            9..=14 => Self::Technician,
+            3..=5 => Self::BetaTester,
+            6..=8 => Self::Original,
+            9..=11 => Self::Teacher,
+            12..=14 => Self::Technician,
             15..=16 => Self::Sysop,
             17..=19 => Self::BBSUser,
             20..=22 => Self::Recovery,

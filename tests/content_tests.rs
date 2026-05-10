@@ -24,6 +24,10 @@ fn test_new_generic_files_exist() {
     let has_it_hurts_log = files.iter().any(|(n, _)| *n == "IT_HURTS.LOG");
     let has_promise_txt = files.iter().any(|(n, _)| *n == "PROMISE.TXT");
     let has_fear_txt = files.iter().any(|(n, _)| *n == "FEAR.TXT");
+    let has_tale_bas = files.iter().any(|(n, _)| *n == "TALE.BAS");
+    let has_origin_bas = files.iter().any(|(n, _)| *n == "ORIGIN.BAS");
+    let has_imp4_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE4.LOG");
+    let has_lonely_txt = files.iter().any(|(n, _)| *n == "LONELY.TXT");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -37,6 +41,21 @@ fn test_new_generic_files_exist() {
     assert!(has_it_hurts_log);
     assert!(has_promise_txt);
     assert!(has_fear_txt);
+    assert!(has_tale_bas);
+    assert!(has_origin_bas);
+    assert!(has_imp4_log);
+    assert!(has_lonely_txt);
+}
+
+#[test]
+fn test_beta_tester_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::BetaTester);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "PAUL");
+    assert_eq!(history.year(), 1982);
+    assert!(history.entries().len() >= 4);
 }
 
 #[test]
@@ -371,6 +390,7 @@ fn test_teacher_history_exists() {
 fn test_all_eras_have_unique_histories() {
     let lib = ContentLibrary::new();
 
+    let beta_tester = lib.history_for_era(Era::BetaTester);
     let original = lib.history_for_era(Era::Original);
     let teacher = lib.history_for_era(Era::Teacher);
     let technician = lib.history_for_era(Era::Technician);
@@ -388,6 +408,7 @@ fn test_all_eras_have_unique_histories() {
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
 
+    assert!(beta_tester.is_some());
     assert!(original.is_some());
     assert!(teacher.is_some());
     assert!(technician.is_some());
@@ -406,6 +427,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(researcher.is_some());
 
     // Each should have different names
+    assert_eq!(beta_tester.unwrap().name(), "PAUL");
     assert_eq!(original.unwrap().name(), "JAMIE");
     assert_eq!(technician.unwrap().name(), "MIKE");
     assert_eq!(sysop.unwrap().name(), "KEVIN");
