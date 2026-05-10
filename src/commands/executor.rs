@@ -238,6 +238,17 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if (cmd_word.eq_ignore_ascii_case("MAKE") || cmd_word.eq_ignore_ascii_case("BUILD"))
+            && !arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_compiler(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if cmd_word.eq_ignore_ascii_case("MAIL") && arg.is_empty() {
             #[cfg(feature = "nova")]
             {
@@ -400,6 +411,13 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_compiler(&self, arg: &str) -> CommandResult {
+        let output =
+            crate::experimental::CompilerSimulator::compile(arg, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
