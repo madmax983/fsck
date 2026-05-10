@@ -14,7 +14,8 @@ impl ProcessMonitor {
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
 
         let layer = entity.layer();
-        let mut output = String::new();
+        // ⚡ Bolt Optimization: Uses String::with_capacity to avoid multiple heap reallocations when generating process lists.
+        let mut output = String::with_capacity(512);
 
         output.push_str("PID    TTY      TIME     CMD\n");
 

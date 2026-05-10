@@ -13,7 +13,8 @@ impl HardwareSensors {
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
 
         let layer = entity.layer();
-        let mut output = String::new();
+        // ⚡ Bolt Optimization: Uses String::with_capacity to avoid multiple heap reallocations when generating sensor readings.
+        let mut output = String::with_capacity(256);
 
         let _ = writeln!(output, "QUERYING SENSORS...\n");
 
