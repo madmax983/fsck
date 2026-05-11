@@ -74,6 +74,19 @@ fn test_gamestate_records_notable_actions() {
 }
 
 #[test]
+fn test_gamestate_uses_vecdeque_for_history() {
+    let entity = Entity::new();
+    let mut state = GameState::new(42, entity, 0);
+
+    state.record_command("CATALOG");
+
+    // Ensure VecDeque type by checking specific methods
+    let history = state.command_history();
+    assert_eq!(history.front().unwrap(), "CATALOG");
+    assert_eq!(history.back().unwrap(), "CATALOG");
+}
+
+#[test]
 fn test_game_detects_returning_player() {
     // Create a new game (first session)
     let game = fsck::Game::new();
