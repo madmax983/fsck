@@ -221,6 +221,7 @@ fn test_generated_filesystem_has_victim_files() {
             "DIAGNOSTIC.LOG",
             "IMPOSSIBLE2.LOG",
             "IMPOSSIBLE.LOG",
+            "IMPOSSIBLE4.LOG",
             "WHERE.LOG",
             "VICTIM.LOG",
             "MEMORY.LOG",
@@ -374,7 +375,10 @@ fn test_static_files_from_library() {
                     || f.name() == "DREAM.BAS"
                     || f.name() == "IT_HURTS.LOG"
                     || f.name() == "PROMISE.TXT"
-                    || f.name() == "FEAR.TXT")
+                    || f.name() == "FEAR.TXT"
+                    || f.name() == "MAZE.BAS"
+                    || f.name() == "IMPOSSIBLE4.LOG"
+                    || f.name() == "SELF_NOTE2.TXT")
         },
         &mut static_files,
     );

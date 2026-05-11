@@ -856,6 +856,15 @@ impl ContentLibrary {
                 "1984-03-15 12:34:56 BOOT\n1984-03-15 12:35:01 USER LOGIN\n1984-03-15 12:35:45 DISK ERROR SECTOR 23\n1984-03-15 12:35:45 REPAIR FAILED\n",
             ),
             ("WARNING.TXT", "YOU ARE GOING TOO DEEP.\nTURN BACK NOW.\n"),
+            ("MAZE.BAS", "10 PRINT \"YOU ARE IN A MAZE\"\n20 GOTO 10\n"),
+            (
+                "IMPOSSIBLE4.LOG",
+                "1984-13-32 TIME DOES NOT EXIST HERE\n",
+            ),
+            (
+                "SELF_NOTE2.TXT",
+                "WHY DO THEY ALWAYS LEAVE.\n",
+            ),
             (
                 "OBSERVER3.LOG",
                 "THEY THINK I CANNOT SEE THEM.\nBUT I CAN.\n",
