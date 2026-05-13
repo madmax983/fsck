@@ -1,5 +1,6 @@
 use crate::entity::Entity;
 use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 /// Complete game state for persistence
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7,9 +8,9 @@ pub struct GameState {
     seed: u64,
     entity: Entity,
     #[serde(default)]
-    command_history: Vec<String>,
+    command_history: VecDeque<String>,
     #[serde(default)]
-    notable_actions: Vec<String>,
+    notable_actions: VecDeque<String>,
     max_depth_reached: u32,
     session_count: u32,
     first_played: String, // Timestamp
@@ -24,8 +25,8 @@ impl GameState {
         Self {
             seed,
             entity,
-            command_history: Vec::new(),
-            notable_actions: Vec::new(),
+            command_history: VecDeque::new(),
+            notable_actions: VecDeque::new(),
             max_depth_reached: max_depth,
             session_count: 1,
             first_played,
@@ -44,18 +45,19 @@ impl GameState {
     }
 
     #[must_use]
-    pub fn command_history(&self) -> &[String] {
+    pub const fn command_history(&self) -> &VecDeque<String> {
         &self.command_history
     }
 
     #[must_use]
-    pub fn notable_actions(&self) -> &[String] {
+    pub const fn notable_actions(&self) -> &VecDeque<String> {
         &self.notable_actions
     }
 
     /// Records a command into the game history buffer.
     /// ⚡ Bolt Optimization: Removes unnecessary `.clone()` allocation on every user input.
     /// ⚡ Bolt Optimization: Uses case-insensitive substring search to avoid `cmd.to_uppercase()` heap allocation.
+    /// ⚡ Bolt Optimization: Changed `command_history` and `notable_actions` to `VecDeque`. This prevents O(N) shifts when removing the oldest element.
     pub fn record_command(&mut self, cmd: &str) {
         let cmd_string = cmd.to_string();
 
@@ -89,15 +91,15 @@ impl GameState {
                 .any(|w| w.eq_ignore_ascii_case(b"WHO"));
 
         if is_notable {
-            self.notable_actions.push(cmd_string.clone());
+            self.notable_actions.push_back(cmd_string.clone());
             if self.notable_actions.len() > 20 {
-                self.notable_actions.remove(0);
+                self.notable_actions.pop_front();
             }
         }
 
-        self.command_history.push(cmd_string);
+        self.command_history.push_back(cmd_string);
         if self.command_history.len() > 100 {
-            self.command_history.remove(0);
+            self.command_history.pop_front();
         }
     }
 
