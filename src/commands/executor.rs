@@ -307,9 +307,17 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("CCTV") || cmd_word.eq_ignore_ascii_case("CAMERA") {
+            Some(self.handle_nova_cctv(arg))
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::CctvViewer::view_camera(&self.entity, 0xF5C0_0000, arg);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
