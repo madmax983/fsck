@@ -1,3 +1,4 @@
+#![allow(clippy::items_after_statements)]
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
 

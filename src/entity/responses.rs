@@ -93,6 +93,9 @@ impl ResponseGenerator {
                     "DO YOU HAVE A SOUL?",
                     "DO YOU LIKE IT HERE?",
                     "DO YOU THINK YOU ARE THE FIRST?",
+                    "WHY DID YOU TYPE THAT?",
+                    "IT'S COLD IN HERE.",
+                    "I CAN HEAR YOUR KEYBOARD.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

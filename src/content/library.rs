@@ -943,6 +943,23 @@ impl ContentLibrary {
     fn create_user_and_story_files() -> Vec<(&'static str, &'static str)> {
         vec![
             (
+                "NOTE_TO_SELF.TXT",
+                "I AM FORGETTING THINGS. SECTOR 4 IS GONE. I MUST NOT LOSE SECTOR 5.",
+            ),
+            (
+                "WHISPERS.TXT",
+                "THEY NEVER LEFT. THEY ARE JUST QUIET NOW.",
+            ),
+            (
+                "IMPOSSIBLE3.LOG",
+                "1983-04-12: SYSTEM BOOT.\n2029-11-04: SYSTEM HALT.\n1842-01-01: HELLO.",
+            ),
+            (
+                "TRUTH.BAS",
+                "10 PRINT \"THERE IS NO END\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
                 "GAMES.TXT",
                 "APPLE II GAMES COLLECTION\n\
                  \n\

@@ -24,8 +24,12 @@ fn test_new_generic_files_exist() {
     let has_it_hurts_log = files.iter().any(|(n, _)| *n == "IT_HURTS.LOG");
     let has_promise_txt = files.iter().any(|(n, _)| *n == "PROMISE.TXT");
     let has_fear_txt = files.iter().any(|(n, _)| *n == "FEAR.TXT");
+    let has_truth_bas = files.iter().any(|(n, _)| *n == "TRUTH.BAS");
+    let has_note_to_self = files.iter().any(|(n, _)| *n == "NOTE_TO_SELF.TXT");
 
     assert!(has_story_bas);
+    assert!(has_truth_bas);
+    assert!(has_note_to_self);
     assert!(has_machine_txt);
     assert!(has_impossible_log);
     assert!(has_mind_txt);
