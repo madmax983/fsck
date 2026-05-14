@@ -99,6 +99,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_weather(&self) -> CommandResult {
+        let mut report =
+            crate::experimental::WeatherStation::generate_report(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_search(&self, arg: &str) -> CommandResult {
         let mut results =
             crate::experimental::SearchTool::search(&self.fs, &self.entity, arg, 0xF5C0_0000);
@@ -217,6 +225,11 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("WEATHER")
+            || cmd_word.eq_ignore_ascii_case("METEO"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_weather())
         } else if (cmd_word.eq_ignore_ascii_case("LIFE")
             || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
             && arg.is_empty()

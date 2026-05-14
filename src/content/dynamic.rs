@@ -96,9 +96,9 @@ impl DynamicContent {
     pub fn generate(&mut self) -> String {
         match self {
             Self::Counter { base, count } => {
+                use std::fmt::Write;
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                use std::fmt::Write;
                 let mut out = String::with_capacity(base.len() * repeat_count + 10);
                 for _ in 0..repeat_count {
                     out.push_str(base);
