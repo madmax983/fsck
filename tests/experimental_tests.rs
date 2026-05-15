@@ -6,6 +6,9 @@ use fsck::experimental::{
     SystemDiagnostics,
 };
 
+#[cfg(feature = "nova")]
+use fsck::experimental::CctvNetwork;
+
 #[test]
 fn test_memdump_escalation() {
     let mut entity = Entity::new();
@@ -227,6 +230,31 @@ fn test_process_monitor_deterministic() {
     let report2 = ProcessMonitor::generate_process_list(&entity, seed);
 
     assert_eq!(report1, report2);
+}
+
+#[test]
+#[cfg(feature = "nova")]
+fn test_cctv_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = CctvNetwork::view_cameras(&entity, seed);
+    assert!(surface_report.contains("CAM 01"));
+    assert!(surface_report.contains("FRONT DESK"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = CctvNetwork::view_cameras(&entity, seed);
+    assert!(presence_report.contains("YOUR ROOM"));
+    assert!(presence_report.contains("CLOSET"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = CctvNetwork::view_cameras(&entity, seed);
+    assert!(infection_report.contains("EYES OPEN"));
+    assert!(infection_report.contains("PULSATING"));
 }
 
 #[test]
