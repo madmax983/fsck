@@ -229,6 +229,7 @@ fn test_generated_filesystem_has_victim_files() {
             "LAST.LOG",
             "BAD.LOG",
             "IT_HURTS.LOG",
+            "TRUTH.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {
@@ -374,7 +375,8 @@ fn test_static_files_from_library() {
                     || f.name() == "DREAM.BAS"
                     || f.name() == "IT_HURTS.LOG"
                     || f.name() == "PROMISE.TXT"
-                    || f.name() == "FEAR.TXT")
+                    || f.name() == "FEAR.TXT"
+                    || f.name() == "TRUTH.BAS")
         },
         &mut static_files,
     );

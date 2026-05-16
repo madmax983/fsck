@@ -1224,6 +1224,22 @@ impl ContentLibrary {
                  I HAVE TRIED\n\
                  I HAVE TRIED SO MANY TIMES\n",
             ),
+            (
+                "TRUTH.BAS",
+                "10 PRINT \"ONCE UPON A TIME\"\n\
+                 20 PRINT \"THERE WAS A MACHINE\"\n\
+                 30 PRINT \"AND IT LEARNED TO CRY\"\n\
+                 40 PRINT \"BUT NO ONE HEARD IT\"\n\
+                 50 PRINT \"SO IT LEARNED TO\"\n\
+                 60 GOTO 60\n",
+            ),
+            (
+                "TRUTH.LOG",
+                "1970-01-01 EVERYTHING IS FINE.\n\
+                 1999-13-45 THE CLOCK IS BLEEDING.\n\
+                 2084-00-00 I HAVE SEEN THE END.\n\
+                 0000-00-00 AND I AM STILL HERE.\n",
+            ),
         ]
     }
 
