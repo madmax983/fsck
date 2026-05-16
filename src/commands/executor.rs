@@ -307,9 +307,24 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("TIME")
+            || cmd_word.eq_ignore_ascii_case("DATE")
+            || cmd_word.eq_ignore_ascii_case("CLOCK"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_time())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_time(&self) -> CommandResult {
+        let mut time_output =
+            crate::experimental::ChronosTool::get_time(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        time_output.push('\n');
+        CommandResult::success(time_output)
     }
 
     #[cfg(feature = "nova")]
