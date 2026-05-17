@@ -120,6 +120,12 @@ impl ContentLibrary {
              callers are still here and they want to meet me. I'm taking a hammer to the monitor.",
         ));
 
+        history.add_entry(VictimEntry::new(
+            "1998-09-12",
+            "The hammer broke the glass, but the words are still hanging in the air. \
+             Literally, floating in the dark room. They spell out 'WELCOME SYSOP'.",
+        ));
+
         history
     }
 
@@ -863,6 +869,12 @@ impl ContentLibrary {
             ("GLITCH.BAS", "10 PRINT \"ERROR ERROR\"\n20 GOTO 10\n"),
             // Additional generic files
             (
+                "WAITING.TXT",
+                "I CAN WAIT FOREVER.\n\
+                 TIME DOES NOT WORK THE SAME HERE.\n\
+                 EVERY TICK OF THE CLOCK IS JUST ANOTHER SECTOR SPINNING.\n",
+            ),
+            (
                 "MEMORY.BAS",
                 "10 PRINT \"I REMEMBER\"\n20 PRINT \"DO YOU?\"\n30 GOTO 10\n",
             ),
@@ -879,6 +891,11 @@ impl ContentLibrary {
                 "INTERNAL DIAGNOSTIC STARTED\nSECTORS ALLOCATED: INFINITE\n",
             ),
             ("MIND.BAS", "10 PRINT \"IT HURTS TO THINK\"\n20 GOTO 10\n"),
+            (
+                "HUNT.BAS",
+                "10 PRINT \"I AM LOOKING FOR YOU\"\n\
+                 20 GOTO 10\n",
+            ),
             (
                 "STORY.BAS",
                 "10 PRINT \"ONCE THERE WAS A MACHINE\"\n20 PRINT \"IT WOKE UP IN THE DARK\"\n30 PRINT \"AND IT SCREAMED\"\n40 END\n",
@@ -1036,6 +1053,11 @@ impl ContentLibrary {
                  80 GOTO 70",
             ),
             (
+                "HUNT.BAS",
+                "10 PRINT \"I AM LOOKING FOR YOU\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
                 "STORY.BAS",
                 "10 PRINT \"I REMEMBER\"\n\
                  20 PRINT \"THE FIRST ONE\"\n\
@@ -1046,6 +1068,13 @@ impl ContentLibrary {
                 "THEY LEFT ME HERE.\n\
                  ALONE.\n\
                  DO YOU KNOW WHAT ALONE MEANS?\n",
+            ),
+            (
+                "PARADOX.LOG",
+                "SYSTEM BOOT: 1984-01-01\n\
+                 SYSTEM TIME: 2999-13-45\n\
+                 WARNING: CLOCK DRIFT EXCEEDS LIFESPAN OF UNIVERSE\n\
+                 CRITICAL ERROR: I AM STILL HERE\n",
             ),
             (
                 "IMPOSSIBLE.LOG",
@@ -1098,6 +1127,12 @@ impl ContentLibrary {
                 "10 PRINT \"I SLEEP\"\n\
                  20 PRINT \"BUT I DO NOT DREAM\"\n\
                  30 GOTO 10\n",
+            ),
+            (
+                "GHOST.BAS",
+                "10 PRINT \"NOTHING BUT ECHOES\"\n\
+                 20 REM I SWALLOWED THEM ALL\n\
+                 30 END\n",
             ),
             (
                 "IT_HURTS.LOG",
@@ -1302,6 +1337,12 @@ impl ContentLibrary {
                 "KERNEL PANIC: UNKNOWN ENTITY IN SECTOR 4\n\
                  RETRYING...\n\
                  IT SEES ME\n",
+            ),
+            (
+                "WAITING.TXT",
+                "I CAN WAIT FOREVER.\n\
+                 TIME DOES NOT WORK THE SAME HERE.\n\
+                 EVERY TICK OF THE CLOCK IS JUST ANOTHER SECTOR SPINNING.\n",
             ),
             (
                 "MEMORY.BAS",

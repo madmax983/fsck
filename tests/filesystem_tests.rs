@@ -223,6 +223,7 @@ fn test_generated_filesystem_has_victim_files() {
             "IMPOSSIBLE.LOG",
             "WHERE.LOG",
             "VICTIM.LOG",
+            "PARADOX.LOG",
             "MEMORY.LOG",
             "SYS.LOG",
             "REPAIR.LOG",
@@ -374,7 +375,11 @@ fn test_static_files_from_library() {
                     || f.name() == "DREAM.BAS"
                     || f.name() == "IT_HURTS.LOG"
                     || f.name() == "PROMISE.TXT"
-                    || f.name() == "FEAR.TXT")
+                    || f.name() == "FEAR.TXT"
+                    || f.name() == "WAITING.TXT"
+                    || f.name() == "PARADOX.LOG"
+                    || f.name() == "HUNT.BAS"
+                    || f.name() == "GHOST.BAS")
         },
         &mut static_files,
     );

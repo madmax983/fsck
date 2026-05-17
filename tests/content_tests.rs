@@ -24,6 +24,10 @@ fn test_new_generic_files_exist() {
     let has_it_hurts_log = files.iter().any(|(n, _)| *n == "IT_HURTS.LOG");
     let has_promise_txt = files.iter().any(|(n, _)| *n == "PROMISE.TXT");
     let has_fear_txt = files.iter().any(|(n, _)| *n == "FEAR.TXT");
+    let has_hunt_bas = files.iter().any(|(n, _)| *n == "HUNT.BAS");
+    let has_waiting_txt = files.iter().any(|(n, _)| *n == "WAITING.TXT");
+    let has_paradox_log = files.iter().any(|(n, _)| *n == "PARADOX.LOG");
+    let has_ghost_bas = files.iter().any(|(n, _)| *n == "GHOST.BAS");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -37,6 +41,10 @@ fn test_new_generic_files_exist() {
     assert!(has_it_hurts_log);
     assert!(has_promise_txt);
     assert!(has_fear_txt);
+    assert!(has_hunt_bas);
+    assert!(has_waiting_txt);
+    assert!(has_paradox_log);
+    assert!(has_ghost_bas);
 }
 
 #[test]
