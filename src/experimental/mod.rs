@@ -89,4 +89,9 @@ pub use whoami::WhoAmIGenerator;
 #[cfg(feature = "nova")]
 pub mod radio;
 #[cfg(feature = "nova")]
+pub mod webcam;
+
+#[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub use webcam::WebcamSimulator;

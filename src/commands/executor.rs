@@ -202,6 +202,18 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("WEBCAM")
+            || cmd_word.eq_ignore_ascii_case("CAMERA"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_webcam())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
@@ -364,6 +376,14 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         fortune_output.push('\n');
         CommandResult::success(fortune_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_webcam(&self) -> CommandResult {
+        let mut output = crate::experimental::WebcamSimulator::capture(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        output.push('\n');
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
