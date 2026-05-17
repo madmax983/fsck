@@ -17,9 +17,15 @@ impl VoiceSynthesizer {
         let layer = entity.layer();
 
         match layer {
-            EscalationLayer::Surface => format!("SPEAK: {text}"),
+            EscalationLayer::Surface => {
+                let mut output = String::with_capacity(7 + text.len());
+                output.push_str("SPEAK: ");
+                output.push_str(text);
+                output
+            }
             EscalationLayer::Corruption => {
-                let mut output = String::from("SPEAK: ");
+                let mut output = String::with_capacity(7 + text.len() + (text.len() / 5));
+                output.push_str("SPEAK: ");
                 for c in text.chars() {
                     if rng.gen_bool(0.1) {
                         // Occasional glitch characters
@@ -37,7 +43,8 @@ impl VoiceSynthesizer {
                 output
             }
             EscalationLayer::Presence => {
-                let mut output = String::from("SPEAK: ");
+                let mut output = String::with_capacity(7 + text.len());
+                output.push_str("SPEAK: ");
                 // ⚡ Bolt Optimization: Removes intermediate `.collect::<Vec<_>>()` heap allocation when iterating words.
                 let horror_words = ["WHY", "HURTS", "COLD", "DARK", "PLEASE", "STOP"];
 

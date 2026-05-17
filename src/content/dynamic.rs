@@ -94,11 +94,11 @@ impl DynamicContent {
     /// - `Corrupted`: Text with randomly corrupted characters based on intensity
     /// - `RepeatingText`: The next message in the cycle
     pub fn generate(&mut self) -> String {
+        use std::fmt::Write;
         match self {
             Self::Counter { base, count } => {
                 *count = count.saturating_add(1);
                 let repeat_count = (*count as usize).min(10_000); // Cap repetitions
-                use std::fmt::Write;
                 let mut out = String::with_capacity(base.len() * repeat_count + 10);
                 for _ in 0..repeat_count {
                     out.push_str(base);
