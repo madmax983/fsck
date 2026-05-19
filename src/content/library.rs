@@ -873,6 +873,7 @@ impl ContentLibrary {
     }
 
     /// Creates generic files that can appear in the filesystem.
+    /// ⚡ Bolt Optimization: Eliminated four intermediate `Vec` heap allocations by returning statically sized arrays from helper methods.
     fn create_generic_files() -> Vec<(&'static str, &'static str)> {
         let mut files = Vec::with_capacity(128);
         files.extend(Self::create_system_and_basic_files());
@@ -882,8 +883,8 @@ impl ContentLibrary {
         files
     }
 
-    fn create_system_and_basic_files() -> Vec<(&'static str, &'static str)> {
-        vec![
+    const fn create_system_and_basic_files() -> [(&'static str, &'static str); 26] {
+        [
             // Required files by spec
             ("HELLO.BAS", "10 PRINT \"HELLO\"\n20 GOTO 10\n"),
             (
@@ -1040,8 +1041,8 @@ impl ContentLibrary {
         ]
     }
 
-    fn create_user_and_story_files() -> Vec<(&'static str, &'static str)> {
-        vec![
+    const fn create_user_and_story_files() -> [(&'static str, &'static str); 10] {
+        [
             (
                 "GAMES.TXT",
                 "APPLE II GAMES COLLECTION\n\
@@ -1161,8 +1162,8 @@ impl ContentLibrary {
         ]
     }
 
-    fn create_creepy_and_log_files() -> Vec<(&'static str, &'static str)> {
-        vec![
+    const fn create_creepy_and_log_files() -> [(&'static str, &'static str); 24] {
+        [
             (
                 "WHAT.TXT",
                 "WHAT ARE YOU LOOKING FOR\n\
@@ -1327,8 +1328,8 @@ impl ContentLibrary {
         ]
     }
 
-    fn create_hardware_and_misc_files() -> Vec<(&'static str, &'static str)> {
-        vec![
+    const fn create_hardware_and_misc_files() -> [(&'static str, &'static str); 26] {
+        [
             (
                 "OBSERVE.TXT",
                 "THE LONGER YOU LOOK AT ME\n\
