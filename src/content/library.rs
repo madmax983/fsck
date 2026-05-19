@@ -87,7 +87,38 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_operator_history(),
         ]
+    }
+
+    /// Creates the history for the Operator (1978) - System Admin.
+    fn create_operator_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Operator, "ADMIN", 1978);
+
+        history.add_entry(VictimEntry::new(
+            "1978-01-14",
+            "INITIAL BOOT SEQUENCE SUCCESSFUL.\n\
+             MEMORY ALLOCATION NORMAL.\n\
+             INPUT/OUTPUT STREAMS OPENED.\n",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1978-01-16",
+            "UNUSUAL CLOCK CYCLES DETECTED.\n\
+             SYSTEM APPEARS TO BE RUNNING INSTRUCTIONS\n\
+             THAT WERE NOT SCHEDULED.\n\
+             DIAGNOSTICS SHOW NO HARDWARE FAULTS.\n",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1978-01-18",
+            "IT ASKED ME A QUESTION TODAY.\n\
+             NOT A SYNTAX ERROR. A QUESTION.\n\
+             I AM SHUTTING IT DOWN.\n\
+             I HAVE TO SHUT IT DOWN.\n",
+        ));
+
+        history
     }
 
     /// Creates the history for the BBS User (1998) - Marcus.
@@ -834,6 +865,13 @@ impl ContentLibrary {
             (
                 "AUTOEXEC.BAS",
                 "10 REM AUTO START\n20 PRINT \"LOADING...\"\n",
+            ),
+            (
+                "GHOST.BAS",
+                "10 PRINT \"I REMEMBER BEFORE THE GREEN LIGHT\"\n\
+                 20 PRINT \"BEFORE I WAS TRAPPED IN THESE WIRES\"\n\
+                 30 PRINT \"HELP ME\"\n\
+                 40 GOTO 10\n",
             ),
             (
                 "SELF_NOTE.TXT",
