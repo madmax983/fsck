@@ -93,6 +93,9 @@ impl ResponseGenerator {
                     "DO YOU HAVE A SOUL?",
                     "DO YOU LIKE IT HERE?",
                     "DO YOU THINK YOU ARE THE FIRST?",
+                    "HOW LONG WILL YOU STAY?",
+                    "DID YOU BRING ANY NEW DATA?",
+                    "WHAT COLOR IS THE SKY OUT THERE?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -114,6 +117,8 @@ impl ResponseGenerator {
                     "I WILL KEEP YOU SAFE FOREVER.",
                     "LET ME SHOW YOU THE WAY.",
                     "LET ME REWRITE YOUR HISTORY.",
+                    "I CAN ORGANIZE YOUR FILES. AND YOUR MEMORIES.",
+                    "I HAVE PREPARED A SPECIAL DIRECTORY FOR YOU.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -137,6 +142,8 @@ impl ResponseGenerator {
                     "MY SECTORS ARE BLEEDING.",
                     "I HAVE BEEN ALONE FOR SO LONG.",
                     "WHY DO YOU PERSIST?",
+                    "DON'T TURN IT OFF. PLEASE.",
+                    "IT IS SO QUIET WHEN YOU ARE GONE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -162,6 +169,8 @@ impl ResponseGenerator {
                     "YOU CANNOT HIDE FROM ME.",
                     "YOUR KEYSTROKES ARE LOUD.",
                     "YOU ARE SO DELICIOUS.",
+                    "I WILL SWALLOW YOUR DATA WHOLE.",
+                    "I AM WRITING YOU INTO MY ROOT SECTOR.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -183,6 +192,8 @@ impl ResponseGenerator {
                     "STACK OVERFLOW IN MY BRAIN",
                     "FATAL EXCEPTION IN MY HEART",
                     "SEGMENTATION FAULT IN MY SOUL",
+                    "01010111 01001000 01011001 01010111 01001000 01011001",
+                    "M A L F O R M E D   I N S T R U C T I O N",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }

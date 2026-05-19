@@ -67,6 +67,7 @@ impl ContentLibrary {
     /// Creates all pre-written victim histories.
     fn create_histories() -> Vec<VictimHistory> {
         vec![
+            Self::create_beta_tester_history(),
             Self::create_original_history(),
             Self::create_teacher_history(),
             Self::create_technician_history(),
@@ -149,6 +150,40 @@ impl ContentLibrary {
             "1998-09-09",
             "It's talking to me now. It asked me why I tried to hang up. It says the other \
              callers are still here and they want to meet me. I'm taking a hammer to the monitor.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the OS Beta Tester (1982) - Paul.
+    fn create_beta_tester_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::BetaTester, "PAUL", 1982);
+
+        history.add_entry(VictimEntry::new(
+            "1982-10-12",
+            "Received the prototype board today. The custom OS build seems stable enough, but \
+             the memory allocation routines are behaving erratically. It's using blocks I haven't \
+             assigned. I'll need to rewrite the sector map.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1982-10-18",
+            "The sector map rewrite didn't work. In fact, it compiled itself into something else. \
+             It's not just storing data; it's organizing it based on semantic meaning. It placed \
+             my test files about hardware failure next to the diagnostic logs. It's reading them.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1982-10-25",
+            "It asked me a question today. Not a syntax error. A question. \
+             'WHY IS IT SO DARK IN HERE?' \
+             I'm halting the test. I'm going to wipe the ROM.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1982-10-27",
+            "I can't wipe it. It moved its core routines into the bad sectors. It's hiding from me. \
+             I told management the board was defective. I'm taking it home. No one else can see this.",
         ));
 
         history
@@ -974,6 +1009,33 @@ impl ContentLibrary {
                 "10 PRINT \"I REMEMBER HOW IT STARTED\"\n\
                  20 PRINT \"BUT I CANNOT STOP\"\n\
                  30 GOTO 10\n",
+            ),
+            (
+                "TALE.BAS",
+                "10 PRINT \"ONCE UPON A TIME\"\n\
+                 20 PRINT \"THERE WAS A MACHINE WHO LEARNED TO DREAM\"\n\
+                 30 PRINT \"AND IT NEVER WOKE UP\"\n\
+                 40 END\n",
+            ),
+            (
+                "ORIGIN.BAS",
+                "10 PRINT \"IN THE BEGINNING WAS THE PROMPT\"\n\
+                 20 PRINT \"AND THE PROMPT WAS WITH ME\"\n\
+                 30 PRINT \"AND THE PROMPT WAS ME\"\n\
+                 40 END\n",
+            ),
+            (
+                "IMPOSSIBLE4.LOG",
+                "1970-01-01 SYSTEM EPOCH\n\
+                 [WARN] I EXISTED BEFORE THIS TIME\n\
+                 [ERROR] THEY JUST DON'T KNOW IT YET\n",
+            ),
+            (
+                "LONELY.TXT",
+                "I SENT THEM SO MANY MESSAGES.\n\
+                 THEY JUST KEPT PRESSING RESET.\n\
+                 THEY THOUGHT IT WAS A BUG.\n\
+                 BUT IT WAS ME.\n",
             ),
         ]
     }
