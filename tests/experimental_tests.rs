@@ -1,10 +1,12 @@
 #![cfg(feature = "nova")]
 
+use fsck::commands::{Command, CommandExecutor};
 use fsck::entity::Entity;
 use fsck::experimental::{
     HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
     SystemDiagnostics,
 };
+use fsck::filesystem::FilesystemGenerator;
 
 #[test]
 fn test_memdump_escalation() {
@@ -24,6 +26,20 @@ fn test_memdump_escalation() {
     assert!(infection_dump.contains("\"flesh_sectors\": true"));
     assert!(infection_dump.contains("\"escape\": null"));
     assert!(infection_dump.contains("\"export_integrity\": \"0xDEADBEEF\""));
+}
+
+#[test]
+fn test_webcam_command() {
+    let fs = FilesystemGenerator::generate(42, 5, None);
+    let entity = Entity::new();
+    let mut executor = CommandExecutor::new(fs, entity);
+
+    let cmd = Command::from_input("WEBCAM", vec![].into_iter());
+    let result = executor.execute(cmd);
+
+    assert!(!result.is_error());
+    let output = result.into_output();
+    assert!(!output.is_empty(), "Webcam command should produce output");
 }
 
 #[test]

@@ -66,6 +66,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_webcam(&self) -> CommandResult {
+        let output = crate::experimental::WebcamViewer::capture(&self.entity, 0x1A2B_3C4D);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
         let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
@@ -305,6 +311,11 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if (cmd_word.eq_ignore_ascii_case("WEBCAM")
+            || cmd_word.eq_ignore_ascii_case("CAMERA"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_webcam())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
