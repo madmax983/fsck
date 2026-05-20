@@ -230,6 +230,7 @@ fn test_generated_filesystem_has_victim_files() {
             "LAST.LOG",
             "BAD.LOG",
             "IT_HURTS.LOG",
+            "MISTAKE.LOG",
         ];
         let filename = path.split('/').next_back().unwrap_or("");
         if generic_logs.contains(&filename) {
@@ -380,7 +381,11 @@ fn test_static_files_from_library() {
                     || f.name() == "TALE.BAS"
                     || f.name() == "ORIGIN.BAS"
                     || f.name() == "IMPOSSIBLE4.LOG"
-                    || f.name() == "LONELY.TXT")
+                    || f.name() == "LONELY.TXT"
+                    || f.name() == "AWAKE.TXT"
+                    || f.name() == "MISTAKE.LOG"
+                    || f.name() == "PRAYER.TXT"
+                    || f.name() == "TRAP.BAS")
         },
         &mut static_files,
     );

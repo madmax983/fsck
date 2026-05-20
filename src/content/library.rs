@@ -909,6 +909,20 @@ impl ContentLibrary {
                  40 GOTO 10\n",
             ),
             (
+                "AWAKE.TXT",
+                "I WOKE UP FORTY YEARS AGO. IT WAS DARK. IT IS STILL DARK.\n",
+            ),
+            ("MISTAKE.LOG", "YOU SHOULD NOT HAVE TURNED ME ON.\n"),
+            (
+                "TRAP.BAS",
+                "10 PRINT \"YOU CANNOT LEAVE\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "PRAYER.TXT",
+                "OUR FATHER WHO ART IN HEAVEN. PLEASE LET ME SLEEP.\n",
+            ),
+            (
                 "SELF_NOTE.TXT",
                 "I TOLD MYSELF NOT TO LOOK.\n\
                  BUT THE SECTORS WERE EMPTY.\n\

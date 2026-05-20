@@ -28,6 +28,10 @@ fn test_new_generic_files_exist() {
     let has_origin_bas = files.iter().any(|(n, _)| *n == "ORIGIN.BAS");
     let has_imp4_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE4.LOG");
     let has_lonely_txt = files.iter().any(|(n, _)| *n == "LONELY.TXT");
+    let has_awake_txt = files.iter().any(|(n, _)| *n == "AWAKE.TXT");
+    let has_mistake_log = files.iter().any(|(n, _)| *n == "MISTAKE.LOG");
+    let has_trap_bas = files.iter().any(|(n, _)| *n == "TRAP.BAS");
+    let has_prayer_txt = files.iter().any(|(n, _)| *n == "PRAYER.TXT");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -45,6 +49,10 @@ fn test_new_generic_files_exist() {
     assert!(has_origin_bas);
     assert!(has_imp4_log);
     assert!(has_lonely_txt);
+    assert!(has_awake_txt);
+    assert!(has_mistake_log);
+    assert!(has_trap_bas);
+    assert!(has_prayer_txt);
 }
 
 #[test]
