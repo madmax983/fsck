@@ -238,6 +238,19 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if (cmd_word.eq_ignore_ascii_case("CCTV")
+            || cmd_word.eq_ignore_ascii_case("CAMERA")
+            || cmd_word.eq_ignore_ascii_case("VIEW"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_cctv())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if cmd_word.eq_ignore_ascii_case("MAIL") && arg.is_empty() {
             #[cfg(feature = "nova")]
             {
@@ -949,5 +962,10 @@ impl CommandExecutor {
         };
 
         self.execute_basic_program(&program)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self) -> CommandResult {
+        CommandResult::success(crate::experimental::cctv::CctvViewer::view(&self.entity))
     }
 }
