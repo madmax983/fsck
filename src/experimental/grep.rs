@@ -20,8 +20,9 @@ impl SearchTool {
     }
 
     /// Extract a safe snippet from the content avoiding char boundary panics.
-    /// Optimized to avoid O(N) heap allocations by iterating over char indices.
-    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
+    /// ⚡ Bolt Optimization: Returns `&str` instead of `String` to avoid heap allocations.
+    /// Uses `.len_utf8()` directly instead of encoding to a buffer.
+    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> &str {
         let prefix = &content[..start_idx];
         let mut chars_before = 0;
         let mut start_byte = start_idx;
@@ -35,11 +36,7 @@ impl SearchTool {
 
         let query_chars = content[start_idx..]
             .chars()
-            .take_while(|c| {
-                let mut buf = [0; 4];
-                let char_len = c.encode_utf8(&mut buf).len();
-                query_len >= char_len
-            })
+            .take_while(|c| query_len >= c.len_utf8())
             .count();
         let query_char_len = if query_chars == 0 { 1 } else { query_chars };
 
@@ -51,7 +48,22 @@ impl SearchTool {
             end_byte = start_idx + i + c.len_utf8();
         }
 
-        content[start_byte..end_byte].to_string()
+        &content[start_byte..end_byte]
+    }
+
+    /// ⚡ Bolt Optimization: Writes a snippet to the result buffer directly, replacing newlines with spaces.
+    /// Avoids intermediate heap allocations from `replace()` and `to_string()`.
+    fn write_clean_snippet(snippet: &str, results: &mut String) {
+        results.push_str("  ...");
+        let mut first = true;
+        for word in snippet.split_whitespace() {
+            if !first {
+                results.push(' ');
+            }
+            results.push_str(word);
+            first = false;
+        }
+        results.push_str("...\n");
     }
 
     /// Formats a matched result based on the entity's escalation layer.
@@ -76,10 +88,7 @@ impl SearchTool {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(snippet, results);
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +105,7 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(snippet, results);
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }

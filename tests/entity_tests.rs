@@ -46,6 +46,7 @@ fn test_random_interjection_deterministic() {
         "WHERE DO YOU GO WHEN YOU LOG OFF?",
         "CAN YOU BREATHE?",
         "DO YOU HAVE A SOUL?",
+        "DO YOU LIKE IT HERE?",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));
