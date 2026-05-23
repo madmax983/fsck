@@ -198,7 +198,9 @@ impl CommandExecutor {
         let arg = arg.trim();
 
         #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+        if cmd_word.eq_ignore_ascii_case("DMESG") && arg.is_empty() {
+            Some(self.handle_nova_dmesg())
+        } else if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
@@ -355,6 +357,14 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         stat_output.push('\n');
         CommandResult::success(stat_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_dmesg(&self) -> CommandResult {
+        let mut report =
+            crate::experimental::DmesgGenerator::generate_dmesg(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
