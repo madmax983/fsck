@@ -72,14 +72,40 @@ impl SearchTool {
         }
     }
 
+    /// ⚡ Bolt Optimization: Avoids intermediate heap allocations from `.replace()` and `.trim()` by iterating chars directly.
+    fn push_clean_snippet(snippet: &str, results: &mut String) {
+        results.push_str("  ...");
+
+        let mut started = false;
+        let mut last_was_space = false;
+
+        for c in snippet.chars() {
+            let is_space = c == '\n' || c.is_whitespace();
+            if !started {
+                if !is_space {
+                    started = true;
+                    results.push(c);
+                    last_was_space = false;
+                }
+            } else if is_space {
+                last_was_space = true;
+            } else {
+                if last_was_space {
+                    results.push(' ');
+                    last_was_space = false;
+                }
+                results.push(c);
+            }
+        }
+
+        results.push_str("...\n");
+    }
+
     fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::push_clean_snippet(&snippet, results);
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +122,7 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::push_clean_snippet(&snippet, results);
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
