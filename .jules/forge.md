@@ -68,3 +68,12 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Fixing entity_tests and Refactoring executor/types match chains]**
+**Learning:** A test was failing because its local copy of strings didn't match the main code. Also, large  chains on string matches obscure the actual routing logic.
+**Action:** Fix the test array to match the main source. Refactor  chains into clean  statements where possible, applying Guard Clauses or extracting logic if needed, ensuring zero behavioral change.
+**[Fixing entity_tests and Refactoring executor/types match chains]**
+**Learning:** A test was failing because its local copy of strings didn't match the main code. Also, large `if else if` chains on string matches obscure the actual routing logic.
+**Action:** Fix the test array to match the main source. Refactor `else if` chains into clean `match` statements where possible, applying Guard Clauses or extracting logic if needed, ensuring zero behavioral change.
+**[Match on ascii uppercase arrays]**
+**Learning:** To match case-insensitively without allocating memory (via `to_ascii_uppercase()`), you can't use standard string patterns.
+**Action:** Instead of `if else if` chains with `.eq_ignore_ascii_case()`, create a zero-allocation helper function or just use a loop if refactoring to match. Or wait, another way to refactor `if/else if` string chains without heap allocating a new string is using a macro or extracting them to a static match function that iterates over known string arrays or using an enum mapping. If we use `let cmd_upper = command.to_ascii_uppercase()`, we allocate. The prompt explicitly says we MUST not allocate, so we can stick to `if / else if` or use an array-based lookup.
