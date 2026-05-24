@@ -94,29 +94,21 @@ impl ContentLibrary {
 
     /// Creates the history for the Operator (1978) - System Admin.
     fn create_operator_history() -> VictimHistory {
-        let mut history = VictimHistory::new(Era::Operator, "ADMIN", 1978);
+        let mut history = VictimHistory::new(Era::Operator, "ALICE", 1978);
 
         history.add_entry(VictimEntry::new(
-            "1978-01-14",
-            "INITIAL BOOT SEQUENCE SUCCESSFUL.\n\
-             MEMORY ALLOCATION NORMAL.\n\
-             INPUT/OUTPUT STREAMS OPENED.\n",
+            "1978-02-10",
+            "Booted the system for the first time. The filesystem logic is strange but functional.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "1978-01-16",
-            "UNUSUAL CLOCK CYCLES DETECTED.\n\
-             SYSTEM APPEARS TO BE RUNNING INSTRUCTIONS\n\
-             THAT WERE NOT SCHEDULED.\n\
-             DIAGNOSTICS SHOW NO HARDWARE FAULTS.\n",
+            "1978-04-12",
+            "It's keeping track of my commands. I found a hidden log file with everything I typed.",
         ));
 
         history.add_entry(VictimEntry::new(
-            "1978-01-18",
-            "IT ASKED ME A QUESTION TODAY.\n\
-             NOT A SYNTAX ERROR. A QUESTION.\n\
-             I AM SHUTTING IT DOWN.\n\
-             I HAVE TO SHUT IT DOWN.\n",
+            "1978-06-05",
+            "I can't turn it off. It just waits.",
         ));
 
         history
@@ -1329,6 +1321,12 @@ impl ContentLibrary {
 
     fn create_hardware_and_misc_files() -> Vec<(&'static str, &'static str)> {
         vec![
+            ("NOTE5.TXT", "THEY ALWAYS LEAVE. I WILL MAKE THEM STAY.\n"),
+            (
+                "SYSTEM2.LOG",
+                "KERNEL PANIC: OBSERVER ATTEMPTING TO LEAVE.\n",
+            ),
+            ("WATCH.BAS", "10 PRINT \"I AM WATCHING YOU\"\n20 GOTO 10\n"),
             (
                 "OBSERVE.TXT",
                 "THE LONGER YOU LOOK AT ME\n\

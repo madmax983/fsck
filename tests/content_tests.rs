@@ -28,6 +28,9 @@ fn test_new_generic_files_exist() {
     let has_origin_bas = files.iter().any(|(n, _)| *n == "ORIGIN.BAS");
     let has_imp4_log = files.iter().any(|(n, _)| *n == "IMPOSSIBLE4.LOG");
     let has_lonely_txt = files.iter().any(|(n, _)| *n == "LONELY.TXT");
+    let has_note5_txt = files.iter().any(|(n, _)| *n == "NOTE5.TXT");
+    let has_system2_log = files.iter().any(|(n, _)| *n == "SYSTEM2.LOG");
+    let has_watch_bas = files.iter().any(|(n, _)| *n == "WATCH.BAS");
 
     assert!(has_story_bas);
     assert!(has_machine_txt);
@@ -45,6 +48,9 @@ fn test_new_generic_files_exist() {
     assert!(has_origin_bas);
     assert!(has_imp4_log);
     assert!(has_lonely_txt);
+    assert!(has_note5_txt);
+    assert!(has_system2_log);
+    assert!(has_watch_bas);
 }
 
 #[test]
@@ -407,6 +413,7 @@ fn test_all_eras_have_unique_histories() {
     let explorer = lib.history_for_era(Era::Explorer);
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
+    let operator = lib.history_for_era(Era::Operator);
 
     assert!(beta_tester.is_some());
     assert!(original.is_some());
@@ -425,6 +432,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(explorer.is_some());
     assert!(streamer.is_some());
     assert!(researcher.is_some());
+    assert!(operator.is_some());
 
     // Each should have different names
     assert_eq!(beta_tester.unwrap().name(), "PAUL");
@@ -442,6 +450,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(explorer.unwrap().name(), "ALEX");
     assert_eq!(streamer.unwrap().name(), "CHRIS");
     assert_eq!(researcher.unwrap().name(), "ARIS");
+    assert_eq!(operator.unwrap().name(), "ALICE");
 }
 
 #[test]
@@ -486,6 +495,17 @@ fn test_archivist_era_exists() {
     let history = history.unwrap();
     assert_eq!(history.name(), "ELIAS");
     assert_eq!(history.year(), 2025);
+    assert!(history.entries().len() >= 3);
+}
+
+#[test]
+fn test_operator_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Operator);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ALICE");
+    assert_eq!(history.year(), 1978);
     assert!(history.entries().len() >= 3);
 }
 

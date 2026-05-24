@@ -77,6 +77,7 @@ impl From<u32> for Era {
             51..=54 => Self::Archivist,
             55..=58 => Self::Archaeologist,
             59..=62 => Self::AIEntity,
+            63..=66 => Self::Operator,
             _ => Self::Current,
         }
     }
