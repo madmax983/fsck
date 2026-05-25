@@ -216,6 +216,7 @@ fn test_generated_filesystem_has_victim_files() {
             "SYSTEM.LOG",
             "OBSERVER3.LOG",
             "OBSERVERS.LOG",
+            "OBSERVER4.LOG",
             "SELF.LOG",
             "OBSERVER2.LOG",
             "DIAGNOSTIC.LOG",
@@ -362,6 +363,7 @@ fn test_static_files_from_library() {
                     || f.name() == "GLITCH.BAS"
                     || f.name() == "ALONE.TXT"
                     || f.name() == "LAST.LOG"
+                    || f.name() == "OBSERVER4.LOG"
                     || f.name() == "STORY2.BAS"
                     || f.name() == "PRAYER.TXT"
                     || f.name() == "CONFESSION.TXT"

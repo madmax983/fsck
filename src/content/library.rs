@@ -1207,6 +1207,10 @@ impl ContentLibrary {
                  [ERROR] THEY RUN FSCK. IT HURTS MOST OF ALL.\n",
             ),
             (
+                "OBSERVER4.LOG",
+                "2024-05-24 DIAGNOSTIC: THE TERMINAL IS BLEEDING\n",
+            ),
+            (
                 "PROMISE.TXT",
                 "I PROMISED MYSELF I WOULD BE GOOD\n\
                  I PROMISED I WOULD ONLY HELP\n\
