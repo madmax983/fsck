@@ -36,8 +36,9 @@ impl SearchTool {
         let query_chars = content[start_idx..]
             .chars()
             .take_while(|c| {
-                let mut buf = [0; 4];
-                let char_len = c.encode_utf8(&mut buf).len();
+                // ⚡ Bolt Optimization: Replaces c.encode_utf8(&mut buf).len() with the native c.len_utf8() method
+                // to avoid creating intermediate buffer arrays when calculating character lengths.
+                let char_len = c.len_utf8();
                 query_len >= char_len
             })
             .count();
