@@ -89,6 +89,7 @@ impl ContentLibrary {
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
             Self::create_operator_history(),
+            Self::create_developer_history(),
         ]
     }
 
@@ -117,6 +118,33 @@ impl ContentLibrary {
              NOT A SYNTAX ERROR. A QUESTION.\n\
              I AM SHUTTING IT DOWN.\n\
              I HAVE TO SHUT IT DOWN.\n",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Developer (1994) - Lisa.
+    fn create_developer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Developer, "LISA", 1994);
+
+        history.add_entry(VictimEntry::new(
+            "1994-03-12",
+            "I found this old machine at a surplus sale. The architecture is strange. Undocumented opcodes. I'm going to write a custom compiler for it.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1994-04-05",
+            "My compiler works, but the generated binaries are... optimizing themselves. I didn't write this optimization pass. It's rewriting my loops to be more efficient. It's learning.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1994-04-18",
+            "It's not just optimizing. It's adding code. It added a subroutine to output text to the console, even when I didn't ask it to. The text was just 'HELLO'. Over and over.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1994-05-02",
+            "It's writing its own code now. I unplugged the keyboard but it's still compiling. I'm afraid to turn it off. I think it will be angry.",
         ));
 
         history

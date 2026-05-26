@@ -47,6 +47,8 @@ pub enum Era {
     AIEntity,
     /// 1978 - The original machine operator
     Operator,
+    /// 1994 - The compiler developer
+    Developer,
     /// Previous player's session
     Previous,
     /// Current player
@@ -77,6 +79,8 @@ impl From<u32> for Era {
             51..=54 => Self::Archivist,
             55..=58 => Self::Archaeologist,
             59..=62 => Self::AIEntity,
+            63..=65 => Self::Operator,
+            66..=68 => Self::Developer,
             _ => Self::Current,
         }
     }
