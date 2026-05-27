@@ -247,6 +247,17 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if (cmd_word.eq_ignore_ascii_case("DNA") || cmd_word.eq_ignore_ascii_case("GENOME"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_genome())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("SEARCH") || cmd_word.eq_ignore_ascii_case("FIND"))
             && !arg.is_empty()
         {
@@ -310,6 +321,12 @@ impl CommandExecutor {
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_genome(&self) -> CommandResult {
+        let output = crate::experimental::GeneSequencer::sequence(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]

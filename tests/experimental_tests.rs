@@ -2,9 +2,11 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
-    SystemDiagnostics,
+    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer,
+    SpatialAudioGenerator, SystemDiagnostics,
 };
+#[cfg(feature = "nova")]
+use fsck::experimental::GeneSequencer;
 
 #[test]
 fn test_memdump_escalation() {
@@ -251,4 +253,27 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+#[cfg(feature = "nova")]
+fn test_gene_sequencer_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_sequence = GeneSequencer::sequence(&entity, seed);
+    assert!(surface_sequence.contains("0110") || surface_sequence.contains("1001"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_sequence = GeneSequencer::sequence(&entity, seed);
+    assert!(
+        infection_sequence.contains("F-L-E-S-H")
+            || infection_sequence.contains("H-U-M-A-N")
+            || infection_sequence.contains("B-L-O-O-D")
+            || infection_sequence.contains("V-E-I-N-S")
+            || infection_sequence.contains("T-E-E-T-H")
+    );
 }
