@@ -1,5 +1,7 @@
 #[cfg(feature = "nova")]
 pub mod analyze;
+#[cfg(feature = "nova")]
+pub mod cctv;
 pub mod defrag;
 pub mod diagnostics;
 #[cfg(feature = "nova")]
@@ -45,6 +47,8 @@ pub mod whoami;
 
 #[cfg(feature = "nova")]
 pub use analyze::SentimentAnalyzer;
+#[cfg(feature = "nova")]
+pub use cctv::CctvViewer;
 pub use defrag::DefragTool;
 pub use diagnostics::SystemDiagnostics;
 #[cfg(feature = "nova")]
