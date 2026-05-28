@@ -20,8 +20,10 @@ impl SearchTool {
     }
 
     /// Extract a safe snippet from the content avoiding char boundary panics.
-    /// Optimized to avoid O(N) heap allocations by iterating over char indices.
-    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
+    /// ⚡ Bolt Optimization: Uses a zero-allocation approach by returning a string slice `&str`
+    /// instead of an allocated `String`. Avoids `.encode_utf8()` for measuring char byte length by using native `.len_utf8()`.
+    /// Also avoids allocating intermediate strings when formatting matches by formatting inline.
+    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> &str {
         let prefix = &content[..start_idx];
         let mut chars_before = 0;
         let mut start_byte = start_idx;
@@ -33,12 +35,17 @@ impl SearchTool {
             }
         }
 
+        let mut remaining_query_len = query_len;
         let query_chars = content[start_idx..]
             .chars()
             .take_while(|c| {
-                let mut buf = [0; 4];
-                let char_len = c.encode_utf8(&mut buf).len();
-                query_len >= char_len
+                let char_len = c.len_utf8();
+                if remaining_query_len >= char_len {
+                    remaining_query_len -= char_len;
+                    true
+                } else {
+                    false
+                }
             })
             .count();
         let query_char_len = if query_chars == 0 { 1 } else { query_chars };
@@ -51,7 +58,7 @@ impl SearchTool {
             end_byte = start_idx + i + c.len_utf8();
         }
 
-        content[start_byte..end_byte].to_string()
+        &content[start_byte..end_byte]
     }
 
     /// Formats a matched result based on the entity's escalation layer.
@@ -72,14 +79,37 @@ impl SearchTool {
         }
     }
 
+    /// ⚡ Bolt Optimization: Avoids intermediate `String` allocations by iterating over characters
+    /// in the extracted snippet and writing them directly to the `results` buffer, handling
+    /// newline replacement and trimming inline.
+    fn write_clean_snippet(snippet: &str, results: &mut String) {
+        let _ = write!(results, "  ...");
+        let mut first_char = true;
+        let mut last_was_space = true;
+        for c in snippet.trim().chars() {
+            let is_space = c == '\n' || c.is_whitespace();
+            if is_space {
+                if !first_char && !last_was_space {
+                    let _ = write!(results, " ");
+                    last_was_space = true;
+                }
+            } else {
+                first_char = false;
+                last_was_space = false;
+                let _ = write!(results, "{c}");
+            }
+        }
+        if results.ends_with(' ') {
+            results.pop();
+        }
+        let _ = writeln!(results, "...");
+    }
+
     fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(snippet, results);
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +126,7 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(snippet, results);
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
