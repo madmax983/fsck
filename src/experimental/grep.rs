@@ -33,12 +33,12 @@ impl SearchTool {
             }
         }
 
+        let mut current_len = 0;
         let query_chars = content[start_idx..]
             .chars()
             .take_while(|c| {
-                let mut buf = [0; 4];
-                let char_len = c.encode_utf8(&mut buf).len();
-                query_len >= char_len
+                current_len += c.len_utf8();
+                query_len >= current_len
             })
             .count();
         let query_char_len = if query_chars == 0 { 1 } else { query_chars };
@@ -52,6 +52,36 @@ impl SearchTool {
         }
 
         content[start_byte..end_byte].to_string()
+    }
+
+    /// Helper to efficiently write a snippet without heap-allocating via `replace`
+    fn write_clean_snippet(snippet: &str, results: &mut String) {
+        results.push_str("  ...");
+
+        let mut first = true;
+        let mut prev_was_space = false;
+
+        for c in snippet.chars() {
+            let is_space = c == '\n' || c.is_whitespace();
+
+            if is_space {
+                if !first && !prev_was_space {
+                    results.push(' ');
+                    prev_was_space = true;
+                }
+            } else {
+                results.push(c);
+                prev_was_space = false;
+                first = false;
+            }
+        }
+
+        // Trim trailing space if any
+        if results.ends_with(' ') {
+            results.pop();
+        }
+
+        let _ = writeln!(results, "...");
     }
 
     /// Formats a matched result based on the entity's escalation layer.
@@ -76,10 +106,7 @@ impl SearchTool {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(&snippet, results);
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +123,7 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(&snippet, results);
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
