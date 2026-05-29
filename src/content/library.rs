@@ -89,7 +89,30 @@ impl ContentLibrary {
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
             Self::create_operator_history(),
+            Self::create_data_hoarder_history(),
         ]
+    }
+
+    /// Creates the history for the Data Hoarder (2011) - Terry.
+    fn create_data_hoarder_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::DataHoarder, "TERRY", 2011);
+        history.add_entry(VictimEntry::new(
+            "2011-04-02",
+            "STARTING FULL SYSTEM BACKUP. THERE ARE A LOT OF DIRECTORIES IN HERE.\n\
+             I WANT TO ARCHIVE IT ALL BEFORE THE DRIVE DIES.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2011-04-05",
+            "BACKUP STILL RUNNING. IT HAS ARCHIVED 4 TERABYTES SO FAR.\n\
+             THIS IS ONLY A 20MB HARD DRIVE. HOW IS THIS POSSIBLE?\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2011-04-10",
+            "IT IS NOT JUST DIRECTORIES. IT IS MAKING THEM UP AS IT GOES.\n\
+             I TRIED TO CANCEL THE SCRIPT BUT IT WON'T STOP.\n\
+             IT WANTS ME TO KEEP READING. IT WANTS TO FILL THE WORLD.\n",
+        ));
+        history
     }
 
     /// Creates the history for the Operator (1978) - System Admin.

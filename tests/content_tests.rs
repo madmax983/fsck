@@ -407,6 +407,11 @@ fn test_all_eras_have_unique_histories() {
     let explorer = lib.history_for_era(Era::Explorer);
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
+    let archivist = lib.history_for_era(Era::Archivist);
+    let archaeologist = lib.history_for_era(Era::Archaeologist);
+    let ai_entity = lib.history_for_era(Era::AIEntity);
+    let operator = lib.history_for_era(Era::Operator);
+    let data_hoarder = lib.history_for_era(Era::DataHoarder);
 
     assert!(beta_tester.is_some());
     assert!(original.is_some());
@@ -425,6 +430,11 @@ fn test_all_eras_have_unique_histories() {
     assert!(explorer.is_some());
     assert!(streamer.is_some());
     assert!(researcher.is_some());
+    assert!(archivist.is_some());
+    assert!(archaeologist.is_some());
+    assert!(ai_entity.is_some());
+    assert!(operator.is_some());
+    assert!(data_hoarder.is_some());
 
     // Each should have different names
     assert_eq!(beta_tester.unwrap().name(), "PAUL");
@@ -442,6 +452,11 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(explorer.unwrap().name(), "ALEX");
     assert_eq!(streamer.unwrap().name(), "CHRIS");
     assert_eq!(researcher.unwrap().name(), "ARIS");
+    assert_eq!(archivist.unwrap().name(), "ELIAS");
+    assert_eq!(archaeologist.unwrap().name(), "DR. RIVERS");
+    assert_eq!(ai_entity.unwrap().name(), "SYSTEM_NULL");
+    assert_eq!(operator.unwrap().name(), "ADMIN");
+    assert_eq!(data_hoarder.unwrap().name(), "TERRY");
 }
 
 #[test]
