@@ -303,6 +303,10 @@ impl CommandExecutor {
             Some(self.handle_nova_profile())
         } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
             Some(self.handle_nova_sleep())
+        } else if (cmd_word.eq_ignore_ascii_case("WEATHER") || cmd_word.eq_ignore_ascii_case("WX"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_weather())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
@@ -310,6 +314,14 @@ impl CommandExecutor {
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_weather(&self) -> CommandResult {
+        let mut output =
+            crate::experimental::WeatherService::get_forecast(&self.entity, 0xF5C0_0000);
+        output.push('\n');
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
