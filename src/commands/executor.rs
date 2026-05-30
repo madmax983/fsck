@@ -217,6 +217,18 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("PHOTO")
+            || cmd_word.eq_ignore_ascii_case("CAMERA"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_camera())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("LIFE")
             || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
             && arg.is_empty()
@@ -401,6 +413,12 @@ impl CommandExecutor {
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_camera(&self) -> CommandResult {
+        let photo = crate::experimental::Camera::take_photo(&self.entity, &self.fs.current_path());
+        CommandResult::success(photo)
     }
 
     #[cfg(feature = "nova")]
