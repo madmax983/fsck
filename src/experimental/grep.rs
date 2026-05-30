@@ -72,14 +72,26 @@ impl SearchTool {
         }
     }
 
+    /// ⚡ Bolt Optimization: Uses a custom formatting function to iterate over characters and
+    /// replace newlines with spaces directly into the results buffer, avoiding an unnecessary
+    /// `String::replace` heap allocation.
+    fn write_clean_snippet(snippet: &str, results: &mut String) {
+        let _ = write!(results, "  ...");
+        for ch in snippet.trim().chars() {
+            if ch == '\n' {
+                results.push(' ');
+            } else {
+                results.push(ch);
+            }
+        }
+        let _ = writeln!(results, "...");
+    }
+
     fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(&snippet, results);
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +108,7 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            Self::write_clean_snippet(&snippet, results);
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }

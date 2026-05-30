@@ -1,3 +1,7 @@
 **[Preserve Capitalization for Retro CLI]
 **Learning:** Command variants in `src/commands/types.rs` (e.g., `Command::ChangeDir`) and filesystem outputs strictly require capitalized strings to maintain the retro behavior and pass tests.
 **Action:** Do not remove `.to_uppercase()` calls when parsing commands or creating files/directories, as downstream tests and output formatting expect capitalized data payloads.
+**[Avoid String::replace Allocations in formatters]\n**Learning:** Using  (e.g., `.replace('\n', " ")`) allocates a new `String` on the heap. If the result is immediately trimmed and/or formatted into another string buffer, this creates redundant intermediate heap allocations.\n**Action:** Use a custom formatting function to iterate over characters of the string and push the transformed characters directly into the final `String` buffer, thereby avoiding the intermediate `String::replace` allocation.
+**[Avoid String::replace Allocations in formatters]
+**Learning:** Using `str::replace()` (e.g., `.replace('\n', " ")`) allocates a new `String` on the heap. If the result is immediately trimmed and/or formatted into another string buffer, this creates redundant intermediate heap allocations.
+**Action:** Use a custom formatting function to iterate over characters of the string and push the transformed characters directly into the final `String` buffer, thereby avoiding the intermediate `String::replace` allocation.
