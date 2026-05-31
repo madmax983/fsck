@@ -54,6 +54,30 @@ impl SearchTool {
         content[start_byte..end_byte].to_string()
     }
 
+    fn write_cleaned_snippet(snippet: &str, results: &mut String) {
+        let mut started = false;
+        let mut trailing_whitespaces = 0;
+
+        for c in snippet.chars() {
+            let actual = if c == '\n' { ' ' } else { c };
+
+            if started {
+                if actual.is_whitespace() {
+                    trailing_whitespaces += 1;
+                } else {
+                    for _ in 0..trailing_whitespaces {
+                        results.push(' ');
+                    }
+                    trailing_whitespaces = 0;
+                    results.push(actual);
+                }
+            } else if !actual.is_whitespace() {
+                started = true;
+                results.push(actual);
+            }
+        }
+    }
+
     /// Formats a matched result based on the entity's escalation layer.
     fn format_match(
         layer: EscalationLayer,
@@ -76,10 +100,9 @@ impl SearchTool {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            results.push_str("  ...");
+            Self::write_cleaned_snippet(&snippet, results);
+            results.push_str("...\n");
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +119,9 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            results.push_str("  ...");
+            Self::write_cleaned_snippet(&snippet, results);
+            results.push_str("...\n");
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
