@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Extract Executor Nova Routing God Function]**
+**Learning:** `handle_nova_commands` contained a massive, 117-line `if / else if` chain checking string conditions, creating a pyramid of doom and violating DRY.
+**Action:** Refactored the chain into a `match` expression utilizing zero-allocation match guards (`c if c.eq_ignore_ascii_case(...)`). Also removed dead `#[cfg(not(feature = "nova"))]` blocks that were nested inside an already-feature-gated method.
