@@ -7,6 +7,22 @@ use fsck::experimental::{
 };
 
 #[test]
+fn test_webcam_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_dump = fsck::experimental::WebcamCapture::capture(&entity, seed);
+    assert!(surface_dump.contains("ACTIVE"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_dump = fsck::experimental::WebcamCapture::capture(&entity, seed);
+    assert!(infection_dump.contains("RECIPROCAL OBSERVATION"));
+}
+
+#[test]
 fn test_memdump_escalation() {
     let mut entity = Entity::new();
     let seed = 42;
