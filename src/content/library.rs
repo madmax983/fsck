@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_glitchhunter_history(),
             Self::create_operator_history(),
         ]
     }
@@ -845,6 +846,23 @@ impl ContentLibrary {
         history.add_entry(VictimEntry::new(
             "2028-02-22",
             "I am no longer extracting data. It is extracting me. My memories are appearing in the root directory.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Glitch Hunter (2024).
+    fn create_glitchhunter_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::GlitchHunter, "JAKE", 2024);
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-12",
+            "Found this old Apple IIe at a garage sale. I'm going to see if I can speedrun breaking the OS."
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-14",
+            "It's fighting back. The terminal responds to my keystrokes before I even press them. I need to pull the plug."
         ));
 
         history
