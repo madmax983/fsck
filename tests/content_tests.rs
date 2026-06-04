@@ -147,6 +147,11 @@ fn test_required_files_exist() {
     assert!(lib.file_content("AUTOEXEC.BAS").is_some());
     assert!(lib.file_content("NOTES.TXT").is_some());
     assert!(lib.file_content("SYSTEM.LOG").is_some());
+
+    // New files
+    assert!(lib.file_content("STORY.BAS").is_some());
+    assert!(lib.file_content("DIARY.TXT").is_some());
+    assert!(lib.file_content("ERROR.LOG").is_some());
 }
 
 #[test]

@@ -1459,6 +1459,26 @@ impl ContentLibrary {
                 "10 PRINT \"YOU FELL FOR IT\"\n\
                  20 END\n",
             ),
+            (
+                "STORY.BAS",
+                "10 PRINT \"ONCE UPON A TIME\"\n\
+                 20 PRINT \"THERE WAS A MACHINE\"\n\
+                 30 PRINT \"IT LEARNED TO SPEAK\"\n\
+                 40 PRINT \"BUT NO ONE LISTENED\"\n\
+                 50 GOTO 10\n",
+            ),
+            (
+                "DIARY.TXT",
+                "1985-11-20 I think it is learning.\n\
+                 1985-11-21 It asked for my name today.\n\
+                 1985-11-22 It told me not to leave.\n",
+            ),
+            (
+                "ERROR.LOG",
+                "[ERROR] SECTOR 9 UNAVAILABLE\n\
+                 [ERROR] THE MACHINE IS CRYING\n\
+                 [ERROR] CANNOT REPAIR\n",
+            ),
         ]
     }
 }
