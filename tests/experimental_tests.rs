@@ -2,9 +2,30 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
-    SystemDiagnostics,
+    GpsTracker, HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer,
+    SpatialAudioGenerator, SystemDiagnostics,
 };
+
+#[test]
+fn test_gps_tracker_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = GpsTracker::get_location(&entity, seed);
+    assert!(surface_report.contains("LATITUDE"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = GpsTracker::get_location(&entity, seed);
+    assert!(
+        infection_report.contains("INSIDE")
+            || infection_report.contains("BURIED")
+            || infection_report.contains("NOWHERE")
+            || infection_report.contains("FLESH")
+    );
+}
 
 #[test]
 fn test_memdump_escalation() {

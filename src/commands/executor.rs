@@ -183,6 +183,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_gps(&self) -> CommandResult {
+        let mut report = crate::experimental::GpsTracker::get_location(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_mail(&self) -> CommandResult {
         let mut mail_output =
             crate::experimental::EmailReader::read_mail(&self.entity, 0xF5C0_0000);
@@ -291,6 +298,19 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_sensors())
+        } else if (cmd_word.eq_ignore_ascii_case("GPS")
+            || cmd_word.eq_ignore_ascii_case("LOCATION")
+            || cmd_word.eq_ignore_ascii_case("WHEREAMI"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_gps())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("HISTORY")
             || cmd_word.eq_ignore_ascii_case("HIST"))
             && arg.is_empty()

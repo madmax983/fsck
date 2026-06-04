@@ -9,6 +9,8 @@ pub mod emotional_bleed;
 pub mod env;
 #[cfg(feature = "nova")]
 pub mod fortune;
+#[cfg(feature = "nova")]
+pub mod gps;
 pub mod grep;
 pub mod hexdump;
 #[cfg(feature = "nova")]
@@ -54,6 +56,8 @@ pub use emotional_bleed::EmotionalBleed;
 pub use env::EnvVarsGenerator;
 #[cfg(feature = "nova")]
 pub use fortune::FortuneGenerator;
+#[cfg(feature = "nova")]
+pub use gps::GpsTracker;
 pub use grep::SearchTool;
 pub use hexdump::HexDumpGenerator;
 #[cfg(feature = "nova")]
