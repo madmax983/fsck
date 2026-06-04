@@ -307,9 +307,21 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("RADAR") || cmd_word.eq_ignore_ascii_case("SONAR"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_radar())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_radar(&self) -> CommandResult {
+        let mut radar_output =
+            crate::experimental::RadarSimulator::perform_sweep(&self.entity, 0xF5C0_0000);
+        radar_output.push('\n');
+        CommandResult::success(radar_output)
     }
 
     #[cfg(feature = "nova")]
