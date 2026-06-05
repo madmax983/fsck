@@ -520,7 +520,7 @@ impl CommandExecutor {
         self.inject_dynamic_file_content(&file_actual_name, &mut content);
 
         #[cfg(feature = "nova")]
-        let mut content = self.apply_emotional_bleed(&content);
+        self.apply_emotional_bleed(&mut content);
 
         self.process_trapdoors(&file_actual_name);
 
@@ -565,7 +565,7 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
-    fn apply_emotional_bleed(&self, content: &str) -> String {
+    fn apply_emotional_bleed(&self, content: &mut String) {
         use crate::experimental::EmotionalBleed;
         use rand::SeedableRng;
         use rand_chacha::ChaCha8Rng;
@@ -573,7 +573,7 @@ impl CommandExecutor {
         let interaction_seed =
             0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
-        EmotionalBleed::inject_emotion(content, self.entity.current_mood(), &mut rng)
+        EmotionalBleed::inject_emotion(content, self.entity.current_mood(), &mut rng);
     }
 
     fn process_trapdoors(&mut self, filename_upper: &str) {

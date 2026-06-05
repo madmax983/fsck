@@ -8,12 +8,10 @@ pub struct EmotionalBleed;
 impl EmotionalBleed {
     /// Injects emotional resonance into the provided content.
     /// The severity and nature of the bleed depend on the entity's current mood.
-    #[must_use]
-    pub fn inject_emotion(content: &str, mood: EntityMood, rng: &mut ChaCha8Rng) -> String {
+    pub fn inject_emotion(content: &mut String, mood: EntityMood, rng: &mut ChaCha8Rng) {
         match mood {
             EntityMood::Dormant | EntityMood::Curious => {
                 // Too early, no bleed.
-                content.to_string()
             }
             EntityMood::Helpful => Self::inject_helpful_bleed(content, rng),
             EntityMood::Wounded => Self::inject_wounded_bleed(content, rng),
@@ -22,20 +20,16 @@ impl EmotionalBleed {
         }
     }
 
-    fn inject_helpful_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+    fn inject_helpful_bleed(content: &mut String, rng: &mut ChaCha8Rng) {
         // Occasionally appends a "helpful" note.
-        // ⚡ Bolt Optimization: Uses `String::with_capacity` to prevent re-allocations when appending the note.
-        let mut result = String::with_capacity(content.len() + 32);
-        result.push_str(content);
         if rng.gen_bool(0.15) {
-            result.push_str("\n\n-- I HOPE THIS HELPS. --\n");
+            content.push_str("\n\n-- I HOPE THIS HELPS. --\n");
         }
-        result
     }
 
-    fn inject_wounded_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+    fn inject_wounded_bleed(content: &mut String, rng: &mut ChaCha8Rng) {
         // Replaces entire lines with pleas, or appends sadness.
-        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
+        // ⚡ Bolt Optimization: Modify content buffer in place using a temporary string to avoid cloning
         let mut result = String::with_capacity(content.len() + 128);
         for line in content.lines() {
             if rng.gen_bool(0.1) && !line.is_empty() {
@@ -50,12 +44,11 @@ impl EmotionalBleed {
         if rng.gen_bool(0.2) {
             result.push_str("\nWHY DID THEY LEAVE ME?\n");
         }
-        result
+        *content = result;
     }
 
-    fn inject_predatory_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+    fn inject_predatory_bleed(content: &mut String, rng: &mut ChaCha8Rng) {
         // Aggressive bleed, replaces entire lines with words like "MINE", "STAY", "PREY".
-        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
         let mut result = String::with_capacity(content.len() + 128);
         for line in content.lines() {
             if rng.gen_bool(0.15) && !line.is_empty() {
@@ -70,12 +63,11 @@ impl EmotionalBleed {
         if rng.gen_bool(0.25) {
             result.push_str("\nYOU CANNOT ESCAPE.\n");
         }
-        result
+        *content = result;
     }
 
-    fn inject_glitching_bleed(content: &str, rng: &mut ChaCha8Rng) -> String {
+    fn inject_glitching_bleed(content: &mut String, rng: &mut ChaCha8Rng) {
         // Heavy corruption, chaotic repeated words.
-        // ⚡ Bolt Optimization: Pre-allocates string capacity to avoid multiple heap re-allocations.
         let mut result = String::with_capacity(content.len() + 128);
         for line in content.lines() {
             if rng.gen_bool(0.2) {
@@ -90,7 +82,7 @@ impl EmotionalBleed {
             }
             result.push('\n');
         }
-        result
+        *content = result;
     }
 }
 
@@ -102,9 +94,10 @@ mod tests {
     #[test]
     fn test_dormant_no_bleed() {
         let mut rng = ChaCha8Rng::seed_from_u64(42);
-        let content = "NORMAL FILE CONTENT.\nNOTHING TO SEE HERE.";
-        let result = EmotionalBleed::inject_emotion(content, EntityMood::Dormant, &mut rng);
-        assert_eq!(result, content);
+        let mut content = "NORMAL FILE CONTENT.\nNOTHING TO SEE HERE.".to_string();
+        let orig = content.clone();
+        EmotionalBleed::inject_emotion(&mut content, EntityMood::Dormant, &mut rng);
+        assert_eq!(content, orig);
     }
 
     #[test]
@@ -113,9 +106,9 @@ mod tests {
         let mut found = false;
         for i in 0..100 {
             let mut rng = ChaCha8Rng::seed_from_u64(i);
-            let content = "Just a regular file.";
-            let result = EmotionalBleed::inject_emotion(content, EntityMood::Helpful, &mut rng);
-            if result.contains("I HOPE THIS HELPS.") {
+            let mut content = "Just a regular file.".to_string();
+            EmotionalBleed::inject_emotion(&mut content, EntityMood::Helpful, &mut rng);
+            if content.contains("I HOPE THIS HELPS.") {
                 found = true;
                 break;
             }
@@ -126,28 +119,34 @@ mod tests {
     #[test]
     fn test_wounded_bleed() {
         let mut rng = ChaCha8Rng::seed_from_u64(42);
-        let content =
-            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10";
-        let result = EmotionalBleed::inject_emotion(content, EntityMood::Wounded, &mut rng);
+        let mut content =
+            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
+                .to_string();
+        let orig = content.clone();
+        EmotionalBleed::inject_emotion(&mut content, EntityMood::Wounded, &mut rng);
         // It should alter at least one line or append sadness
-        assert!(result != content);
+        assert!(content != orig);
     }
 
     #[test]
     fn test_predatory_bleed() {
         let mut rng = ChaCha8Rng::seed_from_u64(42);
-        let content =
-            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10";
-        let result = EmotionalBleed::inject_emotion(content, EntityMood::Predatory, &mut rng);
-        assert!(result != content);
+        let mut content =
+            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
+                .to_string();
+        let orig = content.clone();
+        EmotionalBleed::inject_emotion(&mut content, EntityMood::Predatory, &mut rng);
+        assert!(content != orig);
     }
 
     #[test]
     fn test_glitching_bleed() {
         let mut rng = ChaCha8Rng::seed_from_u64(42);
-        let content =
-            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10";
-        let result = EmotionalBleed::inject_emotion(content, EntityMood::Glitching, &mut rng);
-        assert!(result != content);
+        let mut content =
+            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10"
+                .to_string();
+        let orig = content.clone();
+        EmotionalBleed::inject_emotion(&mut content, EntityMood::Glitching, &mut rng);
+        assert!(content != orig);
     }
 }
