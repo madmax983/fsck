@@ -307,9 +307,22 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("ORACLE") {
+            Some(self.handle_nova_oracle(arg))
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_oracle(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::oracle::SystemOracle::consult(
+            arg,
+            &self.fs,
+            &self.entity,
+            0xF5C0_0000,
+        );
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]

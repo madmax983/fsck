@@ -23,6 +23,8 @@ pub mod network_trace;
 pub mod life_simulator;
 #[cfg(feature = "nova")]
 pub mod mail;
+#[cfg(feature = "nova")]
+pub mod oracle;
 pub mod ping;
 pub mod process_monitor;
 #[cfg(feature = "nova")]
