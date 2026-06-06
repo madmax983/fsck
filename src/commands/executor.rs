@@ -307,9 +307,18 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("ECHO") && !arg.is_empty() {
+            Some(self.handle_nova_echo(arg))
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_echo(&self, arg: &str) -> CommandResult {
+        let mut output = crate::experimental::EchoTool::echo(arg, &self.entity, 0xEC40_0000);
+        output.push('\n');
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]

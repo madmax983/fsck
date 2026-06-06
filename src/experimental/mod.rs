@@ -90,3 +90,8 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+
+#[cfg(feature = "nova")]
+pub mod echo;
+#[cfg(feature = "nova")]
+pub use echo::EchoTool;
