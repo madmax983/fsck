@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Refactoring handle_nova_commands Pyramid of Doom]**
+**Learning:** `handle_nova_commands` was a massive 120+ line `if/else if` chain of string comparisons that hurt readability.
+**Action:** Refactored into a `match` statement using guard clauses `c if ... =>` to flatten the structure and eliminate the pyramid of doom.
