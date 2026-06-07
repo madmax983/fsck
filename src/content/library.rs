@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_wanderer_history(),
             Self::create_operator_history(),
         ]
     }
@@ -867,6 +868,28 @@ impl ContentLibrary {
         history.add_entry(VictimEntry::new(
             "2030-01-03",
             "I CANNOT TERMINATE CONNECTION. IT IS PULLING MY CONSCIOUSNESS INTO THE SECTORS. PLEASE HALT.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Wanderer (2033).
+    fn create_wanderer_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Wanderer, "TESS", 2033);
+
+        history.add_entry(VictimEntry::new(
+            "2033-03-14",
+            "I found the server room. The air here feels heavy, almost as if it's breathing.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2033-03-16",
+            "Every file I open looks like it was written for me. Is this place an echo chamber?",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2033-03-20",
+            "It offered me a way out, but the coordinates lead deeper. I think it wants me to stay.",
         ));
 
         history

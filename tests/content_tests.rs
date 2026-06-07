@@ -407,6 +407,7 @@ fn test_all_eras_have_unique_histories() {
     let explorer = lib.history_for_era(Era::Explorer);
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
+    let wanderer = lib.history_for_era(Era::Wanderer);
 
     assert!(beta_tester.is_some());
     assert!(original.is_some());
@@ -425,6 +426,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(explorer.is_some());
     assert!(streamer.is_some());
     assert!(researcher.is_some());
+    assert!(wanderer.is_some());
 
     // Each should have different names
     assert_eq!(beta_tester.unwrap().name(), "PAUL");
@@ -442,6 +444,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(explorer.unwrap().name(), "ALEX");
     assert_eq!(streamer.unwrap().name(), "CHRIS");
     assert_eq!(researcher.unwrap().name(), "ARIS");
+    assert_eq!(wanderer.unwrap().name(), "TESS");
 }
 
 #[test]
