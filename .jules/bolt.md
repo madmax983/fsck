@@ -1,3 +1,3 @@
-**[Preserve Capitalization for Retro CLI]
-**Learning:** Command variants in `src/commands/types.rs` (e.g., `Command::ChangeDir`) and filesystem outputs strictly require capitalized strings to maintain the retro behavior and pass tests.
-**Action:** Do not remove `.to_uppercase()` calls when parsing commands or creating files/directories, as downstream tests and output formatting expect capitalized data payloads.
+**[Extracting Primitives to Drop Borrows]**
+**Learning:** Holding an immutable borrow (like `file.name()`) prevents mutable borrows of the parent struct (`self`). Cloning the borrowed value (`.to_string()`) is a common anti-pattern to bypass this.
+**Action:** Instead of allocating a `String`, eagerly compute and extract the required primitive data (e.g., boolean flags or `depth_increase` integers) from the `&str` within an isolated block. This drops the immutable borrow early (via NLL), allowing subsequent mutable calls on `self` without allocations.

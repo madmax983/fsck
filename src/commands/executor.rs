@@ -511,18 +511,43 @@ impl CommandExecutor {
             .visible_files()
             .find(|f| f.name().eq_ignore_ascii_case(filename))
         else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", filename.to_uppercase()));
+            return CommandResult::error(format!(
+                "?FILE NOT FOUND: {}
+",
+                filename.to_uppercase()
+            ));
         };
 
-        let file_actual_name = file.name().to_string();
+        // ⚡ Bolt Optimization: Avoid unnecessary `.to_string()` heap allocation for `file_actual_name`
+        // by extracting the required data while the immutable borrow on `self.fs` is active.
+        let file_actual_name = file.name();
+        let depth_increase = match file_actual_name {
+            "FALL.TXT" | "DEEPER.TXT" => 3,
+            "SINK.TXT" | "DOWN.TXT" => 2,
+            "DESCENT.TXT" => 5,
+            _ => 0,
+        };
+
+        let is_observe = file_actual_name == "OBSERVE.TXT";
+        let is_machine_log = file_actual_name == "MACHINE.LOG";
+        let is_history = file_actual_name == "HISTORY.TXT";
+
         let mut content = file.read().into_owned();
 
-        self.inject_dynamic_file_content(&file_actual_name, &mut content);
+        if is_observe {
+            self.inject_observe_txt(&mut content);
+        } else if is_machine_log {
+            self.inject_machine_log(&mut content);
+        } else if is_history {
+            self.inject_history_txt(&mut content);
+        }
 
         #[cfg(feature = "nova")]
         let mut content = self.apply_emotional_bleed(&content);
 
-        self.process_trapdoors(&file_actual_name);
+        if depth_increase > 0 {
+            self.entity.add_depth(depth_increase);
+        }
 
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         content.push('\n');
@@ -555,15 +580,6 @@ impl CommandExecutor {
         }
     }
 
-    fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
-        match filename_upper {
-            "OBSERVE.TXT" => self.inject_observe_txt(content),
-            "MACHINE.LOG" => self.inject_machine_log(content),
-            "HISTORY.TXT" => self.inject_history_txt(content),
-            _ => {}
-        }
-    }
-
     #[cfg(feature = "nova")]
     fn apply_emotional_bleed(&self, content: &str) -> String {
         use crate::experimental::EmotionalBleed;
@@ -574,20 +590,6 @@ impl CommandExecutor {
             0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
         EmotionalBleed::inject_emotion(content, self.entity.current_mood(), &mut rng)
-    }
-
-    fn process_trapdoors(&mut self, filename_upper: &str) {
-        // Trapdoor files pull you deeper
-        let depth_increase = match filename_upper {
-            "FALL.TXT" | "DEEPER.TXT" => 3,
-            "SINK.TXT" | "DOWN.TXT" => 2,
-            "DESCENT.TXT" => 5,
-            _ => 0,
-        };
-
-        if depth_increase > 0 {
-            self.entity.add_depth(depth_increase);
-        }
     }
 
     fn home() -> CommandResult {
