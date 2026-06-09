@@ -305,11 +305,20 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("CAMERA") || cmd_word.eq_ignore_ascii_case("CAM") {
+            Some(self.handle_nova_camera(arg))
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_camera(&self, arg: &str) -> CommandResult {
+        let mut report = crate::experimental::camera::CameraNetwork::access_feed(&self.entity, 0xC400_0000, arg);
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]
