@@ -473,7 +473,7 @@ impl CommandExecutor {
             }
         }
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn change_dir(&mut self, path: &str) -> CommandResult {
@@ -658,7 +658,7 @@ impl CommandExecutor {
             output = corruption.apply(&output, scan_seed);
         }
 
-        CommandResult::success(&output)
+        CommandResult::success(output)
     }
 
     fn hello(&self) -> CommandResult {
@@ -704,7 +704,7 @@ impl CommandExecutor {
 
         help_text.push('\n');
 
-        CommandResult::success(&help_text)
+        CommandResult::success(help_text)
     }
 
     fn quit(&self) -> CommandResult {

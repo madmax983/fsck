@@ -1,13 +1,15 @@
+use std::borrow::Cow;
+
 /// Result of executing a command
 #[derive(Debug, Clone)]
 pub struct CommandResult {
-    output: String,
+    output: Cow<'static, str>,
     is_error: bool,
 }
 
 impl CommandResult {
     #[must_use]
-    pub fn success(output: impl Into<String>) -> Self {
+    pub fn success(output: impl Into<Cow<'static, str>>) -> Self {
         Self {
             output: output.into(),
             is_error: false,
@@ -15,7 +17,7 @@ impl CommandResult {
     }
 
     #[must_use]
-    pub fn error(message: impl Into<String>) -> Self {
+    pub fn error(message: impl Into<Cow<'static, str>>) -> Self {
         Self {
             output: message.into(),
             is_error: true,
@@ -30,7 +32,7 @@ impl CommandResult {
     /// ⚡ Bolt Optimization: Consumes the `CommandResult` to return the owned `String`, avoiding a `.to_string()` heap allocation.
     #[must_use]
     pub fn into_output(self) -> String {
-        self.output
+        self.output.into_owned()
     }
 
     #[must_use]
