@@ -496,7 +496,13 @@ impl CommandExecutor {
                 self.entity.update_depth(self.fs.current_depth());
                 CommandResult::success("")
             }
-            Err(e) => CommandResult::error(format!("?{}\n", e.to_string().to_uppercase())),
+            // ⚡ Bolt Optimization: Use the fmt::Display implementation of FilesystemError directly
+            // combined with string manipulation, avoiding an intermediate `.to_string()` heap allocation
+            // before the final format allocation.
+            Err(e) => {
+                let err_msg = format!("?{e}\n");
+                CommandResult::error(err_msg.to_uppercase())
+            }
         }
     }
 
