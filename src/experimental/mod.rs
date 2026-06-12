@@ -18,6 +18,8 @@ pub mod memdump;
 #[cfg(feature = "nova")]
 pub mod netstat;
 pub mod network_trace;
+#[cfg(feature = "nova")]
+pub mod therapist;
 
 #[cfg(feature = "nova")]
 pub mod life_simulator;
@@ -78,6 +80,8 @@ pub use sleep_mode::SleepMode;
 pub use spatial_audio::SpatialAudioGenerator;
 #[cfg(feature = "nova")]
 pub use stat::StatTool;
+#[cfg(feature = "nova")]
+pub use therapist::ElizaTherapist;
 #[cfg(feature = "nova")]
 pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]

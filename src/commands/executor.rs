@@ -202,6 +202,17 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if cmd_word.eq_ignore_ascii_case("DOCTOR")
+            || cmd_word.eq_ignore_ascii_case("THERAPIST")
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_therapist(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
@@ -355,6 +366,12 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         stat_output.push('\n');
         CommandResult::success(stat_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_therapist(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::ElizaTherapist::consult(arg, &self.entity);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
