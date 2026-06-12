@@ -305,11 +305,22 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("TAROT") && arg.is_empty() {
+            Some(self.handle_nova_tarot())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_tarot(&self) -> CommandResult {
+        let mut tarot_output =
+            crate::experimental::TarotReader::read_cards(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        tarot_output.push('\n');
+        CommandResult::success(tarot_output)
     }
 
     #[cfg(feature = "nova")]
