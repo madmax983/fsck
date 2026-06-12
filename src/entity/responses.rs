@@ -62,6 +62,8 @@ impl ResponseGenerator {
 
     #[must_use]
     #[allow(clippy::too_many_lines)]
+    /// ⚡ Bolt Optimization: Returns an `Option<&'static str>` instead of allocating an owned `String`,
+    /// eliminating an intermediate heap allocation when randomly picking interjections.
     pub fn random_interjection(
         &self,
         mood: EntityMood,

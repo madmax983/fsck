@@ -777,12 +777,14 @@ impl CommandExecutor {
             .collect()
     }
 
-    fn execute_print_statement(
+    /// ⚡ Bolt Optimization: Returns a string slice `&'a str` instead of allocating an owned `String`,
+    /// eliminating intermediate heap allocations for every PRINT statement execution.
+    fn execute_print_statement<'a>(
         &self,
-        stmt: &str,
+        stmt: &'a str,
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
-    ) -> String {
+    ) -> &'a str {
         let is_deep_layer = matches!(
             layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
@@ -796,14 +798,14 @@ impl CommandExecutor {
         };
 
         if let Some(interjection) = possible_interjection {
-            return interjection.to_string();
+            return interjection;
         }
 
         let content = stmt.trim_start_matches("PRINT").trim();
         if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
-            content[1..content.len() - 1].to_string()
+            &content[1..content.len() - 1]
         } else {
-            content.to_string()
+            content
         }
     }
 
@@ -841,7 +843,7 @@ impl CommandExecutor {
     ) -> Result<bool, CommandResult> {
         if stmt.starts_with("PRINT") {
             let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
-            ctx.output.push_str(&display_text);
+            ctx.output.push_str(display_text);
             ctx.output.push('\n');
             return Ok(true);
         }
