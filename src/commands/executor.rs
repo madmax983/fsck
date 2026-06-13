@@ -307,6 +307,11 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("RORSCHACH")
+            || cmd_word.eq_ignore_ascii_case("INKBLOT"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_rorschach())
         } else {
             None
         }
@@ -315,6 +320,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_whoami(&self) -> CommandResult {
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_rorschach(&self) -> CommandResult {
+        let output = crate::experimental::RorschachGenerator::generate(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 

@@ -28,6 +28,8 @@ pub mod process_monitor;
 #[cfg(feature = "nova")]
 pub mod profile;
 #[cfg(feature = "nova")]
+pub mod rorschach;
+#[cfg(feature = "nova")]
 pub mod sensors;
 #[cfg(feature = "nova")]
 pub mod sleep_mode;
@@ -90,3 +92,5 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub use rorschach::RorschachGenerator;
