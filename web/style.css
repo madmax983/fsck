@@ -63,7 +63,7 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.08), rgba(0, 255, 0, 0.04), rgba(0, 0, 255, 0.08));
     z-index: 2;
     background-size: 100% 2px, 3px 100%;
     pointer-events: none;
@@ -100,6 +100,7 @@ body {
 
 /* Aggressive shake/glitch for Infection layer */
 .depth-infection {
-    animation: glitch 0.5s infinite, shake 5s infinite;
+    animation: glitch 0.3s infinite, shake 3s infinite;
     --xterm-foreground: #aaffaa; /* Sickly green shift */
+    text-shadow: 2px 0 0 red, -2px 0 0 blue;
 }

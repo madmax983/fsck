@@ -166,18 +166,22 @@ async function main() {
                     isTyping = true;
                     let charIndex = 0;
                     const chars = [...output];
-                    const typeInterval = setInterval(() => {
+
+                    const typeNextChar = () => {
                         if (charIndex < chars.length) {
                             term.write(chars[charIndex]);
                             // Random typing sound
                             if (Math.random() < 0.3) audio.playKeystroke();
                             charIndex++;
+                            // Glitchy timing for deeper layers
+                            const delay = depth >= 26 ? Math.random() * 100 + 10 : 50;
+                            setTimeout(typeNextChar, delay);
                         } else {
-                            clearInterval(typeInterval);
                             term.write(game.get_prompt());
                             isTyping = false;
                         }
-                    }, 50); // 50ms per character
+                    };
+                    typeNextChar();
                 } else {
                     term.write(output);
                     term.write(game.get_prompt());
