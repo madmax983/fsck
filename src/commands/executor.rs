@@ -229,6 +229,18 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if (cmd_word.eq_ignore_ascii_case("THERAPY")
+            || cmd_word.eq_ignore_ascii_case("TALK"))
+            && !arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_therapy(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if cmd_word.eq_ignore_ascii_case("ANALYZE") && !arg.is_empty() {
             #[cfg(feature = "nova")]
             {
@@ -400,6 +412,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_therapy(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::TherapistSession::respond(arg, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
