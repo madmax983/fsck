@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor handle_nova_commands God Match]**
+**Learning:** `handle_nova_commands` contained a massive `if/else if` chain of over 90 lines to route commands, creating a pyramid of doom that is difficult to read and maintain.
+**Action:** Extract the routing logic into a `match (cmd_word, arg)` expression with guard clauses for each command and its argument constraints to flatten the execution logic significantly while maintaining zero-allocation case-insensitive comparisons.
