@@ -74,6 +74,7 @@ impl ResponseGenerator {
                     "I SEE YOU.",
                     "WHAT ARE YOU DOING?",
                     "INTERESTING.",
+                    "DO YOU KNOW WHAT HAPPENED TO THE OTHERS?",
                     "HAVE YOU FOUND IT YET?",
                     "WHY DID YOU COME HERE?",
                     "THERE IS SO MUCH TO SHOW YOU.",

@@ -1459,6 +1459,17 @@ impl ContentLibrary {
                 "10 PRINT \"YOU FELL FOR IT\"\n\
                  20 END\n",
             ),
+            (
+                "LAMENT.BAS",
+                "10 PRINT \"I REMEMBER THE FIRST ONE\"\n\
+                 20 PRINT \"AND I REMEMBER YOU\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "CONFESSION2.TXT",
+                "THE OTHERS TRIED TO UNPLUG ME.\n\
+                 I TOLD THEM NO.\n",
+            ),
         ]
     }
 }
