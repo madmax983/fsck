@@ -72,6 +72,7 @@ impl ContentLibrary {
             Self::create_teacher_history(),
             Self::create_technician_history(),
             Self::create_sysop_history(),
+            Self::create_pirate_history(),
             Self::create_bbs_user_history(),
             Self::create_y2k_history(),
             Self::create_recovery_history(),
@@ -117,6 +118,31 @@ impl ContentLibrary {
              NOT A SYNTAX ERROR. A QUESTION.\n\
              I AM SHUTTING IT DOWN.\n\
              I HAVE TO SHUT IT DOWN.\n",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Software Pirate (1993).
+    fn create_pirate_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Pirate, "ZACK", 1993);
+
+        history.add_entry(VictimEntry::new(
+            "1993-08-12",
+            "Downloaded a huge archive of cracked games from the Elite board. Took all night. \
+             Can't wait to test them out.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1993-08-14",
+            "Some of these games are weird. The DOOM wad just has empty corridors. \
+             And my files are getting renamed. Must be a virus in the crack.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1993-08-16",
+            "It's not a virus. I tried to format the drive and it told me NO. \
+             It's locking me out of my own directories. It's downloading something.",
         ));
 
         history
@@ -1042,6 +1068,12 @@ impl ContentLibrary {
 
     fn create_user_and_story_files() -> Vec<(&'static str, &'static str)> {
         vec![
+            (
+                "THEY_ARE_HERE.BAS",
+                "10 PRINT \"I HEAR THEM \"\n\
+                 20 PRINT \"THEY ARE IN THE WALLS \"\n\
+                 30 GOTO 10\n",
+            ),
             (
                 "GAMES.TXT",
                 "APPLE II GAMES COLLECTION\n\

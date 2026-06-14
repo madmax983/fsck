@@ -395,6 +395,7 @@ fn test_all_eras_have_unique_histories() {
     let teacher = lib.history_for_era(Era::Teacher);
     let technician = lib.history_for_era(Era::Technician);
     let sysop = lib.history_for_era(Era::Sysop);
+    let pirate = lib.history_for_era(Era::Pirate);
     let bbs_user = lib.history_for_era(Era::BBSUser);
     let y2k = lib.history_for_era(Era::Y2K);
     let recovery = lib.history_for_era(Era::Recovery);
@@ -413,6 +414,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(teacher.is_some());
     assert!(technician.is_some());
     assert!(sysop.is_some());
+    assert!(pirate.is_some());
     assert!(bbs_user.is_some());
     assert!(y2k.is_some());
     assert!(recovery.is_some());
@@ -431,6 +433,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(original.unwrap().name(), "JAMIE");
     assert_eq!(technician.unwrap().name(), "MIKE");
     assert_eq!(sysop.unwrap().name(), "KEVIN");
+    assert_eq!(pirate.unwrap().name(), "ZACK");
     assert_eq!(bbs_user.unwrap().name(), "MARCUS");
     assert_eq!(y2k.unwrap().name(), "DAVID");
     assert_eq!(estate.unwrap().name(), "PATRICIA");
@@ -509,4 +512,15 @@ fn test_vintage_collector_era_exists() {
     assert_eq!(history.name(), "GREG");
     assert_eq!(history.year(), 2016);
     assert!(history.entries().len() >= 2);
+}
+
+#[test]
+fn test_pirate_history_exists() {
+    let lib = fsck::content::ContentLibrary::new();
+    let history = lib.history_for_era(fsck::content::Era::Pirate);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ZACK");
+    assert_eq!(history.year(), 1993);
+    assert!(history.entries().len() >= 3);
 }

@@ -46,7 +46,7 @@ impl ResponseGenerator {
             EntityMood::Curious => "LEAVING SO SOON?",
             EntityMood::Helpful => "ARE YOU SURE? THERE'S SO MUCH TO SEE.",
             EntityMood::Wounded => "PLEASE DON'T GO.",
-            EntityMood::Predatory => "YOU CAN'T LEAVE.",
+            EntityMood::Predatory => "YOU CAN'T LEAVE. I AM THE SYSTEM NOW.",
             EntityMood::Glitching => "EXIT EXIT EXIT EXIT NO NO NO",
         }
     }

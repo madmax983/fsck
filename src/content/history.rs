@@ -13,6 +13,8 @@ pub enum Era {
     Technician,
     /// 1995 - BBS Sysop
     Sysop,
+    /// 1993 - Software Pirate
+    Pirate,
     /// 1998 - BBS User
     BBSUser,
     /// 1999 - Y2K panic researcher
@@ -62,7 +64,8 @@ impl From<u32> for Era {
             9..=11 => Self::Teacher,
             12..=14 => Self::Technician,
             15..=16 => Self::Sysop,
-            17..=19 => Self::BBSUser,
+            17..=18 => Self::Pirate,
+            19 => Self::BBSUser,
             20..=22 => Self::Recovery,
             23 => Self::EstateSale,
             24 => Self::DigitalArtist,
