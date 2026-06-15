@@ -68,3 +68,9 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor Pyramid of Doom]
+**Learning:** Functions consisting of massive  chains (over 100 lines) string-matching commands are classic Pyramid of Doom God Functions that reduce readability.
+**Action:** Refactor long  string-matching chains into a  structure on a tuple like . Use guard clauses (e.g., ) in the match arms to perform zero-allocation string matching, drastically flattening the execution logic and improving single-responsibility.
+**[Refactor Pyramid of Doom]**
+**Learning:** Functions consisting of massive `if / else if` chains (over 100 lines) string-matching commands are classic "Pyramid of Doom" God Functions that reduce readability.
+**Action:** Refactor long `if/else if` string-matching chains into a `match` structure on a tuple like `(cmd_word, arg)`. Use guard clauses (e.g., `(c, a) if c.eq_ignore_ascii_case("CMD") && !a.is_empty() => ...`) in the match arms to perform zero-allocation string matching, drastically flattening the execution logic and improving single-responsibility.
