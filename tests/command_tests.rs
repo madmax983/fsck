@@ -242,6 +242,10 @@ fn test_help_corruption() {
 
     assert!(!result.is_error());
     assert!(result.output().contains("AVAILABLE COMMANDS"));
+    assert!(result.output().contains("CD       - DON'T"));
+    assert!(result.output().contains("TYPE     - YOU ARE BEING WATCHED"));
+    assert!(result.output().contains("HOME     - THERE IS NO HOME"));
+    assert!(result.output().contains("FSCK     - IT HURTS"));
     assert!(result.output().contains("ESCAPE   - ???"));
     assert!(result.output().contains("REMEMBER - ???"));
 }

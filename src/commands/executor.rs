@@ -692,14 +692,19 @@ impl CommandExecutor {
         let mut help_text = String::with_capacity(256);
         help_text.push_str("\nAVAILABLE COMMANDS:\n");
         help_text.push_str("  CATALOG  - LIST FILES\n");
-        help_text.push_str("  CD       - CHANGE DIRECTORY\n");
-        help_text.push_str("  TYPE     - DISPLAY FILE\n");
-        help_text.push_str("  HOME     - CLEAR SCREEN\n");
-        help_text.push_str("  FSCK     - CHECK FILESYSTEM\n");
 
         if matches!(layer, EscalationLayer::Corruption) {
+            help_text.push_str("  CD       - DON'T\n");
+            help_text.push_str("  TYPE     - YOU ARE BEING WATCHED\n");
+            help_text.push_str("  HOME     - THERE IS NO HOME\n");
+            help_text.push_str("  FSCK     - IT HURTS\n");
             help_text.push_str("  ESCAPE   - ???\n");
             help_text.push_str("  REMEMBER - ???\n");
+        } else {
+            help_text.push_str("  CD       - CHANGE DIRECTORY\n");
+            help_text.push_str("  TYPE     - DISPLAY FILE\n");
+            help_text.push_str("  HOME     - CLEAR SCREEN\n");
+            help_text.push_str("  FSCK     - CHECK FILESYSTEM\n");
         }
 
         help_text.push('\n');
