@@ -307,6 +307,15 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("SEANCE") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_seance())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else {
             None
         }
@@ -400,6 +409,13 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_seance(&self) -> CommandResult {
+        let output =
+            crate::experimental::seance::SeanceSimulator::conduct(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
