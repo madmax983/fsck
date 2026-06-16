@@ -663,7 +663,10 @@ impl CommandExecutor {
 
     fn hello(&self) -> CommandResult {
         let response = self.responses.hello_response(self.entity.current_mood());
-        CommandResult::success(format!("{response}\n"))
+        let mut out = String::with_capacity(response.len() + 1);
+        out.push_str(response);
+        out.push('\n');
+        CommandResult::success(out)
     }
 
     fn who(&self) -> CommandResult {
@@ -675,7 +678,10 @@ impl CommandExecutor {
         let response = self
             .responses
             .who_response(self.entity.current_mood(), None);
-        CommandResult::success(format!("{response}\n"))
+        let mut out = String::with_capacity(response.len() + 1);
+        out.push_str(response);
+        out.push('\n');
+        CommandResult::success(out)
     }
 
     fn help(&self) -> CommandResult {
@@ -714,7 +720,10 @@ impl CommandExecutor {
         }
 
         let response = self.responses.quit_response(self.entity.current_mood());
-        CommandResult::error(format!("{response}\n"))
+        let mut out = String::with_capacity(response.len() + 1);
+        out.push_str(response);
+        out.push('\n');
+        CommandResult::error(out)
     }
 
     fn check_run_easter_eggs(&self, prog: &str) -> Option<CommandResult> {
