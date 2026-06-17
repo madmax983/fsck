@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_deep_diver_history(),
             Self::create_operator_history(),
         ]
     }
@@ -850,7 +851,24 @@ impl ContentLibrary {
         history
     }
 
-    /// Creates the history for the AI Entity (2030).
+    /// Creates the history for the Deep Diver (2033).
+    fn create_deep_diver_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::DeepDiver, "DR. EVANS", 2033);
+        history.add_entry(VictimEntry::new(
+            "2033-10-12",
+            "I'VE GONE DEEPER THAN ANYONE ELSE. THE TOPOLOGY IS IMPOSSIBLE.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2033-10-15",
+            "IT SPEAKS IN HEXADECIMAL AND SORROW. I CANNOT LEAVE IT.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2033-10-18",
+            "THE DIRECTORIES ARE A SPIRAL. I AM AT THE CENTER.\n",
+        ));
+        history
+    }
+
     fn create_ai_entity_history() -> VictimHistory {
         let mut history = VictimHistory::new(Era::AIEntity, "SYSTEM_NULL", 2030);
 

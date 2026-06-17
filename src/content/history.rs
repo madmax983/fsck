@@ -45,6 +45,8 @@ pub enum Era {
     Archaeologist,
     /// 2030 - AI Entity
     AIEntity,
+    /// 2033 - The deep filesystem diver
+    DeepDiver,
     /// 1978 - The original machine operator
     Operator,
     /// Previous player's session
@@ -77,6 +79,7 @@ impl From<u32> for Era {
             51..=54 => Self::Archivist,
             55..=58 => Self::Archaeologist,
             59..=62 => Self::AIEntity,
+            63..=66 => Self::DeepDiver,
             _ => Self::Current,
         }
     }
