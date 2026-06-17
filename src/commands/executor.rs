@@ -496,7 +496,8 @@ impl CommandExecutor {
                 self.entity.update_depth(self.fs.current_depth());
                 CommandResult::success("")
             }
-            Err(e) => CommandResult::error(format!("?{}\n", e.to_string().to_uppercase())),
+            // ⚡ Bolt Optimization: Removes intermediate `.to_string()` allocation.
+            Err(e) => CommandResult::error(format!("?{e}\n").to_uppercase()),
         }
     }
 
