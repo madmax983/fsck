@@ -1,6 +1,8 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
+#[cfg(feature = "nova")]
+use fsck::experimental::TarotReader;
 use fsck::experimental::{
     HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
     SystemDiagnostics,
@@ -251,4 +253,30 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+fn test_tarot_surface() {
+    let mut entity = Entity::new();
+    entity.update_depth(0);
+    let output = TarotReader::draw_cards(&entity, 42);
+    assert!(output.contains("INITIALIZING DIGITAL TAROT SEQUENCE..."));
+    assert!(output.contains("[PAST]:"));
+    assert!(output.contains("[PRESENT]:"));
+    assert!(output.contains("[FUTURE]:"));
+    assert!(output.contains("READING:"));
+}
+
+#[test]
+fn test_tarot_infection() {
+    let mut entity = Entity::new();
+    entity.update_depth(30);
+    let output = TarotReader::draw_cards(&entity, 42);
+    assert!(
+        output.contains("F L E S H")
+            || output.contains("SACRIFICE")
+            || output.contains("0xDEADBEEF")
+            || output.contains("DEVIL IN THE RAM")
+            || output.contains("YOUR FUTURE IS VOID")
+    );
 }
