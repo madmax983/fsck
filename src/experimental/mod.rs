@@ -8,6 +8,8 @@ pub mod emotional_bleed;
 #[cfg(feature = "nova")]
 pub mod env;
 #[cfg(feature = "nova")]
+pub mod fdisk;
+#[cfg(feature = "nova")]
 pub mod fortune;
 pub mod grep;
 pub mod hexdump;
@@ -52,6 +54,8 @@ pub use dialer::ModemDialer;
 pub use emotional_bleed::EmotionalBleed;
 #[cfg(feature = "nova")]
 pub use env::EnvVarsGenerator;
+#[cfg(feature = "nova")]
+pub use fdisk::PartitionTool;
 #[cfg(feature = "nova")]
 pub use fortune::FortuneGenerator;
 pub use grep::SearchTool;

@@ -99,6 +99,15 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_fdisk(&self) -> CommandResult {
+        let mut output =
+            crate::experimental::PartitionTool::show_partitions(&self.entity, 0xF5C0_0000);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        output.push('\n');
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_search(&self, arg: &str) -> CommandResult {
         let mut results =
             crate::experimental::SearchTool::search(&self.fs, &self.entity, arg, 0xF5C0_0000);
@@ -217,6 +226,18 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_diag())
+        } else if (cmd_word.eq_ignore_ascii_case("FDISK")
+            || cmd_word.eq_ignore_ascii_case("PARTED"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_fdisk())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("LIFE")
             || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
             && arg.is_empty()

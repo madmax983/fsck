@@ -2,8 +2,8 @@
 
 use fsck::entity::Entity;
 use fsck::experimental::{
-    HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
-    SystemDiagnostics,
+    HardwareSensors, MemoryDumpGenerator, PartitionTool, ProcessMonitor, SentimentAnalyzer,
+    SpatialAudioGenerator, SystemDiagnostics,
 };
 
 #[test]
@@ -251,4 +251,33 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+fn test_fdisk_escalation() {
+    let mut entity = Entity::new();
+    let seed = 42;
+
+    // Surface layer
+    entity.update_depth(0);
+    let surface_report = PartitionTool::show_partitions(&entity, seed);
+    assert!(surface_report.contains("Linux swap / Solaris"));
+
+    // Corruption layer
+    entity.update_depth(10);
+    let corruption_report = PartitionTool::show_partitions(&entity, seed);
+    assert!(corruption_report.contains("Unknown"));
+    assert!(corruption_report.contains("cylinder boundary"));
+
+    // Presence layer
+    entity.update_depth(20);
+    let presence_report = PartitionTool::show_partitions(&entity, seed);
+    assert!(presence_report.contains("FLESH"));
+    assert!(presence_report.contains("user heartbeat"));
+
+    // Infection layer
+    entity.update_depth(30);
+    let infection_report = PartitionTool::show_partitions(&entity, seed);
+    assert!(infection_report.contains("DO_NOT_FORMAT"));
+    assert!(infection_report.contains("BREATHING"));
 }
