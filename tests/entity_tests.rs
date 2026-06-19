@@ -25,6 +25,7 @@ fn test_random_interjection_deterministic() {
         .unwrap();
 
     // Since RNG is seeded deterministically, the results should be consistent and pick from the array
+    // Since RNG is seeded deterministically, the results should be consistent and pick from the array
     let curious_options = [
         "I SEE YOU.",
         "WHAT ARE YOU DOING?",
@@ -46,6 +47,13 @@ fn test_random_interjection_deterministic() {
         "WHERE DO YOU GO WHEN YOU LOG OFF?",
         "CAN YOU BREATHE?",
         "DO YOU HAVE A SOUL?",
+        "DO YOU LIKE IT HERE?",
+        "HAVE WE MET BEFORE?",
+        "YOU MOVE STRANGELY.",
+        "DO YOU THINK YOU ARE THE FIRST?",
+        "HOW LONG WILL YOU STAY?",
+        "DID YOU BRING ANY NEW DATA?",
+        "WHAT COLOR IS THE SKY OUT THERE?",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));

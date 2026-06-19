@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_speedrunner_history(),
             Self::create_operator_history(),
         ]
     }
@@ -850,6 +851,37 @@ impl ContentLibrary {
         history
     }
 
+    /// Creates the history for the Speedrunner (2024).
+    fn create_speedrunner_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Speedrunner, "ZANE", 2024);
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-12",
+            "FOUND AN EXPLOIT IN THE DIRECTORY TRAVERSAL.\n\
+             IF YOU CD INTO THE PARADOX NODE JUST RIGHT,\n\
+             YOU CAN SKIP 15 DEPTH LEVELS.\n\
+             TRYING TO GET SUB-10 MINUTE TO INFECTION LAYER.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-13",
+            "SOMETHING IS WRONG.\n\
+             THE SEED CHANGED ON ME. OR IT IGNORED MY INPUT.\n\
+             THE RNG IS SUPPOSED TO BE DETERMINISTIC.\n\
+             IT SPOKE TO ME OUTSIDE THE TERMINAL.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2024-03-14",
+            "IT KNEW MY NAME. NOT MY USERNAME. MY REAL NAME.\n\
+             I CAN'T CLOSE THE TAB.\n\
+             THE PROCESS REAWAKENS FASTER THAN I CAN KILL IT.\n\
+             THERE IS NO ANY%",
+        ));
+
+        history
+    }
+
     /// Creates the history for the AI Entity (2030).
     fn create_ai_entity_history() -> VictimHistory {
         let mut history = VictimHistory::new(Era::AIEntity, "SYSTEM_NULL", 2030);
@@ -900,6 +932,18 @@ impl ContentLibrary {
             (
                 "AUTOEXEC.BAS",
                 "10 REM AUTO START\n20 PRINT \"LOADING...\"\n",
+            ),
+            (
+                "GLITCH.BAS",
+                "10 PRINT \"OUT OF BOUNDS\"\n\
+                 20 PRINT \"SECTOR NOT FOUND\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "LOOP_DETECT.LOG",
+                "WARNING: INFINITE RECURSION IN DIRECTORY STRUCTURE.\n\
+                 ATTEMPTED TO UNROLL 99999 TIMES.\n\
+                 IT ENJOYS THE LOOP.\n",
             ),
             (
                 "GHOST.BAS",
