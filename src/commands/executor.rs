@@ -194,6 +194,15 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
+
+        let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
+        let arg = arg.trim();
+
+        #[cfg(feature = "nova")]
+        if cmd_word.eq_ignore_ascii_case("EXPORT") {
+            return Some(self.handle_nova_export(arg));
+        }
+
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
 
@@ -404,6 +413,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    #[cfg(feature = "nova")]
+    fn handle_nova_export(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::StateExporter::export(&self.entity, arg, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
     fn handle_nova_analyze(&self, arg: &str) -> CommandResult {
         let target_file = arg;
         let Some(file_node) = self
