@@ -496,7 +496,13 @@ impl CommandExecutor {
                 self.entity.update_depth(self.fs.current_depth());
                 CommandResult::success("")
             }
-            Err(e) => CommandResult::error(format!("?{}\n", e.to_string().to_uppercase())),
+            Err(e) => {
+                // ⚡ Bolt Optimization: Uses `.make_ascii_uppercase()` on a locally formatted string
+                // to avoid two unnecessary heap allocations caused by `.to_string().to_uppercase()`.
+                let mut msg = format!("?{e}\n");
+                msg.make_ascii_uppercase();
+                CommandResult::error(msg)
+            }
         }
     }
 
