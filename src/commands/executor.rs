@@ -66,6 +66,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_mirror(&self) -> CommandResult {
+        use crate::experimental::BlackMirror;
+        let seed = 0xEC40_0000_u64.wrapping_add(u64::from(self.entity.interaction_count()));
+        let result = BlackMirror::gaze(self.entity.current_mood(), self.entity.layer(), seed);
+        CommandResult::success(result)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
         let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
@@ -258,6 +266,11 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_undelete())
+        } else if (cmd_word.eq_ignore_ascii_case("MIRROR")
+            || cmd_word.eq_ignore_ascii_case("REFLECT"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_mirror())
         } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
             Some(self.handle_nova_ping(arg))
         } else if (cmd_word.eq_ignore_ascii_case("DIAL") || cmd_word.eq_ignore_ascii_case("CALL"))
