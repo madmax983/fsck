@@ -68,3 +68,4 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Output Truncation Limits]**\n**Learning:** Bash session outputs are strictly truncated at 1000 characters. When exploring files, attempting to read large blocks (e.g., 30-40 lines) with `sed`, `awk`, or `cat` will truncate the output, causing you to miss code context and hallucinate replacements in your plan.\n**Action:** Always read unverified file sections interactively in very small chunks (e.g., 10-15 lines at a time using `sed -n '<start>,<end>p'`) to successfully bypass the truncation limit and ensure 100% grounded, hallucination-free code replacements.
