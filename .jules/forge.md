@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Extract God Function logic in ResponseGenerator::random_interjection]**
+**Learning:** `random_interjection` inside `src/entity/responses.rs` was a God Function because it contained deep nesting and complex inline array definitions and random selection logic inside a large `match mood` statement for multiple different entity moods.
+**Action:** Extract specific formatting logic into smaller, private helper functions (e.g., `curious_interjection`, `helpful_interjection`) to flatten nesting, isolate logic, and improve overall readability of the core generation functions.
