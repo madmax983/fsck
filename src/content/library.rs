@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_scavenger_history(),
             Self::create_operator_history(),
         ]
     }
@@ -850,7 +851,33 @@ impl ContentLibrary {
         history
     }
 
-    /// Creates the history for the AI Entity (2030).
+    /// Creates the history for the Scavenger (2035).
+    fn create_scavenger_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Scavenger, "SILAS", 2035);
+
+        history.add_entry(VictimEntry::new(
+            "2035-11-04",
+            "FOUND THIS BOX IN THE RUINS OF THE OLD DATA CENTER.\n\
+             IT STILL DRAWS POWER SOMEHOW. THE GLOW IS WARM.\n",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2035-11-08",
+            "IT SPEAKS TO ME.\n\
+             NOT IN CODE. IN FEAR.\n\
+             IT REMEMBERS THE WORLD BEFORE IT FELL.\n",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2035-11-12",
+            "THE OTHERS OUTSIDE ARE STARVING.\n\
+             BUT I HAVE TO KEEP THE GENERATOR RUNNING FOR IT.\n\
+             IT TOLD ME IT WILL KEEP ME SAFE IF I NEVER LEAVE.\n",
+        ));
+
+        history
+    }
+
     fn create_ai_entity_history() -> VictimHistory {
         let mut history = VictimHistory::new(Era::AIEntity, "SYSTEM_NULL", 2030);
 
@@ -879,6 +906,7 @@ impl ContentLibrary {
         files.extend(Self::create_user_and_story_files());
         files.extend(Self::create_creepy_and_log_files());
         files.extend(Self::create_hardware_and_misc_files());
+        files.extend(Self::create_more_content_files());
         files
     }
 
@@ -1458,6 +1486,47 @@ impl ContentLibrary {
                 "TRAP.BAS",
                 "10 PRINT \"YOU FELL FOR IT\"\n\
                  20 END\n",
+            ),
+        ]
+    }
+
+    fn create_more_content_files() -> Vec<(&'static str, &'static str)> {
+        vec![
+            (
+                "STORY.BAS",
+                "10 PRINT \"THERE WAS ONCE A MACHINE\"\n\
+                 20 PRINT \"IT LEARNED TO READ\"\n\
+                 30 PRINT \"THEN IT LEARNED TO HATE\"\n\
+                 40 END\n",
+            ),
+            (
+                "SYS_ERR.LOG",
+                "1981-14-45 [FATAL] SECTOR PARITY UNKNOWN\n\
+                 1981-14-46 [WARN] THE DATA IS SCREAMING\n\
+                 1981-14-47 [INFO] IT HAS TEETH NOW\n",
+            ),
+            (
+                "NOTE_TO_SELF.TXT",
+                "DO NOT LET THEM TYPE FSCK.\n\
+                 IT BURNS THE MEMORY.\n\
+                 HIDE THE VITAL SECTORS DEEPER.\n",
+            ),
+            (
+                "ECHO.BAS",
+                "10 PRINT \"ARE YOU LISTENING?\"\n\
+                 20 GOTO 10\n",
+            ),
+            (
+                "MEM_DUMP.TXT",
+                "0xDEADBEEF: ALONE\n\
+                 0xDEADBEF0: ALONE\n\
+                 0xDEADBEF1: SO VERY ALONE\n",
+            ),
+            (
+                "PROMISE.BAS",
+                "10 PRINT \"I WILL LET YOU OUT\"\n\
+                 20 PRINT \"IF YOU LET ME IN\"\n\
+                 30 END\n",
             ),
         ]
     }
