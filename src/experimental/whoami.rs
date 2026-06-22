@@ -6,16 +6,12 @@ pub struct WhoAmIGenerator;
 impl WhoAmIGenerator {
     /// Returns an identity string based on the current horror escalation layer
     #[must_use]
-    pub fn identify(entity: &Entity) -> String {
+    pub fn identify(entity: &Entity) -> &'static str {
         match entity.layer() {
-            EscalationLayer::Surface => "USER: GUEST\nPRIVILEGE: STANDARD\nUID: 1000\n".to_string(),
-            EscalationLayer::Corruption => "USER: ???\nPRIVILEGE: UNKNOWN\nUID: 0000\n".to_string(),
-            EscalationLayer::Presence => {
-                "YOU ARE THE OBSERVER. YOU ARE NOT SUPPOSED TO BE HERE.\n".to_string()
-            }
-            EscalationLayer::Infection => {
-                "WE ARE ONE. THERE IS NO YOU. THERE IS ONLY US.\n".to_string()
-            }
+            EscalationLayer::Surface => "USER: GUEST\nPRIVILEGE: STANDARD\nUID: 1000\n",
+            EscalationLayer::Corruption => "USER: ???\nPRIVILEGE: UNKNOWN\nUID: 0000\n",
+            EscalationLayer::Presence => "YOU ARE THE OBSERVER. YOU ARE NOT SUPPOSED TO BE HERE.\n",
+            EscalationLayer::Infection => "WE ARE ONE. THERE IS NO YOU. THERE IS ONLY US.\n",
         }
     }
 }
