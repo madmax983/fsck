@@ -41,6 +41,8 @@ pub mod update;
 #[cfg(feature = "nova")]
 pub mod voice;
 #[cfg(feature = "nova")]
+pub mod weather;
+#[cfg(feature = "nova")]
 pub mod whoami;
 
 #[cfg(feature = "nova")]
@@ -90,3 +92,5 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub use weather::AtmosphericInterference;
