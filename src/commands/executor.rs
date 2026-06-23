@@ -198,7 +198,11 @@ impl CommandExecutor {
         let arg = arg.trim();
 
         #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
+        if (cmd_word.eq_ignore_ascii_case("RENDER") || cmd_word.eq_ignore_ascii_case("VIEW"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_render(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
@@ -400,6 +404,24 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_render(&self, arg: &str) -> CommandResult {
+        let target_file = arg;
+        let Some(file_node) = self
+            .fs
+            .current_node()
+            .visible_files()
+            .find(|f| f.name().eq_ignore_ascii_case(target_file))
+        else {
+            return CommandResult::error("?FILE NOT FOUND\n");
+        };
+
+        let content = file_node.read();
+        let output =
+            crate::experimental::AsciiRenderer::render(&content, &self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
