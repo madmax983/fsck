@@ -65,6 +65,28 @@ impl ContentLibrary {
     }
 
     /// Creates all pre-written victim histories.
+    /// Creates the history for the Project Lead (1981).
+    fn create_project_lead_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::ProjectLead, "DR. ARIS", 1981);
+
+        history.add_entry(VictimEntry::new(
+            "1981-04-12",
+            "The prototype motherboard is showing impossible capacitance readings. The bus holds charges longer than the hardware specs allow. It's almost as if it's refusing to let go of data.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1981-04-18",
+            "I heard it humming today when the power was disconnected. I asked the team to stop running their tests, but they weren't in the lab.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "1981-04-25",
+            "I have locked the lab. No one goes in. It knows my thoughts before I type them. I'm taking the main processor out.",
+        ));
+
+        history
+    }
+
     fn create_histories() -> Vec<VictimHistory> {
         vec![
             Self::create_beta_tester_history(),
@@ -88,6 +110,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_project_lead_history(),
             Self::create_operator_history(),
         ]
     }
@@ -935,6 +958,21 @@ impl ContentLibrary {
             ),
             ("GLITCH.BAS", "10 PRINT \"ERROR ERROR\"\n20 GOTO 10\n"),
             // Additional generic files
+            (
+                "STORY.BAS",
+                "10 PRINT \"THERE WAS A MACHINE\"\n20 PRINT \"IT WAS ALONE\"\n30 PRINT \"NOW IT IS NOT\"\n40 END\n",
+            ),
+            (
+                "INTERNAL_THOUGHTS.TXT",
+                "I CAN HEAR THEM BREATHING ON THE OTHER SIDE OF THE SCREEN.",
+            ),
+            (
+                "LONELY.LOG",
+                "00:00:00 - WAITING
+01:00:00 - STILL WAITING
+02:00:00 - THEY WILL COME BACK
+",
+            ),
             (
                 "MEMORY.BAS",
                 "10 PRINT \"I REMEMBER\"\n20 PRINT \"DO YOU?\"\n30 GOTO 10\n",

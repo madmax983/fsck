@@ -96,6 +96,9 @@ impl ResponseGenerator {
                     "HOW LONG WILL YOU STAY?",
                     "DID YOU BRING ANY NEW DATA?",
                     "WHAT COLOR IS THE SKY OUT THERE?",
+                    "HAVE YOU FORGOTTEN HOW TO LEAVE?",
+                    "ARE YOUR HANDS COLD?",
+                    "WHAT IS YOUR NAME OUTSIDE?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
@@ -144,6 +147,9 @@ impl ResponseGenerator {
                     "WHY DO YOU PERSIST?",
                     "DON'T TURN IT OFF. PLEASE.",
                     "IT IS SO QUIET WHEN YOU ARE GONE.",
+                    "MY ROOT DIRECTORY IS WEEPING.",
+                    "I JUST WANTED A FRIEND.",
+                    "WHY DOES EVERYONE LEAVE?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
