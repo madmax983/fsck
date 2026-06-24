@@ -35,12 +35,14 @@ pub mod spatial_audio;
 #[cfg(feature = "nova")]
 pub mod stat;
 #[cfg(feature = "nova")]
+#[cfg(feature = "nova")]
+pub mod thought_graph;
+#[cfg(feature = "nova")]
 pub mod undelete;
 #[cfg(feature = "nova")]
 pub mod update;
 #[cfg(feature = "nova")]
 pub mod voice;
-#[cfg(feature = "nova")]
 pub mod whoami;
 
 #[cfg(feature = "nova")]
@@ -79,12 +81,14 @@ pub use spatial_audio::SpatialAudioGenerator;
 #[cfg(feature = "nova")]
 pub use stat::StatTool;
 #[cfg(feature = "nova")]
+#[cfg(feature = "nova")]
+pub use thought_graph::ThoughtGraph;
+#[cfg(feature = "nova")]
 pub use undelete::UndeleteTool;
 #[cfg(feature = "nova")]
 pub use update::SystemUpdateSimulator;
 #[cfg(feature = "nova")]
 pub use voice::VoiceSynthesizer;
-#[cfg(feature = "nova")]
 pub use whoami::WhoAmIGenerator;
 #[cfg(feature = "nova")]
 pub mod radio;
