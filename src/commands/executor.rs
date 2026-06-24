@@ -505,24 +505,64 @@ impl CommandExecutor {
             return CommandResult::error("?SYNTAX ERROR\n");
         }
 
-        let Some(file) = self
-            .fs
-            .current_node()
-            .visible_files()
-            .find(|f| f.name().eq_ignore_ascii_case(filename))
-        else {
-            return CommandResult::error(format!("?FILE NOT FOUND: {}\n", filename.to_uppercase()));
+        // ⚡ Bolt Optimization: Extract necessary data from `file.name()` into primitive flags to avoid `.to_string()` allocation.
+        // Eagerly grabbing these boolean flags drops the NLL immutable borrow on `self.fs`, allowing mutable borrow of `self` below.
+        let (mut content, needs_observe, needs_machine, needs_history, depth_increase) = {
+            let Some(file) = self
+                .fs
+                .current_node()
+                .visible_files()
+                .find(|f| f.name().eq_ignore_ascii_case(filename))
+            else {
+                return CommandResult::error(format!(
+                    "?FILE NOT FOUND: {}\n",
+                    filename.to_uppercase()
+                ));
+            };
+
+            let needs_observe = file.name().eq_ignore_ascii_case("OBSERVE.TXT");
+            let needs_machine = file.name().eq_ignore_ascii_case("MACHINE.LOG");
+            let needs_history = file.name().eq_ignore_ascii_case("HISTORY.TXT");
+
+            let depth_increase = if file.name().eq_ignore_ascii_case("FALL.TXT")
+                || file.name().eq_ignore_ascii_case("DEEPER.TXT")
+            {
+                3
+            } else if file.name().eq_ignore_ascii_case("SINK.TXT")
+                || file.name().eq_ignore_ascii_case("DOWN.TXT")
+            {
+                2
+            } else if file.name().eq_ignore_ascii_case("DESCENT.TXT") {
+                5
+            } else {
+                0
+            };
+
+            (
+                file.read().into_owned(),
+                needs_observe,
+                needs_machine,
+                needs_history,
+                depth_increase,
+            )
         };
 
-        let file_actual_name = file.name().to_string();
-        let mut content = file.read().into_owned();
-
-        self.inject_dynamic_file_content(&file_actual_name, &mut content);
+        if needs_observe {
+            self.inject_observe_txt(&mut content);
+        }
+        if needs_machine {
+            self.inject_machine_log(&mut content);
+        }
+        if needs_history {
+            self.inject_history_txt(&mut content);
+        }
 
         #[cfg(feature = "nova")]
         let mut content = self.apply_emotional_bleed(&content);
 
-        self.process_trapdoors(&file_actual_name);
+        if depth_increase > 0 {
+            self.entity.add_depth(depth_increase);
+        }
 
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         content.push('\n');
@@ -555,15 +595,6 @@ impl CommandExecutor {
         }
     }
 
-    fn inject_dynamic_file_content(&self, filename_upper: &str, content: &mut String) {
-        match filename_upper {
-            "OBSERVE.TXT" => self.inject_observe_txt(content),
-            "MACHINE.LOG" => self.inject_machine_log(content),
-            "HISTORY.TXT" => self.inject_history_txt(content),
-            _ => {}
-        }
-    }
-
     #[cfg(feature = "nova")]
     fn apply_emotional_bleed(&self, content: &str) -> String {
         use crate::experimental::EmotionalBleed;
@@ -574,20 +605,6 @@ impl CommandExecutor {
             0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count()));
         let mut rng = ChaCha8Rng::seed_from_u64(interaction_seed);
         EmotionalBleed::inject_emotion(content, self.entity.current_mood(), &mut rng)
-    }
-
-    fn process_trapdoors(&mut self, filename_upper: &str) {
-        // Trapdoor files pull you deeper
-        let depth_increase = match filename_upper {
-            "FALL.TXT" | "DEEPER.TXT" => 3,
-            "SINK.TXT" | "DOWN.TXT" => 2,
-            "DESCENT.TXT" => 5,
-            _ => 0,
-        };
-
-        if depth_increase > 0 {
-            self.entity.add_depth(depth_increase);
-        }
     }
 
     fn home() -> CommandResult {
