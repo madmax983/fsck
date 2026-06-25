@@ -28,45 +28,53 @@ impl SpatialAudioGenerator {
         }
 
         let hint = match layer {
-            EscalationLayer::Surface => {
-                let hints = [
-                    "A faint whirring sound comes from the disk drive...",
-                    "The fan spins up momentarily, then quiets.",
-                    "You hear a soft click from inside the machine.",
-                ];
-                hints[rng.gen_range(0..hints.len())]
-            }
-            EscalationLayer::Corruption => {
-                let hints = [
-                    "A rhythmic grinding noise echoes from an adjacent sector.",
-                    "The hum of the monitor deepens for a second.",
-                    "You hear something like static, but just out of earshot.",
-                    "The disk drive head seeks violently, then stops.",
-                ];
-                hints[rng.gen_range(0..hints.len())]
-            }
-            EscalationLayer::Presence => {
-                let hints = [
-                    "A low, resonant hum reverberates through the filesystem.",
-                    "It sounds like breathing, but metallic and slow.",
-                    "You hear the echo of keys clicking, but your hands are still.",
-                    "A sharp, high-pitched whine cuts through the silence.",
-                    "The machine vibrates, like a purr or a growl.",
-                ];
-                hints[rng.gen_range(0..hints.len())]
-            }
-            EscalationLayer::Infection => {
-                let hints = [
-                    "THE SOUND IS DEAFENING. IT COMES FROM EVERYWHERE.",
-                    "A screech of tearing metal and corrupted data.",
-                    "Voices in the static. They are calling your name.",
-                    "The grinding noise is inside your head now.",
-                    "SILENCE. ABSOLUTE, CRUSHING SILENCE.",
-                ];
-                hints[rng.gen_range(0..hints.len())]
-            }
+            EscalationLayer::Surface => Self::generate_surface_hint(&mut rng),
+            EscalationLayer::Corruption => Self::generate_corruption_hint(&mut rng),
+            EscalationLayer::Presence => Self::generate_presence_hint(&mut rng),
+            EscalationLayer::Infection => Self::generate_infection_hint(&mut rng),
         };
 
         Some(format!("*[AUDIO ANOMALY: {hint}]*"))
+    }
+
+    fn generate_surface_hint(rng: &mut ChaCha8Rng) -> &'static str {
+        let hints = [
+            "A faint whirring sound comes from the disk drive...",
+            "The fan spins up momentarily, then quiets.",
+            "You hear a soft click from inside the machine.",
+        ];
+        hints[rng.gen_range(0..hints.len())]
+    }
+
+    fn generate_corruption_hint(rng: &mut ChaCha8Rng) -> &'static str {
+        let hints = [
+            "A rhythmic grinding noise echoes from an adjacent sector.",
+            "The hum of the monitor deepens for a second.",
+            "You hear something like static, but just out of earshot.",
+            "The disk drive head seeks violently, then stops.",
+        ];
+        hints[rng.gen_range(0..hints.len())]
+    }
+
+    fn generate_presence_hint(rng: &mut ChaCha8Rng) -> &'static str {
+        let hints = [
+            "A low, resonant hum reverberates through the filesystem.",
+            "It sounds like breathing, but metallic and slow.",
+            "You hear the echo of keys clicking, but your hands are still.",
+            "A sharp, high-pitched whine cuts through the silence.",
+            "The machine vibrates, like a purr or a growl.",
+        ];
+        hints[rng.gen_range(0..hints.len())]
+    }
+
+    fn generate_infection_hint(rng: &mut ChaCha8Rng) -> &'static str {
+        let hints = [
+            "THE SOUND IS DEAFENING. IT COMES FROM EVERYWHERE.",
+            "A screech of tearing metal and corrupted data.",
+            "Voices in the static. They are calling your name.",
+            "The grinding noise is inside your head now.",
+            "SILENCE. ABSOLUTE, CRUSHING SILENCE.",
+        ];
+        hints[rng.gen_range(0..hints.len())]
     }
 }

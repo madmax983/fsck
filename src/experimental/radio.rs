@@ -48,35 +48,41 @@ impl RadioTransceiver {
         } else if (freq - 66.6).abs() < f32::EPSILON {
             output.push_str("[RADIO]: THE WALLS ARE LISTENING\n");
         } else {
-            // Procedural Stations
-            match rng.gen_range(0..4) {
-                0 => {
-                    let number1 = rng.gen_range(0..10);
-                    let number2 = rng.gen_range(0..10);
-                    let number3 = rng.gen_range(0..10);
-                    let _ = writeln!(
-                        output,
-                        "[RADIO]: ... Alpha, {number1}, {number2}, {number3}, Charlie ..."
-                    );
-                }
-                1 => {
-                    output.push_str(
-                        "[RADIO]: [STATIC] ... [CLASSICAL MUSIC PLAYING FAINTLY] ... [STATIC]\n",
-                    );
-                }
-                2 => {
-                    if rng.gen_bool(0.2) && matches!(layer, EscalationLayer::Corruption) {
-                        output.push_str("[RADIO]: ... I'm lost in the filesystem ... help ...\n");
-                    } else {
-                        output.push_str("[RADIO]: ... [BZZZT] ... [SILENCE] ...\n");
-                    }
-                }
-                _ => {
-                    output.push_str("[RADIO]: [WHITE NOISE]\n");
-                }
-            }
+            Self::generate_procedural_station(&mut output, &mut rng, layer);
         }
 
         output
+    }
+
+    fn generate_procedural_station(
+        output: &mut String,
+        rng: &mut ChaCha8Rng,
+        layer: EscalationLayer,
+    ) {
+        match rng.gen_range(0..4) {
+            0 => Self::generate_numbers_station(output, rng),
+            1 => output
+                .push_str("[RADIO]: [STATIC] ... [CLASSICAL MUSIC PLAYING FAINTLY] ... [STATIC]\n"),
+            2 => Self::generate_creepy_station(output, rng, layer),
+            _ => output.push_str("[RADIO]: [WHITE NOISE]\n"),
+        }
+    }
+
+    fn generate_numbers_station(output: &mut String, rng: &mut ChaCha8Rng) {
+        let number1 = rng.gen_range(0..10);
+        let number2 = rng.gen_range(0..10);
+        let number3 = rng.gen_range(0..10);
+        let _ = writeln!(
+            output,
+            "[RADIO]: ... Alpha, {number1}, {number2}, {number3}, Charlie ..."
+        );
+    }
+
+    fn generate_creepy_station(output: &mut String, rng: &mut ChaCha8Rng, layer: EscalationLayer) {
+        if rng.gen_bool(0.2) && matches!(layer, EscalationLayer::Corruption) {
+            output.push_str("[RADIO]: ... I'm lost in the filesystem ... help ...\n");
+        } else {
+            output.push_str("[RADIO]: ... [BZZZT] ... [SILENCE] ...\n");
+        }
     }
 }
