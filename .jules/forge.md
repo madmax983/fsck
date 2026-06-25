@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Zero-Allocation String Matching]**
+**Learning:** Using `command.to_ascii_uppercase()` before a `match` statement creates unnecessary heap allocations. Conversely, large `if / else if` chains using `.eq_ignore_ascii_case()` avoid allocations but drastically reduce readability.
+**Action:** Refactor long `if/else if` string-matching chains into a `match` structure using guard clauses (e.g., `match (cmd_word, arg) { (c, _) if c.eq_ignore_ascii_case("CMD") && !arg.is_empty() => ... }`) to flatten logic while retaining zero-allocation behavior.
