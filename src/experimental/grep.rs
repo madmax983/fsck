@@ -21,7 +21,8 @@ impl SearchTool {
 
     /// Extract a safe snippet from the content avoiding char boundary panics.
     /// Optimized to avoid O(N) heap allocations by iterating over char indices.
-    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
+    /// ⚡ Bolt Optimization: Returns `&str` instead of `String` to completely eliminate heap allocation during snippet extraction.
+    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> &str {
         let prefix = &content[..start_idx];
         let mut chars_before = 0;
         let mut start_byte = start_idx;
@@ -51,7 +52,7 @@ impl SearchTool {
             end_byte = start_idx + i + c.len_utf8();
         }
 
-        content[start_byte..end_byte].to_string()
+        &content[start_byte..end_byte]
     }
 
     /// Formats a matched result based on the entity's escalation layer.
