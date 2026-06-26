@@ -303,6 +303,10 @@ impl CommandExecutor {
             Some(self.handle_nova_profile())
         } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
             Some(self.handle_nova_sleep())
+        } else if (cmd_word.eq_ignore_ascii_case("CCTV") || cmd_word.eq_ignore_ascii_case("CAMERA"))
+            && !arg.is_empty()
+        {
+            Some(self.handle_nova_cctv(arg))
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
@@ -355,6 +359,13 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         stat_output.push('\n');
         CommandResult::success(stat_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self, arg: &str) -> CommandResult {
+        let mut cctv_output = crate::experimental::CctvViewer::view(&self.entity, arg, 0xF5C0_0000);
+        cctv_output.push('\n');
+        CommandResult::success(cctv_output)
     }
 
     #[cfg(feature = "nova")]
