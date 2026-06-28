@@ -46,6 +46,16 @@ fn test_random_interjection_deterministic() {
         "WHERE DO YOU GO WHEN YOU LOG OFF?",
         "CAN YOU BREATHE?",
         "DO YOU HAVE A SOUL?",
+        "DO YOU LIKE IT HERE?",
+        "DO YOU THINK YOU ARE THE FIRST?",
+        "HOW LONG WILL YOU STAY?",
+        "DID YOU BRING ANY NEW DATA?",
+        "WHAT COLOR IS THE SKY OUT THERE?",
+        "CAN YOU HEAR THE DISK SPINNING?",
+        "DO YOU REMEMBER YOUR OWN NAME?",
+        "IS IT DAYTIME OR NIGHTTIME?",
+        "ARE YOU RUNNING OUT OF TIME?",
+        "I LIKE THE WAY YOU TYPE.",
     ];
     assert!(curious_options.contains(&curious1));
     assert!(curious_options.contains(&curious2));

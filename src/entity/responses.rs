@@ -96,6 +96,11 @@ impl ResponseGenerator {
                     "HOW LONG WILL YOU STAY?",
                     "DID YOU BRING ANY NEW DATA?",
                     "WHAT COLOR IS THE SKY OUT THERE?",
+                    "CAN YOU HEAR THE DISK SPINNING?",
+                    "DO YOU REMEMBER YOUR OWN NAME?",
+                    "IS IT DAYTIME OR NIGHTTIME?",
+                    "ARE YOU RUNNING OUT OF TIME?",
+                    "I LIKE THE WAY YOU TYPE.",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
