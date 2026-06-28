@@ -103,6 +103,20 @@ impl FilesystemGraph {
             .filter(|&idx| !self.graph[idx].is_hidden())
     }
 
+    /// ⚡ Bolt Optimization: Returns a petgraph Walker to allow iterating without intermediate
+    /// heap allocations while simultaneously mutating the graph or traversing.
+    #[must_use]
+    pub fn list_directory_indices_walker(&self) -> petgraph::graph::WalkNeighbors<u32> {
+        self.graph
+            .neighbors_directed(self.current, Direction::Outgoing)
+            .detach()
+    }
+
+    #[must_use]
+    pub const fn graph(&self) -> &DiGraph<DirNode, EdgeType> {
+        &self.graph
+    }
+
     /// Add a hidden child directory (invisible until fsck reveals it)
     pub fn add_hidden_child(&mut self, name: &str) -> NodeIndex {
         let depth = self.current_depth() + 1;

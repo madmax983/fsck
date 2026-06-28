@@ -171,9 +171,13 @@ impl FilesystemGenerator {
         Self::add_hidden_content(fs, rng, current_depth);
 
         // Recursively populate children
-        // ⚡ Bolt Optimization: Use node indices directly to avoid allocating strings for directory traversal
-        let children_indices: Vec<_> = fs.list_directory_indices().collect();
-        for child_idx in children_indices {
+        // ⚡ Bolt Optimization: Use node indices directly to avoid allocating strings for directory traversal.
+        // We can detach the iterator to walk without a `.collect::<Vec<_>>()` intermediate heap allocation.
+        let mut walker = fs.list_directory_indices_walker();
+        while let Some(child_idx) = walker.next_node(fs.graph()) {
+            if fs.graph()[child_idx].is_hidden() {
+                continue;
+            }
             fs.change_dir_by_index(child_idx);
             Self::populate_level_with_content(fs, rng, library, current_depth + 1, max_depth);
             let _ = fs.change_dir("..", 0, 0.0);
