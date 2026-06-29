@@ -1,15 +1,18 @@
 use crate::entity::Entity;
 use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 /// Complete game state for persistence
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameState {
     seed: u64,
     entity: Entity,
+    /// ⚡ Bolt Optimization: Uses `VecDeque` for O(1) front removals when the queue is full.
     #[serde(default)]
-    command_history: Vec<String>,
+    command_history: VecDeque<String>,
+    /// ⚡ Bolt Optimization: Uses `VecDeque` for O(1) front removals when the queue is full.
     #[serde(default)]
-    notable_actions: Vec<String>,
+    notable_actions: VecDeque<String>,
     max_depth_reached: u32,
     session_count: u32,
     first_played: String, // Timestamp
@@ -24,8 +27,8 @@ impl GameState {
         Self {
             seed,
             entity,
-            command_history: Vec::new(),
-            notable_actions: Vec::new(),
+            command_history: VecDeque::with_capacity(100),
+            notable_actions: VecDeque::with_capacity(20),
             max_depth_reached: max_depth,
             session_count: 1,
             first_played,
@@ -44,12 +47,12 @@ impl GameState {
     }
 
     #[must_use]
-    pub fn command_history(&self) -> &[String] {
+    pub const fn command_history(&self) -> &VecDeque<String> {
         &self.command_history
     }
 
     #[must_use]
-    pub fn notable_actions(&self) -> &[String] {
+    pub const fn notable_actions(&self) -> &VecDeque<String> {
         &self.notable_actions
     }
 
@@ -89,16 +92,16 @@ impl GameState {
                 .any(|w| w.eq_ignore_ascii_case(b"WHO"));
 
         if is_notable {
-            self.notable_actions.push(cmd_string.clone());
-            if self.notable_actions.len() > 20 {
-                self.notable_actions.remove(0);
+            if self.notable_actions.len() >= 20 {
+                self.notable_actions.pop_front();
             }
+            self.notable_actions.push_back(cmd_string.clone());
         }
 
-        self.command_history.push(cmd_string);
-        if self.command_history.len() > 100 {
-            self.command_history.remove(0);
+        if self.command_history.len() >= 100 {
+            self.command_history.pop_front();
         }
+        self.command_history.push_back(cmd_string);
     }
 
     #[must_use]
