@@ -305,6 +305,15 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("RORSCHACH") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_rorschach())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
@@ -364,6 +373,14 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         fortune_output.push('\n');
         CommandResult::success(fortune_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_rorschach(&self) -> CommandResult {
+        let mut rorschach_output =
+            crate::experimental::RorschachTest::generate(&self.entity, 0xF5C0_0000);
+        rorschach_output.push('\n');
+        CommandResult::success(rorschach_output)
     }
 
     #[cfg(feature = "nova")]
