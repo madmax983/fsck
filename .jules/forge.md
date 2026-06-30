@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Preserving Feature Flags in Match Refactors]
+**Learning:** Refactoring feature-gated `if / else if` chains into `match` expressions without transferring the `#[cfg(feature = "...")]` attributes to the corresponding match arms silently drops conditional compilation logic, causing critical regressions.
+**Action:** When converting feature-gated logic to `match` statements, meticulously preserve all `#[cfg(...)]` attributes by applying them directly above each respective match arm.
