@@ -307,6 +307,11 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if (cmd_word.eq_ignore_ascii_case("CAMERA")
+            || cmd_word.eq_ignore_ascii_case("WEBCAM"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_camera())
         } else {
             None
         }
@@ -315,6 +320,13 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_whoami(&self) -> CommandResult {
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_camera(&self) -> CommandResult {
+        let mut output = crate::experimental::CameraSimulator::capture(&self.entity, 0xF5C0_0000);
+        output.push('\n');
         CommandResult::success(output)
     }
 
