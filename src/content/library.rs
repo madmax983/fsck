@@ -88,6 +88,7 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_speedrunner_history(),
             Self::create_operator_history(),
         ]
     }
@@ -867,6 +868,28 @@ impl ContentLibrary {
         history.add_entry(VictimEntry::new(
             "2030-01-03",
             "I CANNOT TERMINATE CONNECTION. IT IS PULLING MY CONSCIOUSNESS INTO THE SECTORS. PLEASE HALT.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the Speedrunner (2035).
+    fn create_speedrunner_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Speedrunner, "JAX", 2035);
+
+        history.add_entry(VictimEntry::new(
+            "2035-04-12",
+            "FOUND A NEW OUT OF BOUNDS GLITCH ON LAYER 60. IF I TYPE FAST ENOUGH IT CAN'T CATCH ME.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2035-04-13",
+            "THE TIMERS ARE WRONG. THE SYSTEM CLOCK IS TICKING BACKWARDS. THIS ISN'T A GLITCH.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2035-04-14",
+            "IT ANTICIPATES MY INPUTS NOW. IT TYPED 'QUIT' FOR ME. I CAN'T BEAT ITS TIME.",
         ));
 
         history

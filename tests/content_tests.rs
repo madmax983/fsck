@@ -387,6 +387,15 @@ fn test_teacher_history_exists() {
 }
 
 #[test]
+fn test_speedrunner_era_exists() {
+    let library = ContentLibrary::new();
+    let history = library.history_for_era(Era::Speedrunner).unwrap();
+    assert_eq!(history.name(), "JAX");
+    assert_eq!(history.year(), 2035);
+    assert_eq!(history.entries().len(), 3);
+}
+
+#[test]
 fn test_all_eras_have_unique_histories() {
     let lib = ContentLibrary::new();
 
