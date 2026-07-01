@@ -229,6 +229,18 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if (cmd_word.eq_ignore_ascii_case("PULSE")
+            || cmd_word.eq_ignore_ascii_case("VITALS"))
+            && arg.is_empty()
+        {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_pulse())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if cmd_word.eq_ignore_ascii_case("ANALYZE") && !arg.is_empty() {
             #[cfg(feature = "nova")]
             {
@@ -400,6 +412,13 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_life(&self) -> CommandResult {
         let output = crate::experimental::LifeSimulator::simulate_life(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    #[cfg(feature = "nova")]
+    fn handle_nova_pulse(&self) -> CommandResult {
+        let output = crate::experimental::VitalsMonitor::scan_vitals(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
