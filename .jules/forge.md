@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactoring if/else if chains in Option Return Type]**
+**Learning:** Returning `Option<T>` within long `if/else if` chains checking strings with `.eq_ignore_ascii_case()` creates boilerplate and deep nesting, making it harder to read than a single `match` statement.
+**Action:** Use a `match` expression with guards (e.g., `(cmd_word, arg) if cmd_word.eq_ignore_ascii_case("CMD") && !arg.is_empty() => ...`) to cleanly flatten string matching, maintaining `Option<T>` returns and reducing redundant `if/else` logic.
