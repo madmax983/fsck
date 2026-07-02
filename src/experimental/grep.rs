@@ -77,9 +77,17 @@ impl SearchTool {
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
             // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            // ⚡ Bolt Optimization: Replace `snippet.replace('\n', " ").trim()` with a zero-allocation `split_whitespace` buffer push.
+            results.push_str("  ...");
+            let mut first = true;
+            for word in snippet.split_whitespace() {
+                if !first {
+                    results.push(' ');
+                }
+                results.push_str(word);
+                first = false;
+            }
+            let _ = writeln!(results, "...");
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +104,17 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            // ⚡ Bolt Optimization: Replace `snippet.replace('\n', " ").trim()` with a zero-allocation `split_whitespace` buffer push.
+            results.push_str("  ...");
+            let mut first = true;
+            for word in snippet.split_whitespace() {
+                if !first {
+                    results.push(' ');
+                }
+                results.push_str(word);
+                first = false;
+            }
+            let _ = writeln!(results, "...");
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
