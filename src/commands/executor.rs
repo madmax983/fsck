@@ -307,14 +307,33 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("CCTV") || cmd_word.eq_ignore_ascii_case("CAM") {
+            Some(self.handle_nova_cctv(arg))
         } else {
             None
         }
     }
 
     #[cfg(feature = "nova")]
+
     fn handle_nova_whoami(&self) -> CommandResult {
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+
+    fn handle_nova_cctv(&self, arg: &str) -> CommandResult {
+        let camera_id = arg.parse::<u32>().unwrap_or(1);
+
+        let output = crate::experimental::CctvViewer::view_feed(
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+            camera_id,
+            self.entity.layer(),
+            self.entity.current_mood(),
+        );
+
         CommandResult::success(output)
     }
 
