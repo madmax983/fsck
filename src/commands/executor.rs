@@ -839,34 +839,25 @@ impl CommandExecutor {
         stmt: &str,
         line_num: u32,
     ) -> Result<bool, CommandResult> {
-        if stmt.starts_with("PRINT") {
-            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
-            ctx.output.push_str(&display_text);
-            ctx.output.push('\n');
-            return Ok(true);
+        match stmt {
+            s if s.starts_with("PRINT") => {
+                let display_text = self.execute_print_statement(s, ctx.layer, ctx.rng);
+                ctx.output.push_str(&display_text);
+                ctx.output.push('\n');
+                Ok(true)
+            }
+            s if s.starts_with("GOTO") => Self::evaluate_goto_statement(ctx, s, line_num),
+            s if s.starts_with("END") => Ok(false),
+            s if s.starts_with("REM") => Ok(true),
+            "" => Ok(true),
+            _ => {
+                use std::fmt::Write;
+                let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
+                // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
+                let out = std::mem::take(ctx.output);
+                Err(CommandResult::error(out))
+            }
         }
-
-        if stmt.starts_with("GOTO") {
-            return Self::evaluate_goto_statement(ctx, stmt, line_num);
-        }
-
-        if stmt.starts_with("END") {
-            return Ok(false);
-        }
-
-        if stmt.starts_with("REM") {
-            return Ok(true);
-        }
-
-        if !stmt.is_empty() {
-            use std::fmt::Write;
-            let _ = writeln!(ctx.output, "?SYNTAX ERROR IN {line_num}");
-            // ⚡ Bolt Optimization: Take the constructed `String` instead of allocating an intermediate formatted `String`.
-            let out = std::mem::take(ctx.output);
-            return Err(CommandResult::error(out));
-        }
-
-        Ok(true)
     }
 
     fn execute_basic_program(
