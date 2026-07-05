@@ -745,7 +745,8 @@ impl CommandExecutor {
         }
     }
 
-    fn find_program_content(&self, prog: &str) -> Option<String> {
+    /// ⚡ Bolt Optimization: Use `std::borrow::Cow<'_, str>` instead of `.into_owned()` to eliminate intermediate `String` allocation for static `.BAS` files.
+    fn find_program_content(&self, prog: &str) -> Option<std::borrow::Cow<'_, str>> {
         self.fs
             .current_node()
             .visible_files()
@@ -757,7 +758,7 @@ impl CommandExecutor {
                         .or_else(|| name.strip_suffix(".bas"))
                         .is_some_and(|base| base.eq_ignore_ascii_case(prog))
             })
-            .map(|file| file.read().into_owned())
+            .map(|file| file.read())
     }
 
     fn parse_basic_program(
