@@ -68,3 +68,10 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Extracted God Function logic in CommandExecutor::handle_nova_commands]**
+**Learning:** `handle_nova_commands` was a God Function because it contained a massive `if-else if` block checking strings with `.eq_ignore_ascii_case()` and returning `Option<CommandResult>`. This "Pyramid of Doom" caused high cognitive load and deep nesting, especially with feature flags inside the blocks.
+**Action:** Extract the complex `if-else if` block into a much cleaner `match (cmd_word, arg)` expression, utilizing guard clauses (e.g., `(c, a) if c.eq_ignore_ascii_case("SPEAK") => ...`) to flatten the nesting, drastically improving readability while retaining exact zero-allocation string matching behavior.
+
+**[Deterministic Tests and Static Arrays]**
+**Learning:** Modifying arrays of strings (like `curious_options`) in the production code logic (e.g. `src/entity/responses.rs`) breaks deterministic tests that verify RNG output against a duplicate hard-coded array in the test file (e.g. `tests/entity_tests.rs`).
+**Action:** When adding new dialogue options to static response arrays, always manually update the corresponding copied test array in `entity_tests.rs` to keep the deterministic assertion passing.
