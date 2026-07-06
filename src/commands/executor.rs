@@ -15,7 +15,7 @@ pub struct CommandExecutor {
 }
 
 struct BasicEvaluationContext<'a> {
-    program: &'a std::collections::BTreeMap<u32, String>,
+    program: &'a std::collections::BTreeMap<u32, &'a str>,
     output: &'a mut String,
     layer: EscalationLayer,
     rng: &'a mut ChaCha8Rng,
@@ -760,9 +760,7 @@ impl CommandExecutor {
             .map(|file| file.read().into_owned())
     }
 
-    fn parse_basic_program(
-        content: &str,
-    ) -> Result<std::collections::BTreeMap<u32, String>, String> {
+    fn parse_basic_program(content: &str) -> Result<std::collections::BTreeMap<u32, &str>, String> {
         content
             .lines()
             .map(str::trim)
@@ -771,7 +769,7 @@ impl CommandExecutor {
                 let (num_str, stmt) = line.split_once(' ').unwrap_or((line, ""));
                 num_str
                     .parse::<u32>()
-                    .map(|line_num| (line_num, stmt.trim().to_string()))
+                    .map(|line_num| (line_num, stmt.trim()))
                     .map_err(|_| format!("?SYNTAX ERROR IN: {line}\n"))
             })
             .collect()
@@ -871,7 +869,7 @@ impl CommandExecutor {
 
     fn execute_basic_program(
         &self,
-        program: &std::collections::BTreeMap<u32, String>,
+        program: &std::collections::BTreeMap<u32, &str>,
     ) -> CommandResult {
         if program.is_empty() {
             return CommandResult::success("");
