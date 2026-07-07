@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Python Multiline Search Failures]**
+**Learning:** Using Python scripts with large multiline `"""..."""` blocks for text replacement is highly fragile; minor whitespace or indentation mismatches (often caused by copy-pasting from terminal output) will cause 'Search string not found' errors.
+**Action:** When replacing text via Python scripts, either use smaller, carefully verified search strings, utilize regex, or ensure exact whitespace matching by extracting the target block directly via `sed`.
