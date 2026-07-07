@@ -307,9 +307,24 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("VISION") || cmd_word.eq_ignore_ascii_case("VIEW") {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_vision())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_vision(&self) -> CommandResult {
+        let output = crate::experimental::AsciiRenderer::render_view(&self.entity, 42);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
