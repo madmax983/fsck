@@ -782,7 +782,8 @@ impl CommandExecutor {
         stmt: &str,
         layer: EscalationLayer,
         rng: &mut ChaCha8Rng,
-    ) -> String {
+        output: &mut String,
+    ) {
         let is_deep_layer = matches!(
             layer,
             EscalationLayer::Corruption | EscalationLayer::Presence | EscalationLayer::Infection
@@ -796,14 +797,15 @@ impl CommandExecutor {
         };
 
         if let Some(interjection) = possible_interjection {
-            return interjection.to_string();
+            output.push_str(interjection);
+            return;
         }
 
         let content = stmt.trim_start_matches("PRINT").trim();
         if content.starts_with('"') && content.ends_with('"') && content.len() >= 2 {
-            content[1..content.len() - 1].to_string()
+            output.push_str(&content[1..content.len() - 1]);
         } else {
-            content.to_string()
+            output.push_str(content);
         }
     }
 
@@ -840,8 +842,8 @@ impl CommandExecutor {
         line_num: u32,
     ) -> Result<bool, CommandResult> {
         if stmt.starts_with("PRINT") {
-            let display_text = self.execute_print_statement(stmt, ctx.layer, ctx.rng);
-            ctx.output.push_str(&display_text);
+            // ⚡ Bolt Optimization: Push directly to `ctx.output` to avoid allocating an intermediate `String` for every PRINT statement.
+            self.execute_print_statement(stmt, ctx.layer, ctx.rng, ctx.output);
             ctx.output.push('\n');
             return Ok(true);
         }

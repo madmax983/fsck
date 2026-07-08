@@ -1,3 +1,3 @@
-**[Preserve Capitalization for Retro CLI]
-**Learning:** Command variants in `src/commands/types.rs` (e.g., `Command::ChangeDir`) and filesystem outputs strictly require capitalized strings to maintain the retro behavior and pass tests.
-**Action:** Do not remove `.to_uppercase()` calls when parsing commands or creating files/directories, as downstream tests and output formatting expect capitalized data payloads.
+**[Zero-Allocation String Building]**
+**Learning:** Refactoring a function that returns an allocated `String` into one that takes a `&mut String` buffer parameter successfully avoids intermediate allocations on hot loops (like processing `PRINT` statements in a tight BASIC loop).
+**Action:** When a method returns a string built from smaller string chunks (e.g. substrings or parsed parts), check if it's called in a loop. If so, modify the method signature to accept a `&mut String` and append directly to the caller's buffer rather than returning newly allocated strings.
