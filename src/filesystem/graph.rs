@@ -35,6 +35,11 @@ pub struct FilesystemGraph {
 
 impl FilesystemGraph {
     #[must_use]
+    pub const fn raw_graph(&self) -> &DiGraph<DirNode, EdgeType> {
+        &self.graph
+    }
+
+    #[must_use]
     pub fn new() -> Self {
         let mut graph = DiGraph::new();
         let root = graph.add_node(DirNode::new("/", 0));

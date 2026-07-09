@@ -90,3 +90,7 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub mod map_exporter;
+#[cfg(feature = "nova")]
+pub use map_exporter::MapExporter;

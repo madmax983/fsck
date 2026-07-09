@@ -192,6 +192,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_map(&self) -> CommandResult {
+        let mut output = crate::experimental::MapExporter::export_dot(&self.fs);
+        output.push('\n');
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
@@ -307,6 +314,8 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("MAP") && arg.is_empty() {
+            Some(self.handle_nova_map())
         } else {
             None
         }
