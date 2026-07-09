@@ -655,7 +655,7 @@ impl CommandExecutor {
         if matches!(layer, EscalationLayer::Infection) {
             self.entity.add_depth(3);
             let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
-            output = corruption.apply(&output, scan_seed);
+            output = corruption.apply(&output, scan_seed).into_owned();
         }
 
         CommandResult::success(&output)
@@ -923,10 +923,12 @@ impl CommandExecutor {
 
         if matches!(layer, EscalationLayer::Infection) {
             let corruption = CorruptionEffect::new(CorruptionIntensity::Moderate);
-            output = corruption.apply(
-                &output,
-                0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
-            );
+            output = corruption
+                .apply(
+                    &output,
+                    0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+                )
+                .into_owned();
         }
 
         CommandResult::success(output)

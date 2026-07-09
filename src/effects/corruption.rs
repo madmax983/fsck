@@ -53,14 +53,15 @@ impl CorruptionEffect {
     }
 
     #[must_use]
-    pub fn apply(&self, text: &str, seed: u64) -> String {
+    pub fn apply<'a>(&self, text: &'a str, seed: u64) -> std::borrow::Cow<'a, str> {
         if matches!(self.intensity, CorruptionIntensity::None) {
-            return text.to_string();
+            return std::borrow::Cow::Borrowed(text);
         }
 
         let mut rng = ChaCha8Rng::seed_from_u64(seed);
         let rate = self.intensity.corruption_rate();
-        let mut result = String::with_capacity(text.len());
+        // Calculate max possible capacity. 3 is the max byte size of CORRUPTION_CHARS.
+        let mut result = String::with_capacity(text.len() * 3);
 
         for ch in text.chars() {
             if ch.is_whitespace() {
@@ -72,6 +73,6 @@ impl CorruptionEffect {
             }
         }
 
-        result
+        std::borrow::Cow::Owned(result)
     }
 }
