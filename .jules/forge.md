@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Extract God Function logic in Command::from_input]**
+**Learning:** `Command::from_input` inside `src/commands/types.rs` was a deeply nested God Function because it contained a massive `if/else if` chain matching string slices to determine the command type.
+**Action:** Extract this logic into a flattened `match` statement using guard clauses (e.g., `match command { c if c.eq_ignore_ascii_case("CATALOG") => Self::Catalog, ... }`) to improve overall readability and maintain zero-allocation string matching.
