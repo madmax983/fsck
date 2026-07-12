@@ -3,7 +3,7 @@
 use fsck::entity::Entity;
 use fsck::experimental::{
     HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
-    SystemDiagnostics,
+    SystemDiagnostics, TreeVisualizer,
 };
 
 #[test]
@@ -251,4 +251,58 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+fn test_tree_visualizer_surface() {
+    let mut entity = fsck::entity::Entity::new();
+    entity.update_depth(0); // Surface layer
+
+    // We need a dummy filesystem graph to test with
+    let mut fs = fsck::filesystem::FilesystemGraph::new();
+    let child1 = fs.add_child("DOCS");
+    fs.add_child("SYSTEM");
+
+    fs.change_dir_by_index(child1);
+    fs.current_node_mut()
+        .add_file(fsck::filesystem::FileNode::new("README.TXT", "Welcome"));
+    fs.change_dir("..", 0, 0.0).unwrap();
+
+    let seed = 42;
+    let output = TreeVisualizer::generate_tree(&fs, &entity, seed);
+
+    assert!(output.contains("DOCS"));
+    assert!(output.contains("SYSTEM"));
+    assert!(output.contains("README.TXT"));
+    assert!(!output.contains("I_AM_HERE.txt"));
+}
+
+#[test]
+fn test_tree_visualizer_infection() {
+    let mut entity = fsck::entity::Entity::new();
+    entity.update_depth(30); // Infection layer
+
+    let fs = fsck::filesystem::FilesystemGraph::new();
+
+    let mut found_hallucination = false;
+    for seed in 0..100 {
+        let output = TreeVisualizer::generate_tree(&fs, &entity, seed);
+        if output.contains(".txt")
+            || output.contains(".sys")
+            || output.contains(".log")
+            || output.contains(".cfg")
+            || output.contains(".dmp")
+            || output.contains("RECURSION DETECTED")
+            || output.contains("ERROR_NO_DIR")
+            || output.contains('?')
+        {
+            found_hallucination = true;
+            break;
+        }
+    }
+
+    assert!(
+        found_hallucination,
+        "Should generate hallucinations at infection layer"
+    );
 }

@@ -98,9 +98,16 @@ impl FilesystemGraph {
     /// ⚡ Bolt Optimization: Returns `impl Iterator<Item = NodeIndex>` to allow iterating without
     /// allocating or dealing with strings, useful for recursive directory traversal.
     pub fn list_directory_indices(&self) -> impl Iterator<Item = NodeIndex> + '_ {
+        self.list_directory_indices_from(self.current)
+    }
+
+    pub fn list_directory_indices_from(
+        &self,
+        node: NodeIndex,
+    ) -> impl Iterator<Item = NodeIndex> + '_ {
         self.graph
-            .neighbors_directed(self.current, Direction::Outgoing)
-            .filter(|&idx| !self.graph[idx].is_hidden())
+            .neighbors_directed(node, petgraph::Direction::Outgoing)
+            .filter(move |&idx| !self.graph[idx].is_hidden())
     }
 
     /// Add a hidden child directory (invisible until fsck reveals it)
@@ -246,10 +253,21 @@ impl FilesystemGraph {
         &mut self.graph[self.current]
     }
 
+    #[must_use]
+    pub const fn current_index(&self) -> NodeIndex {
+        self.current
+    }
+
     /// Get reference to current directory node
     #[must_use]
     pub fn current_node(&self) -> &DirNode {
         &self.graph[self.current]
+    }
+
+    /// Get reference to a node by index
+    #[must_use]
+    pub fn node(&self, idx: NodeIndex) -> &DirNode {
+        &self.graph[idx]
     }
 
     /// Get mutable reference to a node by index

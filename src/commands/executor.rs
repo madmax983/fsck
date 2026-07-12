@@ -307,6 +307,8 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("TREE") && arg.is_empty() {
+            Some(self.handle_nova_tree())
         } else {
             None
         }
@@ -949,5 +951,12 @@ impl CommandExecutor {
         };
 
         self.execute_basic_program(&program)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_tree(&self) -> CommandResult {
+        let output =
+            crate::experimental::TreeVisualizer::generate_tree(&self.fs, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 }
