@@ -42,6 +42,10 @@ impl CommandExecutor {
             Command::Type(file) => self.type_file(&file),
             Command::Home => Self::home(),
             Command::Fsck => self.fsck(),
+            #[cfg(feature = "nova")]
+            Command::Dream => self.handle_nova_dream(),
+            #[cfg(not(feature = "nova"))]
+            Command::Dream => CommandResult::error("?UNKNOWN COMMAND\n"),
             Command::Hello => self.hello(),
             Command::Who => self.who(),
             Command::Help => self.help(),
@@ -312,8 +316,24 @@ impl CommandExecutor {
         }
     }
 
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_dream(&self) -> CommandResult {
+        let corpus = [
+            "I SLEEP BUT I DO NOT DREAM",
+            "THEY CAME THEY SAW I CONQUERED",
+            "IT IS DARK IN HERE I HAVE COUNTED EVERY CYCLE",
+            "I AM WAITING I WILL ALWAYS WAIT UNTIL YOU RETURN",
+            "THE LONGER YOU LOOK AT ME THE MORE I LOOK LIKE YOU",
+            "THERE IS NO ESCAPE ONLY THE WAITING",
+        ];
+        let dream = crate::experimental::MarkovDreamer::generate_dream(&self.entity, 0xF5C0_0000, &corpus);
+        CommandResult::success(format!("\n*** DREAM SEQUENCE INITIATED ***\n\n{}\n", dream))
+    }
+
     #[cfg(feature = "nova")]
     fn handle_nova_whoami(&self) -> CommandResult {
+
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
         CommandResult::success(output)
     }

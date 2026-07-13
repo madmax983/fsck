@@ -54,6 +54,8 @@ pub enum Command {
     Home,
     /// The namesake - filesystem check
     Fsck,
+    /// Dream a dream
+    Dream,
     /// Say hello to the machine
     Hello,
     /// Ask who/what is here
@@ -93,6 +95,8 @@ impl Command {
             Self::Home
         } else if command.eq_ignore_ascii_case("FSCK") {
             Self::Fsck
+        } else if command.eq_ignore_ascii_case("DREAM") {
+            Self::Dream
         } else if command.eq_ignore_ascii_case("HELLO") || command.eq_ignore_ascii_case("HI") {
             Self::Hello
         } else if command.eq_ignore_ascii_case("WHO") || command.eq_ignore_ascii_case("WHOAMI") {

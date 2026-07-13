@@ -1,7 +1,7 @@
 #![cfg(feature = "nova")]
 
 use fsck::entity::Entity;
-use fsck::experimental::{
+use fsck::experimental::{MarkovDreamer,
     HardwareSensors, MemoryDumpGenerator, ProcessMonitor, SentimentAnalyzer, SpatialAudioGenerator,
     SystemDiagnostics,
 };
@@ -251,4 +251,27 @@ fn test_hardware_sensors_escalation() {
     let infection_report = HardwareSensors::get_readings(&entity, seed);
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
+}
+
+#[test]
+#[cfg(feature = "nova")]
+fn test_markov_dreamer_escalation() {
+    let mut entity = Entity::new();
+    let corpus = vec!["THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG"];
+
+    // Surface
+    let surface_dream = MarkovDreamer::generate_dream(&entity, 42, &corpus);
+    assert!(!surface_dream.contains("WAKE UP"));
+
+    // Infection
+    entity.update_depth(26);
+    let mut infection_wakes = false;
+    for i in 0..10 {
+        let dream = MarkovDreamer::generate_dream(&entity, 42 + i, &corpus);
+        if dream.contains("WAKE UP") {
+            infection_wakes = true;
+            break;
+        }
+    }
+    assert!(infection_wakes);
 }
