@@ -90,3 +90,7 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub mod chronos;
+#[cfg(feature = "nova")]
+pub use chronos::ChronosDilation;
