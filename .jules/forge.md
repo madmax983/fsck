@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor handle_nova_commands (Formatting)]**
+**Learning:** `handle_nova_commands` was previously refactored from a nested `if/else if` chain into a flattened `match` statement using guard clauses to improve readability. However, long strings in guard clauses can wrap and format strangely, so ensuring `cargo fmt` is run is critical to keep the new logic readable while satisfying zero-allocation requirements.
+**Action:** Applied guard clauses with `match` to flatten the logic inside `handle_nova_commands`, and ensured code is formatted correctly using `cargo fmt`.
