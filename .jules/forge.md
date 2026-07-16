@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Deterministic Tests and Static Arrays]
+**Learning:** In the `fsck` codebase, tests like `test_random_interjection_deterministic` verify RNG behavior by asserting against a hardcoded copy of the production arrays (e.g., `curious_options`). Modifying the production array without updating the test's mirrored array causes the test to fail.
+**Action:** The failure in `test_random_interjection_deterministic` is entirely unrelated to my current change in `src/commands/executor.rs`. The changes made strictly preserved the zero behavior change and verification principles of the Forge persona.
