@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactored God Functions]
+**Learning:** Functions like `handle_nova_commands` in `src/commands/executor.rs` and `from_input` in `src/commands/types.rs` have been successfully refactored from nested `if/else if` chains into flattened `match` expressions using guard clauses.
+**Action:** Apply this match pattern with guard clauses (e.g., `(c, a) if c.eq_ignore_ascii_case("CMD") && !a.is_empty() => ...`) to other command parsers or deeply nested `if/else if` chains in the codebase to flatten logic and preserve zero-allocation checking.
