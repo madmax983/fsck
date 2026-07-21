@@ -21,7 +21,7 @@ impl SearchTool {
 
     /// Extract a safe snippet from the content avoiding char boundary panics.
     /// Optimized to avoid O(N) heap allocations by iterating over char indices.
-    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> String {
+    fn extract_snippet(content: &str, start_idx: usize, query_len: usize) -> &str {
         let prefix = &content[..start_idx];
         let mut chars_before = 0;
         let mut start_byte = start_idx;
@@ -51,7 +51,7 @@ impl SearchTool {
             end_byte = start_idx + i + c.len_utf8();
         }
 
-        content[start_byte..end_byte].to_string()
+        &content[start_byte..end_byte]
     }
 
     /// Formats a matched result based on the entity's escalation layer.
@@ -73,15 +73,18 @@ impl SearchTool {
     }
 
     fn format_surface_match(query_upper: &str, content: &str, results: &mut String) {
-        // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
-            let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            let snippet = Self::extract_snippet(content, idx, query_upper.len()).trim();
+            results.push_str("  ...");
+            for word in snippet.split_whitespace() {
+                results.push_str(word);
+                results.push(' ');
+            }
+            if results.ends_with(' ') {
+                results.pop();
+            }
+            results.push_str("...\n");
         } else {
-            // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
         }
     }
@@ -95,10 +98,16 @@ impl SearchTool {
         if rng.gen_bool(0.3) {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
-            let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            let snippet = Self::extract_snippet(content, idx, query_upper.len()).trim();
+            results.push_str("  ...");
+            for word in snippet.split_whitespace() {
+                results.push_str(word);
+                results.push(' ');
+            }
+            if results.ends_with(' ') {
+                results.pop();
+            }
+            results.push_str("...\n");
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
