@@ -283,6 +283,8 @@ impl CommandExecutor {
             Some(self.handle_nova_env())
         } else if cmd_word.eq_ignore_ascii_case("NETSTAT") && arg.is_empty() {
             Some(self.handle_nova_netstat())
+        } else if cmd_word.eq_ignore_ascii_case("DREAM") && arg.is_empty() {
+            Some(self.handle_nova_dream())
         } else if cmd_word.eq_ignore_ascii_case("RADIO") || cmd_word.eq_ignore_ascii_case("TUNE") {
             Some(self.handle_nova_radio(arg))
         } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
@@ -376,6 +378,12 @@ impl CommandExecutor {
     fn handle_nova_netstat(&self) -> CommandResult {
         let output =
             crate::experimental::NetStatGenerator::generate_netstat(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_dream(&self) -> CommandResult {
+        let output = crate::experimental::DreamLog::generate_dream(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
