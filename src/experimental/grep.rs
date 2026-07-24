@@ -76,10 +76,15 @@ impl SearchTool {
         // Show actual snippet if possible, or a generic match string
         if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            // Replace newlines with spaces for single-line output
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            // ⚡ Bolt Optimization: Avoid allocating string replacement methods on hot paths.
+            results.push_str("  ...");
+            for (i, word) in snippet.split_whitespace().enumerate() {
+                if i > 0 {
+                    results.push(' ');
+                }
+                results.push_str(word);
+            }
+            results.push_str("...\n");
         } else {
             // Shouldn't happen at Surface, but just in case
             results.push_str("  [MATCH FOUND]\n");
@@ -96,9 +101,15 @@ impl SearchTool {
             results.push_str("  ...[DATA CORRUPTED]...\n");
         } else if let Some(idx) = Self::find_ignore_ascii_case(content, query_upper) {
             let snippet = Self::extract_snippet(content, idx, query_upper.len());
-            let clean_snippet = snippet.replace('\n', " ");
-            let clean_snippet_trimmed = clean_snippet.trim();
-            let _ = writeln!(results, "  ...{clean_snippet_trimmed}...");
+            // ⚡ Bolt Optimization: Avoid allocating string replacement methods on hot paths.
+            results.push_str("  ...");
+            for (i, word) in snippet.split_whitespace().enumerate() {
+                if i > 0 {
+                    results.push(' ');
+                }
+                results.push_str(word);
+            }
+            results.push_str("...\n");
         } else {
             results.push_str("  [FALSE POSITIVE DETECTED]\n");
         }
