@@ -1,5 +1,7 @@
 #[cfg(feature = "nova")]
 pub mod analyze;
+#[cfg(feature = "nova")]
+pub mod cctv;
 pub mod defrag;
 pub mod diagnostics;
 #[cfg(feature = "nova")]
@@ -90,3 +92,6 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+
+#[cfg(feature = "nova")]
+pub use cctv::CctvViewer;
