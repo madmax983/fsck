@@ -202,6 +202,15 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if cmd_word.eq_ignore_ascii_case("CCTV") && !arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_cctv(arg))
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
@@ -391,6 +400,14 @@ impl CommandExecutor {
         CommandResult::success(output)
     }
 
+    #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self, arg: &str) -> CommandResult {
+        if arg.is_empty() {
+            return CommandResult::error("?SPECIFY CHANNEL (E.G. CCTV 1)\n");
+        }
+        let output = crate::experimental::CctvViewer::view_feed(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
     #[cfg(feature = "nova")]
     fn handle_nova_history(&self) -> CommandResult {
         let output = crate::experimental::CommandHistory::generate(&self.entity, 0xF5C0_0000u64);
