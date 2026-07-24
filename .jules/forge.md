@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor Basic Matcher & String Matching Options]**
+**Learning:** `src/commands/executor.rs`'s `handle_nova_commands` and `src/commands/types.rs`'s `from_input` were God Functions implementing "Pyramid of Doom" architectures using many `if / else if` string-matching statements and multiple heap allocations instead of `match` guards.
+**Action:** Flatten these using a `match` expression with guards, like `match (cmd_word, arg) { (c, a) if c.eq_ignore_ascii_case("CMD") && a.is_empty() => { ... } }`, avoiding any need for string heap allocations, improving logic isolation, and maintaining zero-behavior change.
