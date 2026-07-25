@@ -68,3 +68,10 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactored God Functions]
+**Learning:** Functions like `from_input` in `src/commands/types.rs` and `handle_nova_commands` in `src/commands/executor.rs` were successfully refactored from nested `if/else if` chains into flattened `match` expressions using guard clauses.
+**Action:** Apply this match pattern with guard clauses (e.g., `c if c.eq_ignore_ascii_case("CMD") => ...`) or tuple restructuring (e.g., `match (cmd_word, arg)`) to other command parsers or deeply nested `if/else if` chains in the codebase to flatten logic and preserve zero-allocation checking.
+
+**[Preserving Feature Flags in Match Refactors]
+**Learning:** Refactoring feature-gated `if / else if` chains into `match` expressions without transferring the `#[cfg(feature = "...")]` attributes to the corresponding match arms silently drops conditional compilation logic, causing critical regressions.
+**Action:** When converting feature-gated logic to `match` statements, meticulously preserve all `#[cfg(...)]` attributes by applying them directly above each respective match arm.
