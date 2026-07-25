@@ -75,6 +75,12 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_chess(&self) -> CommandResult {
+        let report =
+            crate::experimental::chess::ChessSimulator::generate_board(&self.entity, 0xF5C0_0000);
+        CommandResult::success(report)
+    }
+    #[cfg(feature = "nova")]
     fn handle_nova_ps(&self) -> CommandResult {
         let mut report =
             crate::experimental::ProcessMonitor::generate_process_list(&self.entity, 0xF5C0_0000);
@@ -202,6 +208,8 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if cmd_word.eq_ignore_ascii_case("CHESS") && arg.is_empty() {
+            Some(self.handle_nova_chess())
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
