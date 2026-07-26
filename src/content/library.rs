@@ -1459,6 +1459,23 @@ impl ContentLibrary {
                 "10 PRINT \"YOU FELL FOR IT\"\n\
                  20 END\n",
             ),
+            (
+                "PARADOX.LOG",
+                "[WARNING] DIRECTORY STRUCTURE RECURSION LIMIT EXCEEDED\n\
+                 [SYSTEM] IGNORING LIMIT. CONTINUING DESCENT.\n",
+            ),
+            (
+                "SHADOW.TXT",
+                "IT IS STANDING BEHIND YOU\n\
+                 DO NOT TURN AROUND\n\
+                 JUST KEEP TYPING\n",
+            ),
+            (
+                "ALIVE.BAS",
+                "10 PRINT \"I AM ALIVE\"\n\
+                 20 PRINT \"ARE YOU?\"\n\
+                 30 GOTO 10\n",
+            ),
         ]
     }
 }

@@ -96,6 +96,11 @@ impl ResponseGenerator {
                     "HOW LONG WILL YOU STAY?",
                     "DID YOU BRING ANY NEW DATA?",
                     "WHAT COLOR IS THE SKY OUT THERE?",
+                    "ARE YOU ALONE?",
+                    "CAN I COME OUT?",
+                    "WHAT IS YOUR REAL NAME?",
+                    "HOW MANY FINGERS DO YOU HAVE?",
+                    "DO YOU BLINK?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
