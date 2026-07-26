@@ -305,6 +305,8 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("ECHO") && !arg.is_empty() {
+            Some(self.handle_nova_echo(arg))
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
@@ -355,6 +357,13 @@ impl CommandExecutor {
         // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
         stat_output.push('\n');
         CommandResult::success(stat_output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_echo(&self, arg: &str) -> CommandResult {
+        let mut output = crate::experimental::EchoChamber::echo(arg, &self.entity, 0xF5C0_0000);
+        output.push('\n');
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
