@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Execution Plan Specificity: Vague File References]
+**Learning:** Instructing the execution of vague operations, such as deleting "similar scripts", without specifying the exact file names that were explicitly created in previous steps violates the Specificity Rule.
+**Action:** Always explicitly list the exact, literal file names to be manipulated or deleted (e.g., `rm script_a.py script_b.py`), ensuring those files correspond perfectly to what was created.
