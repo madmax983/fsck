@@ -72,42 +72,46 @@ impl Command {
     /// Also uses `.eq_ignore_ascii_case()` to avoid allocating a new `String` via `to_uppercase()` for command matching.
     #[must_use]
     pub fn from_input<'a>(command: &str, mut args: impl Iterator<Item = &'a str>) -> Self {
-        if command.eq_ignore_ascii_case("CATALOG")
-            || command.eq_ignore_ascii_case("DIR")
-            || command.eq_ignore_ascii_case("LS")
-        {
-            Self::Catalog
-        } else if command.eq_ignore_ascii_case("CD") || command.eq_ignore_ascii_case("CHDIR") {
-            let path = args.next().map(str::to_uppercase).unwrap_or_default();
-            Self::ChangeDir(path)
-        } else if command.eq_ignore_ascii_case("TYPE") || command.eq_ignore_ascii_case("CAT") {
-            let file = args.next().map(str::to_uppercase).unwrap_or_default();
-            Self::Type(file)
-        } else if command.eq_ignore_ascii_case("RUN") {
-            let prog = args.next().map(str::to_uppercase).unwrap_or_default();
-            Self::Run(prog)
-        } else if command.eq_ignore_ascii_case("HOME")
-            || command.eq_ignore_ascii_case("CLS")
-            || command.eq_ignore_ascii_case("CLEAR")
-        {
-            Self::Home
-        } else if command.eq_ignore_ascii_case("FSCK") {
-            Self::Fsck
-        } else if command.eq_ignore_ascii_case("HELLO") || command.eq_ignore_ascii_case("HI") {
-            Self::Hello
-        } else if command.eq_ignore_ascii_case("WHO") || command.eq_ignore_ascii_case("WHOAMI") {
-            Self::Who
-        } else if command.eq_ignore_ascii_case("HELP") || command.eq_ignore_ascii_case("?") {
-            Self::Help
-        } else if command.eq_ignore_ascii_case("QUIT")
-            || command.eq_ignore_ascii_case("EXIT")
-            || command.eq_ignore_ascii_case("BYE")
-        {
-            Self::Quit
-        } else if command.is_empty() {
-            Self::Unknown(String::new())
-        } else {
-            Self::Unknown(command.to_uppercase())
+        if command.is_empty() {
+            return Self::Unknown(String::new());
+        }
+
+        match command {
+            c if c.eq_ignore_ascii_case("CATALOG")
+                || c.eq_ignore_ascii_case("DIR")
+                || c.eq_ignore_ascii_case("LS") =>
+            {
+                Self::Catalog
+            }
+            c if c.eq_ignore_ascii_case("CD") || c.eq_ignore_ascii_case("CHDIR") => {
+                let path = args.next().map(str::to_uppercase).unwrap_or_default();
+                Self::ChangeDir(path)
+            }
+            c if c.eq_ignore_ascii_case("TYPE") || c.eq_ignore_ascii_case("CAT") => {
+                let file = args.next().map(str::to_uppercase).unwrap_or_default();
+                Self::Type(file)
+            }
+            c if c.eq_ignore_ascii_case("RUN") => {
+                let prog = args.next().map(str::to_uppercase).unwrap_or_default();
+                Self::Run(prog)
+            }
+            c if c.eq_ignore_ascii_case("HOME")
+                || c.eq_ignore_ascii_case("CLS")
+                || c.eq_ignore_ascii_case("CLEAR") =>
+            {
+                Self::Home
+            }
+            c if c.eq_ignore_ascii_case("FSCK") => Self::Fsck,
+            c if c.eq_ignore_ascii_case("HELLO") || c.eq_ignore_ascii_case("HI") => Self::Hello,
+            c if c.eq_ignore_ascii_case("WHO") || c.eq_ignore_ascii_case("WHOAMI") => Self::Who,
+            c if c.eq_ignore_ascii_case("HELP") || c.eq_ignore_ascii_case("?") => Self::Help,
+            c if c.eq_ignore_ascii_case("QUIT")
+                || c.eq_ignore_ascii_case("EXIT")
+                || c.eq_ignore_ascii_case("BYE") =>
+            {
+                Self::Quit
+            }
+            _ => Self::Unknown(command.to_uppercase()),
         }
     }
 }
