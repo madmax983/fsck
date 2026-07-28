@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Extract `from_input` logic]**
+**Learning:** `Command::from_input` was a God Function because it used a massive, deeply nested `if-else if` chain to parse incoming commands, acting as a "Pyramid of Doom".
+**Action:** Extract the `if-else if` chain into a flattened `match` expression using guard clauses (`c if c.eq_ignore_ascii_case("...") => ...`) for case-insensitive matching to improve clarity and readability while preserving zero-allocation iterator parsing.
