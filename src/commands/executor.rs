@@ -66,6 +66,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_tarot(&self) -> CommandResult {
+        let mut output = crate::experimental::TarotReader::read_cards(&self.entity, 0xF5C0_0000);
+        output.push('\n');
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
         let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
@@ -242,6 +249,15 @@ impl CommandExecutor {
             #[cfg(feature = "nova")]
             {
                 Some(self.handle_nova_mail())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
+        } else if cmd_word.eq_ignore_ascii_case("TAROT") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_tarot())
             }
             #[cfg(not(feature = "nova"))]
             {
