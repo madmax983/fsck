@@ -83,6 +83,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_cctv(&self, arg: &str) -> CommandResult {
+        let mut output = crate::experimental::CameraSystem::view(arg, &self.entity, 0xF5C0_0000);
+        output.push('\n');
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_memdump(&self) -> CommandResult {
         let mut report =
             crate::experimental::MemoryDumpGenerator::generate_dump(&self.entity, 0xF5C0_0000);
@@ -285,6 +292,8 @@ impl CommandExecutor {
             Some(self.handle_nova_netstat())
         } else if cmd_word.eq_ignore_ascii_case("RADIO") || cmd_word.eq_ignore_ascii_case("TUNE") {
             Some(self.handle_nova_radio(arg))
+        } else if cmd_word.eq_ignore_ascii_case("CCTV") || cmd_word.eq_ignore_ascii_case("CAMERA") {
+            Some(self.handle_nova_cctv(arg))
         } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
             || cmd_word.eq_ignore_ascii_case("SENSE")
             || cmd_word.eq_ignore_ascii_case("TEMP"))
