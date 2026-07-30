@@ -303,6 +303,8 @@ impl CommandExecutor {
             Some(self.handle_nova_profile())
         } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
             Some(self.handle_nova_sleep())
+        } else if cmd_word.eq_ignore_ascii_case("EVP") && arg.is_empty() {
+            Some(self.handle_nova_evp())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
@@ -325,6 +327,12 @@ impl CommandExecutor {
             self.entity.layer(),
             0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
         );
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_evp(&self) -> CommandResult {
+        let output = crate::experimental::evp::EvpScanner::scan(&self.entity, 0xF5C0_0000);
         CommandResult::success(output)
     }
 
