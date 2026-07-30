@@ -510,3 +510,14 @@ fn test_vintage_collector_era_exists() {
     assert_eq!(history.year(), 2016);
     assert!(history.entries().len() >= 2);
 }
+
+#[test]
+fn test_cybersecurity_history_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::CyberSecurity);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "ALICE");
+    assert_eq!(history.year(), 2026);
+    assert!(history.entries().len() >= 4);
+}
