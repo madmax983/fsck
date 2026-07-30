@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactored nested if/else if into flattened match with guard clauses]**
+**Learning:** Sequential `if/else if` statements with multiple conditions (like those previously used in `Command::from_input` and `handle_nova_commands` for command parsing) violate the project's requirement to flatten logic into guard clauses and avoid a "Pyramid of Doom". Deep nesting creates cognitive load, especially when handling long sequential string matching.
+**Action:** When implementing or refactoring sequential pattern matching over string input (such as command parsers), always extract it into a flattened `match` statement. Utilize tuple structuring (e.g., `match (cmd, arg)`) and inline guard clauses (`c if c.eq_ignore_ascii_case("...")`) to handle parsing clearly and idiomatically without deep nesting or runtime regressions.
