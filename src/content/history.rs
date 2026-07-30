@@ -39,6 +39,8 @@ pub enum Era {
     Streamer,
     /// 2023 - AI Researcher
     Researcher,
+    /// 2026 - `CyberSecurity` Analyst
+    CyberSecurity,
     /// 2025 - Digital Archivist
     Archivist,
     /// 2028 - Digital Archaeologist
@@ -73,7 +75,8 @@ impl From<u32> for Era {
             36..=38 => Self::VintageCollector,
             39..=42 => Self::Explorer,
             43..=46 => Self::Streamer,
-            47..=50 => Self::Researcher,
+            47 => Self::CyberSecurity,
+            48..=50 => Self::Researcher,
             51..=54 => Self::Archivist,
             55..=58 => Self::Archaeologist,
             59..=62 => Self::AIEntity,

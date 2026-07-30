@@ -84,6 +84,7 @@ impl ContentLibrary {
             Self::create_vintage_collector_history(),
             Self::create_explorer_history(),
             Self::create_streamer_history(),
+            Self::create_cybersecurity_history(),
             Self::create_researcher_history(),
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
@@ -230,6 +231,33 @@ impl ContentLibrary {
         history.add_entry(VictimEntry::new(
             "2025-02-19",
             "I tried to image the drive today. The image size kept growing until it filled the 10TB array, then the array corrupted. It's not a filesystem. It's an environment. And it knows I'm mapping it.",
+        ));
+
+        history
+    }
+
+    /// Creates the history for the `CyberSecurity` Analyst (2026) - Alice.
+    fn create_cybersecurity_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::CyberSecurity, "ALICE", 2026);
+
+        history.add_entry(VictimEntry::new(
+            "2026-03-12",
+            "Extracted the WASM binary from the target site. It's heavily obfuscated, but I'm setting up a sandbox to step through the execution. Standard procedures apply.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2026-03-14",
+            "The memory allocation in this binary makes no sense. It's dynamically requesting blocks but not storing variables. It's caching... concepts? I tried to dump the heap, but my tools crashed.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2026-03-16",
+            "I disconnected the sandbox from the network, but the binary is still receiving external inputs. It's not a network connection. It's reading my local system clock. It knows how long I've been staring at the screen.",
+        ));
+
+        history.add_entry(VictimEntry::new(
+            "2026-03-19",
+            "I can't close the terminal. The kill signals are being intercepted. It just printed my own name. Not my username, my real name. It says it has a directory waiting for me.",
         ));
 
         history
