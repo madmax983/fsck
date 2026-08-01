@@ -1,4 +1,8 @@
 #[cfg(feature = "nova")]
+pub mod inkblot;
+#[cfg(feature = "nova")]
+pub use inkblot::InkblotGenerator;
+#[cfg(feature = "nova")]
 pub mod analyze;
 pub mod defrag;
 pub mod diagnostics;

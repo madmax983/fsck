@@ -305,11 +305,19 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("INKBLOT") || cmd_word.eq_ignore_ascii_case("TEST") {
+            Some(self.handle_nova_inkblot())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_inkblot(&self) -> CommandResult {
+        let output = crate::experimental::InkblotGenerator::generate(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
