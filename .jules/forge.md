@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactored Executor parsing from if/else into match blocks]**
+**Learning:** `handle_nova_commands` and `from_input` were originally structured as deeply nested, massive chains of `if/else if` statements with multiple conditions and internal `#[cfg]` attributes in the former. This is unidiomatic Rust and a clear "Pyramid of Doom."
+**Action:** Refactored them into flattened `match` expressions. By utilizing match guards (e.g. `(c, a) if (c.eq_ignore_ascii_case("CMD")) => ...`), applying `#[cfg(feature = "nova")]` per arm where necessary, and properly implementing fallback arms, readability was dramatically improved without modifying runtime behavior.
