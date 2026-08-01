@@ -407,6 +407,7 @@ fn test_all_eras_have_unique_histories() {
     let explorer = lib.history_for_era(Era::Explorer);
     let streamer = lib.history_for_era(Era::Streamer);
     let researcher = lib.history_for_era(Era::Researcher);
+    let speedrunner = lib.history_for_era(Era::Speedrunner);
 
     assert!(beta_tester.is_some());
     assert!(original.is_some());
@@ -425,6 +426,7 @@ fn test_all_eras_have_unique_histories() {
     assert!(explorer.is_some());
     assert!(streamer.is_some());
     assert!(researcher.is_some());
+    assert!(speedrunner.is_some());
 
     // Each should have different names
     assert_eq!(beta_tester.unwrap().name(), "PAUL");
@@ -442,6 +444,7 @@ fn test_all_eras_have_unique_histories() {
     assert_eq!(explorer.unwrap().name(), "ALEX");
     assert_eq!(streamer.unwrap().name(), "CHRIS");
     assert_eq!(researcher.unwrap().name(), "ARIS");
+    assert_eq!(speedrunner.unwrap().name(), "JAX");
 }
 
 #[test]
@@ -509,4 +512,15 @@ fn test_vintage_collector_era_exists() {
     assert_eq!(history.name(), "GREG");
     assert_eq!(history.year(), 2016);
     assert!(history.entries().len() >= 2);
+}
+
+#[test]
+fn test_speedrunner_era_exists() {
+    let lib = ContentLibrary::new();
+    let history = lib.history_for_era(Era::Speedrunner);
+    assert!(history.is_some());
+    let history = history.unwrap();
+    assert_eq!(history.name(), "JAX");
+    assert_eq!(history.year(), 2026);
+    assert!(history.entries().len() >= 4);
 }

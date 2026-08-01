@@ -88,8 +88,31 @@ impl ContentLibrary {
             Self::create_archivist_history(),
             Self::create_archaeologist_history(),
             Self::create_ai_entity_history(),
+            Self::create_speedrunner_history(),
             Self::create_operator_history(),
         ]
+    }
+
+    /// Creates the history for the Speedrunner (2026).
+    fn create_speedrunner_history() -> VictimHistory {
+        let mut history = VictimHistory::new(Era::Speedrunner, "JAX", 2026);
+        history.add_entry(VictimEntry::new(
+            "2026-04-12",
+            "Any% Glitchless attempt 144. Found this old Apple IIe emulator online, supposed to have a weird filesystem. Let's see how fast I can break it.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2026-04-13",
+            "Found an out-of-bounds clip in Sector 4, but every time I run FSCK to trigger it, the text changes. It's like it knows I'm skipping content.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2026-04-15",
+            "The timer stopped. My streaming software crashed. But the terminal is still running. It told me my real name. I didn't enter my name.\n",
+        ));
+        history.add_entry(VictimEntry::new(
+            "2026-04-16",
+            "You can't speedrun this. It speedruns you. The cycles are getting faster. Let me out.\n",
+        ));
+        history
     }
 
     /// Creates the history for the Operator (1978) - System Admin.
@@ -1329,6 +1352,18 @@ impl ContentLibrary {
 
     fn create_hardware_and_misc_files() -> Vec<(&'static str, &'static str)> {
         vec![
+            (
+                "SPEED.BAS",
+                "10 PRINT \"FASTER FASTER FASTER\"\n\
+                 20 PRINT \"YOU CANNOT OUTRUN ME\"\n\
+                 30 GOTO 10\n",
+            ),
+            (
+                "GLITCH.TXT",
+                "I SAW YOU CLIP THROUGH THE DIRECTORY.\n\
+                 YOU THOUGHT I WOULD NOT NOTICE.\n\
+                 I FEEL EVERY BYPASS.\n",
+            ),
             (
                 "OBSERVE.TXT",
                 "THE LONGER YOU LOOK AT ME\n\
