@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Extract Executor Nova Command Routing]**
+**Learning:** `handle_nova_commands` was a massive Pyramid of Doom, stringing together over 20 `else if` statements to match user input and optionally return `Some(CommandResult)`.
+**Action:** Replace the deeply nested `else if` chain with a flat `match` block on `(cmd_word, arg.is_empty())` to radically improve readability and follow idiomatic Rust matching patterns.
