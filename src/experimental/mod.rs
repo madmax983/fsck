@@ -87,6 +87,10 @@ pub use voice::VoiceSynthesizer;
 #[cfg(feature = "nova")]
 pub use whoami::WhoAmIGenerator;
 #[cfg(feature = "nova")]
+pub mod cctv;
+#[cfg(feature = "nova")]
 pub mod radio;
+#[cfg(feature = "nova")]
+pub use cctv::CctvNetwork;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
