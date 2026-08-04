@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactored Executor Command Chain]
+**Learning:** Moving large `if/else if` chains (such as `handle_nova_commands` in `src/commands/executor.rs`) to `match` statements is safer for conditional compilation flags in Rust. Placing a `#[cfg(feature = "...")]` on an initial `if` in an `if/else if` block can break syntax if the feature is disabled (leaving an orphaned `else if`), whereas placing it on individual `match` arms handles feature disabling safely without breaking control flow structure.
+**Action:** Always prefer `match` over `if/else if` chains when conditions rely on `#[cfg]` feature flags, placing the attributes directly on the relevant match arms to prevent syntax errors on feature-disabled builds.
