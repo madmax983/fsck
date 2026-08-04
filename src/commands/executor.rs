@@ -66,6 +66,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_rorschach(&self) -> CommandResult {
+        let output =
+            crate::experimental::RorschachTest::generate_inkblot(&self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     fn handle_nova_speak(&self, arg: &str) -> CommandResult {
         let mut voice_output =
             crate::experimental::VoiceSynthesizer::synthesize(arg, &self.entity, 0xF5C0_0000);
@@ -202,6 +209,15 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if cmd_word.eq_ignore_ascii_case("RORSCHACH") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_rorschach())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
