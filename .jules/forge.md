@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Extract God Function logic in NetStatGenerator and SpatialAudioGenerator]**
+**Learning:** `generate_connection` in `netstat.rs` and `generate_anomaly` in `spatial_audio.rs` used massive `match` statements based on `EscalationLayer` to build strings sequentially, acting as God Functions with inline generation.
+**Action:** Extracted each layer's generation logic into specific helper functions (e.g. `generate_surface_connection`, `generate_corruption_anomaly`) to flatten the structure and encapsulate the logic.
