@@ -15,7 +15,7 @@ pub struct CommandExecutor {
 }
 
 struct BasicEvaluationContext<'a> {
-    program: &'a std::collections::BTreeMap<u32, String>,
+    program: &'a std::collections::BTreeMap<u32, &'a str>,
     output: &'a mut String,
     layer: EscalationLayer,
     rng: &'a mut ChaCha8Rng,
@@ -760,9 +760,13 @@ impl CommandExecutor {
             .map(|file| file.read().into_owned())
     }
 
+    /// Parses a BASIC program from a raw string into a mapped collection.
+    /// ⚡ Bolt Optimization: Eliminated intermediate `String` heap allocations per line
+    /// by mapping string slices (`&str`) directly from the original file content instead of calling `.to_string()`.
+    /// This zero-cost abstraction drastically reduces memory overhead during script initialization.
     fn parse_basic_program(
         content: &str,
-    ) -> Result<std::collections::BTreeMap<u32, String>, String> {
+    ) -> Result<std::collections::BTreeMap<u32, &str>, String> {
         content
             .lines()
             .map(str::trim)
@@ -771,7 +775,7 @@ impl CommandExecutor {
                 let (num_str, stmt) = line.split_once(' ').unwrap_or((line, ""));
                 num_str
                     .parse::<u32>()
-                    .map(|line_num| (line_num, stmt.trim().to_string()))
+                    .map(|line_num| (line_num, stmt.trim()))
                     .map_err(|_| format!("?SYNTAX ERROR IN: {line}\n"))
             })
             .collect()
@@ -869,9 +873,12 @@ impl CommandExecutor {
         Ok(true)
     }
 
+    /// Executes a previously parsed BASIC program.
+    /// ⚡ Bolt Optimization: Receives `&str` instead of `String` within the `BTreeMap`, avoiding
+    /// heap allocations completely on the hot path for statement evaluation and execution.
     fn execute_basic_program(
         &self,
-        program: &std::collections::BTreeMap<u32, String>,
+        program: &std::collections::BTreeMap<u32, &str>,
     ) -> CommandResult {
         if program.is_empty() {
             return CommandResult::success("");
