@@ -307,9 +307,17 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("ELIZA") || cmd_word.eq_ignore_ascii_case("THERAPY") {
+            Some(self.handle_nova_therapy(arg))
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_therapy(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::ElizaTherapist::consult(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
     }
 
     #[cfg(feature = "nova")]
