@@ -68,3 +68,9 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Strict Scoping & Unrelated Test Failures]
+**Learning:** Fixing a pre-existing test failure that is entirely unrelated to the current refactor or feature scope violates strict scoping rules.
+**Action:** Never fix unrelated, pre-existing test failures in your commit. Revert out-of-scope test fixes and explicitly document the failures as pre-existing issues in the PR description instead.
+**[Refactored God Functions]
+**Learning:** Functions like `from_input` in `src/commands/types.rs` and `handle_nova_commands` in `src/commands/executor.rs` had deeply nested `if/else if` chains acting as God Functions.
+**Action:** Apply a `match` expression pattern using guard clauses (e.g., `match (cmd_word, arg)`) or matching directly on variables (e.g., `match command`) to flatten nested logic and improve readability.
