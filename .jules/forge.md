@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactoring God Functions]
+**Learning:** Nested `if/else if` chains in command parsers reduce readability and can be refactored into flattened `match` expressions.
+**Action:** Apply the match pattern with guard clauses (e.g., `c if c.eq_ignore_ascii_case("CMD") => ...`) or tuple restructuring (e.g., `match (cmd_word, arg)`) to command parsers or deeply nested `if/else if` chains to flatten logic and improve readability without changing behavior.
