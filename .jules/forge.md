@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactoring God Functions]**
+**Learning:** `from_input` and `handle_nova_commands` contained deep nested `if/else if/else` logic that acts as a Pyramid of Doom, degrading readability.
+**Action:** Replace `if/else if/else` blocks with flat `match` expressions using match guards (e.g. `(c, a) if c.eq_ignore_ascii_case("CMD") => ...`) to dramatically flatten the code structure and align with idiomatic Rust patterns.
