@@ -307,6 +307,8 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("TAROT") && arg.is_empty() {
+            Some(self.handle_nova_tarot())
         } else {
             None
         }
@@ -315,6 +317,16 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_whoami(&self) -> CommandResult {
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_tarot(&self) -> CommandResult {
+        let output = crate::experimental::tarot::TarotReader::draw_cards(
+            self.entity.current_mood(),
+            self.entity.layer(),
+            0xF5C0_0000u64.wrapping_add(u64::from(self.entity.interaction_count())),
+        );
         CommandResult::success(output)
     }
 
