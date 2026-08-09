@@ -247,6 +247,15 @@ impl CommandExecutor {
             {
                 None
             }
+        } else if cmd_word.eq_ignore_ascii_case("MIRROR") && arg.is_empty() {
+            #[cfg(feature = "nova")]
+            {
+                Some(self.handle_nova_mirror())
+            }
+            #[cfg(not(feature = "nova"))]
+            {
+                None
+            }
         } else if (cmd_word.eq_ignore_ascii_case("SEARCH") || cmd_word.eq_ignore_ascii_case("FIND"))
             && !arg.is_empty()
         {
@@ -388,6 +397,12 @@ impl CommandExecutor {
             );
         }
         let output = crate::experimental::RadioTransceiver::tune(arg, &self.entity, 0xF5C0_0000);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_mirror(&self) -> CommandResult {
+        let output = crate::experimental::TerminalMirror::reflect(&self.entity, 0xF5C0_0000u64);
         CommandResult::success(output)
     }
 
