@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor Executor handle_nova_commands if/else Chain]**
+**Learning:** The `handle_nova_commands` command parser contained a massive, deeply nested `if/else if` chain that redundantly called `eq_ignore_ascii_case` and checked `arg.is_empty()` repeatedly.
+**Action:** Flatten command parsing logic by extracting `(cmd_word.to_ascii_uppercase().as_str(), arg.is_empty())` and matching on tuples of literal patterns (e.g., `("SPEAK" | "SAY", false)`). Ensure all `#[cfg(feature = "nova")]` attributes are meticulously mapped to the correct match arms.
