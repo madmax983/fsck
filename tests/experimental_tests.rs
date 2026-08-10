@@ -252,3 +252,17 @@ fn test_hardware_sensors_escalation() {
     assert!(infection_report.contains("HEARTBEAT"));
     assert!(infection_report.contains("EYE_CONTACT_SEC"));
 }
+
+#[test]
+fn test_rorschach_escalation() {
+    let mut entity = fsck::entity::Entity::new();
+    let seed = 42;
+
+    entity.update_depth(0);
+    let surface_inkblot = fsck::experimental::RorschachTest::generate(&entity, seed);
+    assert!(surface_inkblot.contains("GENERATING INKBLOT..."));
+
+    entity.update_depth(30);
+    let infection_inkblot = fsck::experimental::RorschachTest::generate(&entity, seed);
+    assert!(infection_inkblot.contains("GENERATING INKBLOT..."));
+}
