@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor handle_nova_commands Match]**
+**Learning:** `handle_nova_commands` was a God Function that used a massive `if/else if` chain scattered with `#[cfg(feature = "nova")]` attributes, creating a "Pyramid of Doom" and making it very hard to read and maintain.
+**Action:** Flattened the logic by refactoring it into a cleaner `match` expression using guard clauses (`if arg.is_empty()`) and literal matching. Applied conditional compilation directly to match arms where necessary to preserve syntax safety.
