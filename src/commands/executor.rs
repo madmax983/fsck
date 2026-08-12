@@ -192,6 +192,13 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_dream(&self) -> CommandResult {
+        let dream_output =
+            crate::experimental::DreamGenerator::generate_dream(&self.entity, 0x1337_BEEF);
+        CommandResult::success(dream_output)
+    }
+
+    #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
@@ -202,6 +209,11 @@ impl CommandExecutor {
             && !arg.is_empty()
         {
             Some(self.handle_nova_speak(arg))
+        } else if (cmd_word.eq_ignore_ascii_case("DREAM")
+            || cmd_word.eq_ignore_ascii_case("TRANCE"))
+            && arg.is_empty()
+        {
+            Some(self.handle_nova_dream())
         } else if (cmd_word.eq_ignore_ascii_case("PS")
             || cmd_word.eq_ignore_ascii_case("TOP")
             || cmd_word.eq_ignore_ascii_case("TASKS"))
