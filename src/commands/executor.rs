@@ -197,118 +197,103 @@ impl CommandExecutor {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
         let arg = arg.trim();
 
-        #[cfg(feature = "nova")]
-        if (cmd_word.eq_ignore_ascii_case("SPEAK") || cmd_word.eq_ignore_ascii_case("SAY"))
-            && !arg.is_empty()
-        {
-            Some(self.handle_nova_speak(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("PS")
-            || cmd_word.eq_ignore_ascii_case("TOP")
-            || cmd_word.eq_ignore_ascii_case("TASKS"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_ps())
-        } else if (cmd_word.eq_ignore_ascii_case("MEMDUMP")
-            || cmd_word.eq_ignore_ascii_case("EXPORT"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_memdump())
-        } else if (cmd_word.eq_ignore_ascii_case("DIAG") || cmd_word.eq_ignore_ascii_case("SYS"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_diag())
-        } else if (cmd_word.eq_ignore_ascii_case("LIFE")
-            || cmd_word.eq_ignore_ascii_case("AUTOMATON"))
-            && arg.is_empty()
-        {
+        match (cmd_word, arg) {
             #[cfg(feature = "nova")]
+            (c, a)
+                if (c.eq_ignore_ascii_case("SPEAK") || c.eq_ignore_ascii_case("SAY"))
+                    && !a.is_empty() =>
             {
+                Some(self.handle_nova_speak(a))
+            }
+            (c, "")
+                if c.eq_ignore_ascii_case("PS")
+                    || c.eq_ignore_ascii_case("TOP")
+                    || c.eq_ignore_ascii_case("TASKS") =>
+            {
+                Some(self.handle_nova_ps())
+            }
+            (c, "") if c.eq_ignore_ascii_case("MEMDUMP") || c.eq_ignore_ascii_case("EXPORT") => {
+                Some(self.handle_nova_memdump())
+            }
+            (c, "") if c.eq_ignore_ascii_case("DIAG") || c.eq_ignore_ascii_case("SYS") => {
+                Some(self.handle_nova_diag())
+            }
+            #[cfg(feature = "nova")]
+            (c, "") if c.eq_ignore_ascii_case("LIFE") || c.eq_ignore_ascii_case("AUTOMATON") => {
                 Some(self.handle_nova_life())
             }
             #[cfg(not(feature = "nova"))]
-            {
+            (c, "") if c.eq_ignore_ascii_case("LIFE") || c.eq_ignore_ascii_case("AUTOMATON") => {
                 None
             }
-        } else if cmd_word.eq_ignore_ascii_case("ANALYZE") && !arg.is_empty() {
             #[cfg(feature = "nova")]
-            {
-                Some(self.handle_nova_analyze(arg))
+            (c, a) if c.eq_ignore_ascii_case("ANALYZE") && !a.is_empty() => {
+                Some(self.handle_nova_analyze(a))
             }
             #[cfg(not(feature = "nova"))]
-            {
-                None
-            }
-        } else if cmd_word.eq_ignore_ascii_case("MAIL") && arg.is_empty() {
+            (c, a) if c.eq_ignore_ascii_case("ANALYZE") && !a.is_empty() => None,
             #[cfg(feature = "nova")]
-            {
-                Some(self.handle_nova_mail())
-            }
+            (c, "") if c.eq_ignore_ascii_case("MAIL") => Some(self.handle_nova_mail()),
             #[cfg(not(feature = "nova"))]
+            (c, "") if c.eq_ignore_ascii_case("MAIL") => None,
+            (c, a)
+                if (c.eq_ignore_ascii_case("SEARCH") || c.eq_ignore_ascii_case("FIND"))
+                    && !a.is_empty() =>
             {
-                None
+                Some(self.handle_nova_search(a))
             }
-        } else if (cmd_word.eq_ignore_ascii_case("SEARCH") || cmd_word.eq_ignore_ascii_case("FIND"))
-            && !arg.is_empty()
-        {
-            Some(self.handle_nova_search(arg))
-        } else if cmd_word.eq_ignore_ascii_case("DEFRAG") && arg.is_empty() {
-            Some(self.handle_nova_defrag())
-        } else if (cmd_word.eq_ignore_ascii_case("UNDELETE")
-            || cmd_word.eq_ignore_ascii_case("RECOVER"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_undelete())
-        } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
-            Some(self.handle_nova_ping(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("DIAL") || cmd_word.eq_ignore_ascii_case("CALL"))
-            && !arg.is_empty()
-        {
-            Some(self.handle_nova_dial(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("DUMP")
-            || cmd_word.eq_ignore_ascii_case("HEXDUMP"))
-            && !arg.is_empty()
-        {
-            Some(self.handle_nova_dump(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("TRACE")
-            || cmd_word.eq_ignore_ascii_case("TRACEROUTE"))
-            && !arg.is_empty()
-        {
-            Some(self.handle_nova_trace(arg))
-        } else if cmd_word.eq_ignore_ascii_case("STAT") && !arg.is_empty() {
-            Some(self.handle_nova_stat(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("ENV")
-            || cmd_word.eq_ignore_ascii_case("PRINTENV"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_env())
-        } else if cmd_word.eq_ignore_ascii_case("NETSTAT") && arg.is_empty() {
-            Some(self.handle_nova_netstat())
-        } else if cmd_word.eq_ignore_ascii_case("RADIO") || cmd_word.eq_ignore_ascii_case("TUNE") {
-            Some(self.handle_nova_radio(arg))
-        } else if (cmd_word.eq_ignore_ascii_case("SENSORS")
-            || cmd_word.eq_ignore_ascii_case("SENSE")
-            || cmd_word.eq_ignore_ascii_case("TEMP"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_sensors())
-        } else if (cmd_word.eq_ignore_ascii_case("HISTORY")
-            || cmd_word.eq_ignore_ascii_case("HIST"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_history())
-        } else if (cmd_word.eq_ignore_ascii_case("PROFILE")
-            || cmd_word.eq_ignore_ascii_case("ANALYZE"))
-            && arg.is_empty()
-        {
-            Some(self.handle_nova_profile())
-        } else if cmd_word.eq_ignore_ascii_case("SLEEP") && arg.is_empty() {
-            Some(self.handle_nova_sleep())
-        } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
-            Some(self.handle_nova_fortune())
-        } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
-            Some(self.handle_nova_whoami())
-        } else {
-            None
+            (c, "") if c.eq_ignore_ascii_case("DEFRAG") => Some(self.handle_nova_defrag()),
+            (c, "") if c.eq_ignore_ascii_case("UNDELETE") || c.eq_ignore_ascii_case("RECOVER") => {
+                Some(self.handle_nova_undelete())
+            }
+            (c, a) if c.eq_ignore_ascii_case("PING") && !a.is_empty() => {
+                Some(self.handle_nova_ping(a))
+            }
+            (c, a)
+                if (c.eq_ignore_ascii_case("DIAL") || c.eq_ignore_ascii_case("CALL"))
+                    && !a.is_empty() =>
+            {
+                Some(self.handle_nova_dial(a))
+            }
+            (c, a)
+                if (c.eq_ignore_ascii_case("DUMP") || c.eq_ignore_ascii_case("HEXDUMP"))
+                    && !a.is_empty() =>
+            {
+                Some(self.handle_nova_dump(a))
+            }
+            (c, a)
+                if (c.eq_ignore_ascii_case("TRACE") || c.eq_ignore_ascii_case("TRACEROUTE"))
+                    && !a.is_empty() =>
+            {
+                Some(self.handle_nova_trace(a))
+            }
+            (c, a) if c.eq_ignore_ascii_case("STAT") && !a.is_empty() => {
+                Some(self.handle_nova_stat(a))
+            }
+            (c, "") if c.eq_ignore_ascii_case("ENV") || c.eq_ignore_ascii_case("PRINTENV") => {
+                Some(self.handle_nova_env())
+            }
+            (c, "") if c.eq_ignore_ascii_case("NETSTAT") => Some(self.handle_nova_netstat()),
+            (c, a) if c.eq_ignore_ascii_case("RADIO") || c.eq_ignore_ascii_case("TUNE") => {
+                Some(self.handle_nova_radio(a))
+            }
+            (c, "")
+                if c.eq_ignore_ascii_case("SENSORS")
+                    || c.eq_ignore_ascii_case("SENSE")
+                    || c.eq_ignore_ascii_case("TEMP") =>
+            {
+                Some(self.handle_nova_sensors())
+            }
+            (c, "") if c.eq_ignore_ascii_case("HISTORY") || c.eq_ignore_ascii_case("HIST") => {
+                Some(self.handle_nova_history())
+            }
+            (c, "") if c.eq_ignore_ascii_case("PROFILE") || c.eq_ignore_ascii_case("ANALYZE") => {
+                Some(self.handle_nova_profile())
+            }
+            (c, "") if c.eq_ignore_ascii_case("SLEEP") => Some(self.handle_nova_sleep()),
+            (c, "") if c.eq_ignore_ascii_case("FORTUNE") => Some(self.handle_nova_fortune()),
+            (c, "") if c.eq_ignore_ascii_case("WHOAMI") => Some(self.handle_nova_whoami()),
+            _ => None,
         }
     }
 

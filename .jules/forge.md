@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor Executor Commands match]**
+**Learning:** `handle_nova_commands` contained deep nested `if/else if` chains evaluating multiple string variations and emptiness checks, generating a "Pyramid of Doom". Also `cargo fmt` enforces some very strict formatting and using `Option<CommandResult>` on individual match arms.
+**Action:** Replace `if/else if` chain with a flat `match (cmd_word, arg)` using tuple destructuring and guard clauses.
