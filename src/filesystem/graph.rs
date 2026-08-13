@@ -256,6 +256,18 @@ impl FilesystemGraph {
     pub fn node_mut(&mut self, idx: NodeIndex) -> &mut DirNode {
         &mut self.graph[idx]
     }
+
+    #[cfg(feature = "nova")]
+    #[must_use]
+    pub const fn graph(&self) -> &DiGraph<DirNode, EdgeType> {
+        &self.graph
+    }
+
+    #[cfg(feature = "nova")]
+    #[must_use]
+    pub const fn current_index(&self) -> NodeIndex {
+        self.current
+    }
 }
 
 impl Default for FilesystemGraph {

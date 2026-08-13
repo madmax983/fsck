@@ -1,0 +1,3 @@
+- **Clippy: Uninlined Format Args:** When writing output format strings, remember to use direct variable interpolation (e.g., `format!("{cost}")`) rather than the older syntax (e.g., `format!("{}", cost)`), as `clippy` will strictly forbid it under `-D warnings`.
+- **Cargo Test Features:** When testing code locked behind `#[cfg(feature = "nova")]`, you MUST append `--features nova` to the `cargo test` command; otherwise, tests and source implementations will be silently excluded from the test run, leading to 0 executed tests and false positives.
+- **Git Reset Caveats:** Avoid bare `git reset` in the terminal; it triggers a sandbox restriction warning. Use explicit `git reset HEAD` instead.
