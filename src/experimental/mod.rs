@@ -42,6 +42,8 @@ pub mod update;
 pub mod voice;
 #[cfg(feature = "nova")]
 pub mod whoami;
+#[cfg(feature = "nova")]
+pub mod pathfinder;
 
 #[cfg(feature = "nova")]
 pub use analyze::SentimentAnalyzer;
@@ -86,6 +88,8 @@ pub use update::SystemUpdateSimulator;
 pub use voice::VoiceSynthesizer;
 #[cfg(feature = "nova")]
 pub use whoami::WhoAmIGenerator;
+#[cfg(feature = "nova")]
+pub use pathfinder::Pathfinder;
 #[cfg(feature = "nova")]
 pub mod radio;
 #[cfg(feature = "nova")]

@@ -192,6 +192,14 @@ impl CommandExecutor {
     }
 
     #[cfg(feature = "nova")]
+    fn handle_nova_navigate(&self, arg: &str) -> CommandResult {
+        let mut output = crate::experimental::Pathfinder::navigate(&self.fs, &self.entity, arg);
+        // ⚡ Bolt Optimization: Append newline directly instead of allocating a new string via format!
+        output.push('\n');
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
     #[allow(clippy::too_many_lines)]
     fn handle_nova_commands(&self, cmd: &str) -> Option<CommandResult> {
         let (cmd_word, arg) = cmd.split_once(' ').unwrap_or((cmd, ""));
@@ -258,6 +266,8 @@ impl CommandExecutor {
             && arg.is_empty()
         {
             Some(self.handle_nova_undelete())
+        } else if cmd_word.eq_ignore_ascii_case("NAVIGATE") && !arg.is_empty() {
+            Some(self.handle_nova_navigate(arg))
         } else if cmd_word.eq_ignore_ascii_case("PING") && !arg.is_empty() {
             Some(self.handle_nova_ping(arg))
         } else if (cmd_word.eq_ignore_ascii_case("DIAL") || cmd_word.eq_ignore_ascii_case("CALL"))
