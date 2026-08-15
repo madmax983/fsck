@@ -307,6 +307,8 @@ impl CommandExecutor {
             Some(self.handle_nova_fortune())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
+        } else if cmd_word.eq_ignore_ascii_case("FORMAT") {
+            Some(self.handle_nova_format(arg))
         } else {
             None
         }
@@ -315,6 +317,12 @@ impl CommandExecutor {
     #[cfg(feature = "nova")]
     fn handle_nova_whoami(&self) -> CommandResult {
         let output = crate::experimental::WhoAmIGenerator::identify(&self.entity);
+        CommandResult::success(output)
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_format(&self, arg: &str) -> CommandResult {
+        let output = crate::experimental::FormatTool::format_drive(&self.entity, 0xF5C0_0000, arg);
         CommandResult::success(output)
     }
 
