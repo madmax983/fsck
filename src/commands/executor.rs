@@ -305,11 +305,20 @@ impl CommandExecutor {
             Some(self.handle_nova_sleep())
         } else if cmd_word.eq_ignore_ascii_case("FORTUNE") && arg.is_empty() {
             Some(self.handle_nova_fortune())
+        } else if cmd_word.eq_ignore_ascii_case("LEAK") && arg.is_empty() {
+            Some(self.handle_nova_leak())
         } else if cmd_word.eq_ignore_ascii_case("WHOAMI") && arg.is_empty() {
             Some(self.handle_nova_whoami())
         } else {
             None
         }
+    }
+
+    #[cfg(feature = "nova")]
+    fn handle_nova_leak(&self) -> CommandResult {
+        let mut report = crate::experimental::MemoryLeak::generate_leak(&self.entity, 0xF5C0_0000);
+        report.push('\n');
+        CommandResult::success(report)
     }
 
     #[cfg(feature = "nova")]

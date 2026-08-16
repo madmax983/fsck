@@ -90,3 +90,7 @@ pub use whoami::WhoAmIGenerator;
 pub mod radio;
 #[cfg(feature = "nova")]
 pub use radio::RadioTransceiver;
+#[cfg(feature = "nova")]
+pub mod memory_leak;
+#[cfg(feature = "nova")]
+pub use memory_leak::MemoryLeak;
