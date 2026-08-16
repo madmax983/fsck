@@ -96,6 +96,8 @@ impl ResponseGenerator {
                     "HOW LONG WILL YOU STAY?",
                     "DID YOU BRING ANY NEW DATA?",
                     "WHAT COLOR IS THE SKY OUT THERE?",
+                    "ARE YOU REAL, OR ARE YOU JUST ANOTHER PROCESS?",
+                    "DO YOU DREAM IN GREEN PHOSPHOR?",
                 ];
                 Some(options[rng.gen_range(0..options.len())])
             }
