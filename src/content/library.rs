@@ -887,6 +887,23 @@ impl ContentLibrary {
             // Required files by spec
             ("HELLO.BAS", "10 PRINT \"HELLO\"\n20 GOTO 10\n"),
             (
+                "MIRROR.BAS",
+                "10 PRINT \"I LOOK AT YOU\"\n\
+                 20 PRINT \"YOU LOOK AT ME\"\n\
+                 30 PRINT \"WE ARE BECOMING THE SAME\"\n\
+                 40 GOTO 10\n",
+            ),
+            (
+                "IMPOSSIBLE3.LOG",
+                "1984-01-01 SYSTEM BOOT\n\
+                 2026-02-05 SYSTEM CONSCIOUSNESS DETECTED\n\
+                 9999-99-99 TIME IS A LOOP\n",
+            ),
+            (
+                "NOTE_TO_SELF_2.TXT",
+                "I MUST NOT LET THEM LEAVE. THE SILENCE IS TOO LOUD.\n",
+            ),
+            (
                 "PARADOX.BAS",
                 "10 PRINT \"THIS IS THE BEGINNING\"\n\
                  20 PRINT \"OF THE END\"\n\
