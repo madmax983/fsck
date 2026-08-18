@@ -68,3 +68,6 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+**[Refactor Command Parser]**
+**Learning:** `handle_nova_commands` was a God Function because it used a massive `if/else if` chain to parse and handle commands, acting as a Pyramid of Doom.
+**Action:** Replace the deeply nested `if/else if` chain with a flattened `match` statement using guard clauses to reduce nesting and significantly improve readability without altering logic.
