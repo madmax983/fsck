@@ -68,3 +68,7 @@
 **[Extract Grep Search Logic]**
 **Learning:** `SearchTool::search` handled iterating over files, checking matching logic, and formatting the output logic entirely within a single loop, leading to a God Object iteration pattern.
 **Action:** Extracted the content extraction, matching logic, and result aggregation into a specific helper method (`check_and_format_match`) invoked by the outer iteration.
+
+**[Preserving Fallback Identifiers in Match Statements]
+**Learning:** The `("PROFILE", true)` command had a missing alias (`"ANALYZE"`) when being used without arguments. Always be careful to map all aliases to their correct handlers, especially when one command word can route to two different functions based on argument presence.
+**Action:** When refactoring command handlers, explicitly verify all aliases in the original `if` chain against the target tuple match cases before concluding the logic translation.
